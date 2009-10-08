@@ -55,15 +55,6 @@
 		<defaultGoal>package</defaultGoal>
 		<plugins>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-release-plugin</artifactId>
-				<configuration>
-					<tagBase>
-						https://lion.maps.com.br/svn/main/hudson-plugins/xfpanel/tags
-					</tagBase>
-				</configuration>
-			</plugin>
-			<plugin>
 				<groupId>org.jvnet.hudson.tools</groupId>
 				<artifactId>maven-hpi-plugin</artifactId>
 				<version>1.31</version>
