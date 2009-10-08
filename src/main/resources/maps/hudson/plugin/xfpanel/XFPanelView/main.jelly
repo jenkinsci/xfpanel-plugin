@@ -1,0 +1,63 @@
+<!-- 
+	Thanks to Mark Howard and his work on the Radiator View Plugin from which this was based.
+ -->
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define"
+	xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form"
+	xmlns:i="jelly:fmt">
+
+	<j:choose>
+		<j:when test="${empty(items)}">
+			<st:include page="noJob.jelly" />
+		</j:when>
+		<j:otherwise>
+			<div class="dashboard"
+				style="overflow: visible; left: 0px; top: 34px; position: absolute; height: 100%; z-index: 9999; width: 100%; background-color: white; text-align: center;">
+
+				<j:invoke var="jobs" on="${from}" method="sort">
+					<j:arg type="java.util.Collection" value="${items}" />
+				</j:invoke>
+
+				<j:forEach var="job" items="${jobs}">
+					<table align="center" style="margin:5px; background-color:${job.backgroundColor}; -moz-border-radius:10px; width:99%; height:205px; float: center" tooltip="${job.name}">
+						<tr>
+							<td>
+								<a
+									style="white-space: nowrap; color: ${job.color}; font-size: 76; font-weight:bold;"
+									href="${job.url}">${job.name}</a>
+							</td>
+
+							<j:set var="failColor" value="#00FF00" />
+							<j:if test="${job.failCount > 0}">
+								<j:set var="failColor" value="#FF0000" />
+							</j:if>
+							<td rowspan="2" align="center"
+								style="width: 20%; text-align=center; color: ${failColor}; font-size: 160; font-weight:bold;">
+								<j:if test="${job.broken == true}">
+									<st:include page="warning.jelly" />
+								</j:if>
+								<j:if test="${job.broken == false}">
+									${job.failCount}
+								</j:if>
+							</td>
+						</tr>
+						<tr valign="top">
+							<j:if test="${job.building == false}">
+								<td valign="top"
+									style="color: ${job.color}; font-size: 60; font-weight:bold; white-space: nowrap;">
+									<st:include page="notBuilding.jelly" />
+								</td>
+							</j:if>
+							<j:if test="${job.building == true}">
+								<td valign="top"
+									style="color: ${job.color}; font-size: 40; font-weight:bold;">
+									<st:include page="building.jelly" />
+								</td>
+							</j:if>
+						</tr>
+					</table>
+				</j:forEach>
+			</div>
+		</j:otherwise>
+	</j:choose>
+
+</j:jelly>
