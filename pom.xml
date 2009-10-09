@@ -8,7 +8,6 @@
 	    	<relativePath>../pom.xml</relativePath>
 	</parent>
 
-	<groupId>maps.hudson.plugins</groupId>
 	<artifactId>xfpanel</artifactId>
 	<packaging>hpi</packaging>
 	<name>eXtreme Feedback Panel</name>
