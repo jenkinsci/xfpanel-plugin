@@ -2,6 +2,7 @@ package maps.hudson.plugin.xfpanel;
 
 import hudson.Extension;
 import hudson.Functions;
+import hudson.Util;
 import hudson.model.AbstractBuild;
 import hudson.model.Job;
 import hudson.model.ListView;
@@ -9,7 +10,9 @@ import hudson.model.Result;
 import hudson.model.Run;
 import hudson.model.User;
 import hudson.model.ViewDescriptor;
+import hudson.model.Descriptor.FormException;
 import hudson.tasks.test.AbstractTestResultAction;
+import hudson.util.FormValidation;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -17,8 +20,15 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Pattern;
 
+import javax.servlet.ServletException;
+
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.QueryParameter;
+import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerResponse;
 
 /**
  * Represents an eXtreme Feedback Panel View.
@@ -33,8 +43,14 @@ public class XFPanelView extends ListView {
 	
 	private Integer numColumns;
 	
+	private Integer refresh;
+	
+	private transient List<XFPanelEntry> entries;
+	
+	private transient int token;
+	
 	/**
-	 * C'tor
+	 * C'tor<meta  />
 	 * @param name the name of the view
 	 * @param numColumns the number of columns to use on the layout (work in progress)
 	 */
@@ -60,20 +76,74 @@ public class XFPanelView extends ListView {
 	 */
     public Collection<XFPanelEntry> sort(Collection<Job<?, ?>> jobs) {
     	if (jobs != null) {
-    		List<XFPanelEntry> entries = new ArrayList<XFPanelEntry>();
-    		for (Job<?, ?> job : jobs) {
-				entries.add(new XFPanelEntry(job));
-			}
-    		return entries;
+    		int newToken = getTokenFrom(jobs);
+    		if (this.entries == null || this.token != newToken) {
+    			synchronized (this) {
+    				if (this.entries == null || this.token != newToken) {
+	    				List<XFPanelEntry> ents = new ArrayList<XFPanelEntry>();
+	    				for (Job<?, ?> job : jobs) {
+	    					ents.add(new XFPanelEntry(job));
+	    				}
+	    				this.entries = ents;
+	    				this.token = newToken;
+    				}
+				}
+    		}
+    		return this.entries;
     	} 
         return Collections.emptyList();
     }
     
     /**
+     * Returns a token (hashcode) for this collection of jobs
+     * @param jobs the jobs
+     * @return the token
+     */
+    public int getTokenFrom(Collection<Job<?, ?>> jobs) {
+    	HashCodeBuilder hcb = new HashCodeBuilder();
+    	for (Job<?, ?> job : jobs) {
+			hcb.append(job.getName());
+		}
+		return hcb.toHashCode();
+    }
+    
+    /**
+	 * @return the refresh time in seconds
+	 */
+	public Integer getRefresh() {
+		return this.refresh;
+	}
+    
+    /**
 	 * @return the numColumns
 	 */
 	public Integer getNumColumns() {
-		return numColumns;
+		return this.numColumns;
+	}
+	
+	/**
+	 * Gets from the request the configuration parameters
+	 * 
+	 * @param req {@link StaplerRequest}
+	 * 
+	 * @throws ServletException if any
+	 * @throws FormException if any
+	 */
+	@Override
+	protected void submit(StaplerRequest req) throws ServletException, FormException {
+		super.submit(req);
+		
+		try {
+			this.numColumns = Integer.parseInt(req.getParameter("numColumns"));
+		} catch (NumberFormatException e) {
+			throw new FormException(XFPanelViewDescriptor.MSG, "numColumns");
+		}
+		
+		try {
+			this.refresh = Integer.parseInt(req.getParameter("refresh"));
+		} catch (NumberFormatException e) {
+			throw new FormException(XFPanelViewDescriptor.REFRESH_MSG, "refresh");
+		}
 	}
 	
     /**
@@ -326,6 +396,8 @@ public class XFPanelView extends ListView {
 	 */
     @Extension
     public static final class XFPanelViewDescriptor extends ViewDescriptor {
+    	public static final String REFRESH_MSG = "Refresh time must be a positive integer.";
+		public static final String MSG = "Number of columns currently supported is 1 or 2.";
 
     	/**
     	 * {@inheritDoc}
@@ -335,6 +407,33 @@ public class XFPanelView extends ListView {
 			return "eXtreme Feedback Panel";
 		}
     	
+		/**
+		 * Performs validation on request parameters
+		 * @param req request
+		 * @param resp response
+		 * @return a form validation
+		 */
+		public FormValidation doCheckNumColumns(StaplerRequest req, StaplerResponse resp) {
+			String num = Util.fixEmptyAndTrim(req.getParameter("numColumns"));
+			if (num != null) {
+				try {
+					int i = Integer.parseInt(num);
+					if (i < 1 || i > 2) {
+						return FormValidation.error(MSG);
+					}
+				} catch (NumberFormatException e) {
+					return FormValidation.error(MSG);
+				}
+			} else {
+				return FormValidation.error(MSG);
+			}
+			return FormValidation.ok();
+		}
+		
+		public FormValidation doCheckRefresh(StaplerRequest req) {
+			return FormValidation.validatePositiveInteger(req.getParameter("refresh"));
+		}
+		
     }
     
     /**

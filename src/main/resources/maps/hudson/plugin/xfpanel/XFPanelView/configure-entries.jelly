@@ -20,9 +20,11 @@
 		</f:entry>
 	</f:optionalBlock>
 
-	<f:dropdownList title="${%Number of layout columns}" name="numColumns">
-		<f:dropdownListBlock name="cols1" value="1" title="One" />
-		<f:dropdownListBlock name="cols2" value="2" title="Two" />
-	</f:dropdownList>
+	<f:entry title="${%Number of columns}">
+		<f:textbox name="numColumns" field="numColumns" />
+	</f:entry>
+	<f:entry title="${%Refresh time in seconds}">
+		<f:textbox name="refresh" field="refresh" />
+	</f:entry>
 
 </j:jelly>
