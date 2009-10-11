@@ -4,7 +4,7 @@
 	<table style="width: 100%;">
 		<j:forEach var="run" items="${job.buildsInProgress}">
 			<tr>
-				<td style="font-size: 60; font-weight:bold; white-space: nowrap;">
+				<td style="font-size: ${infoFont}; font-weight:bold; white-space: nowrap;">
 					<font color="${job.color}">BUILD ${run.displayName} ${run.executor.progress}%
 					</font>
 				</td>
@@ -17,7 +17,7 @@
 								<tbody>
 									<tr>
 										<td class="progress-bar-left"
-											style="width:${100-run.executor.progress}% height: 60px;" />
+											style="width:100% height: ${infoFont}px;" />
 									</tr>
 								</tbody>
 							</j:when>
@@ -25,9 +25,9 @@
 								<tbody>
 									<tr>
 										<td class="progress-bar-done"
-											style="width:${run.executor.progress}%; height: 60px;" />
+											style="width:${run.executor.progress}%; height: ${infoFont}px;" />
 										<td class="progress-bar-left"
-											style="width:${100-run.executor.progress}% height: 60px;" />
+											style="width:${100-run.executor.progress}% height: ${infoFont}px;" />
 									</tr>
 								</tbody>
 							</j:otherwise>

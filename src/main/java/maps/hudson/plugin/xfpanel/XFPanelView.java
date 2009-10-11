@@ -20,13 +20,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.regex.Pattern;
 
 import javax.servlet.ServletException;
 
-import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 
@@ -41,13 +38,13 @@ public class XFPanelView extends ListView {
 
 	private XFColors colors;
 	
-	private Integer numColumns;
+	private Integer numColumns = 1;
 	
-	private Integer refresh;
+	private Integer refresh = 3;
+	
+	private Boolean fullHD = false;
 	
 	private transient List<XFPanelEntry> entries;
-	
-	private transient int token;
 	
 	/**
 	 * C'tor<meta  />
@@ -70,41 +67,24 @@ public class XFPanelView extends ListView {
 		return this.colors;
 	}
 	
+	public Boolean getFullHD() {
+		return this.fullHD;
+	}
+	
 	/**
 	 * @param jobs the selected jobs
 	 * @return the jobs list wrapped into {@link XFPanelEntry} instances
 	 */
     public Collection<XFPanelEntry> sort(Collection<Job<?, ?>> jobs) {
     	if (jobs != null) {
-    		int newToken = getTokenFrom(jobs);
-    		if (this.entries == null || this.token != newToken) {
-    			synchronized (this) {
-    				if (this.entries == null || this.token != newToken) {
-	    				List<XFPanelEntry> ents = new ArrayList<XFPanelEntry>();
-	    				for (Job<?, ?> job : jobs) {
-	    					ents.add(new XFPanelEntry(job));
-	    				}
-	    				this.entries = ents;
-	    				this.token = newToken;
-    				}
-				}
-    		}
+			List<XFPanelEntry> ents = new ArrayList<XFPanelEntry>();
+			for (Job<?, ?> job : jobs) {
+				ents.add(new XFPanelEntry(job));
+			}
+			this.entries = ents;
     		return this.entries;
     	} 
         return Collections.emptyList();
-    }
-    
-    /**
-     * Returns a token (hashcode) for this collection of jobs
-     * @param jobs the jobs
-     * @return the token
-     */
-    public int getTokenFrom(Collection<Job<?, ?>> jobs) {
-    	HashCodeBuilder hcb = new HashCodeBuilder();
-    	for (Job<?, ?> job : jobs) {
-			hcb.append(job.getName());
-		}
-		return hcb.toHashCode();
     }
     
     /**
@@ -144,6 +124,8 @@ public class XFPanelView extends ListView {
 		} catch (NumberFormatException e) {
 			throw new FormException(XFPanelViewDescriptor.REFRESH_MSG, "refresh");
 		}
+		
+		this.fullHD = Boolean.parseBoolean(req.getParameter("fullHD"));
 	}
 	
     /**
