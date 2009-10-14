@@ -3,13 +3,7 @@ package maps.hudson.plugin.xfpanel;
 import hudson.Extension;
 import hudson.Functions;
 import hudson.Util;
-import hudson.model.AbstractBuild;
-import hudson.model.Job;
-import hudson.model.ListView;
-import hudson.model.Result;
-import hudson.model.Run;
-import hudson.model.User;
-import hudson.model.ViewDescriptor;
+import hudson.model.*;
 import hudson.model.Descriptor.FormException;
 import hudson.tasks.test.AbstractTestResultAction;
 import hudson.util.FormValidation;
@@ -20,6 +14,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 import javax.servlet.ServletException;
 
@@ -45,6 +41,8 @@ public class XFPanelView extends ListView {
 	private Boolean fullHD = false;
 	
 	private transient List<XFPanelEntry> entries;
+
+    private Map<hudson.model.Queue.Item, Integer> placeInQueue = new HashMap<hudson.model.Queue.Item, Integer>();
 	
 	/**
 	 * C'tor<meta  />
@@ -76,6 +74,12 @@ public class XFPanelView extends ListView {
 	 * @return the jobs list wrapped into {@link XFPanelEntry} instances
 	 */
     public Collection<XFPanelEntry> sort(Collection<Job<?, ?>> jobs) {
+        placeInQueue = new HashMap<hudson.model.Queue.Item, Integer>();
+        int j = 1;
+        for(hudson.model.Queue.Item i : Hudson.getInstance().getQueue().getItems()) {
+            placeInQueue.put(i, j++);
+        }
+
     	if (jobs != null) {
 			List<XFPanelEntry> ents = new ArrayList<XFPanelEntry>();
 			for (Job<?, ?> job : jobs) {
@@ -147,6 +151,10 @@ public class XFPanelView extends ListView {
     	
     	private Boolean building = false;
 
+        private Boolean queued = false;
+
+        private Integer queueNumber;        
+
     	/**
     	 * C'tor
     	 * @param job the job to be represented
@@ -169,7 +177,21 @@ public class XFPanelView extends ListView {
 		public String getName() {
 			return job.getName().toUpperCase();
 		}
-		
+
+        /**
+         * @return if this job is queued for build
+         */
+        public Boolean getQueued() {
+            return this.job.isInQueue();
+        }
+
+        /**
+         * @return the job's queue number, if any
+         */
+        public Integer getQueueNumber() {
+            return placeInQueue.get(this.job.getQueueItem());
+        }
+
 		/**
 		 * @return background color for this job
 		 */

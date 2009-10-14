@@ -6,6 +6,11 @@
 		${job.successPercentage} ${job.successCount}/${job.testCount} 
 		<j:if test="${job.diff != ''}">
 			(<font color="${job.diffColor}">${job.diff}</font>)
-		</j:if>									
+		</j:if>
+        <j:if test="${job.queued == true}">
+            <span style="float: right;">
+                   Queued: #${job.queueNumber}
+            </span>                          
+		</j:if>
 	</j:if>
 </j:jelly>
