@@ -40,6 +40,8 @@ public class XFPanelView extends ListView {
 	
 	private Boolean fullHD = false;
 	
+    private Boolean showDescription = false;
+
 	private transient List<XFPanelEntry> entries;
 
     private Map<hudson.model.Queue.Item, Integer> placeInQueue = new HashMap<hudson.model.Queue.Item, Integer>();
@@ -68,6 +70,13 @@ public class XFPanelView extends ListView {
 	public Boolean getFullHD() {
 		return this.fullHD;
 	}
+
+    public Boolean getShowDescription() {
+        if (this.showDescription == null) {
+            this.showDescription = false;
+        }
+        return this.showDescription;
+    }
 	
 	/**
 	 * @param jobs the selected jobs
@@ -130,6 +139,7 @@ public class XFPanelView extends ListView {
 		}
 		
 		this.fullHD = Boolean.parseBoolean(req.getParameter("fullHD"));
+        this.showDescription = Boolean.parseBoolean(req.getParameter("showDescription"));
 	}
 	
     /**
@@ -175,7 +185,11 @@ public class XFPanelView extends ListView {
 		 * @return the job's name
 		 */
 		public String getName() {
-			return job.getName().toUpperCase();
+			String label = job.getName().toUpperCase();
+            if (getShowDescription() == true && !job.getDescription().isEmpty()) {
+                label += ": " + job.getDescription();
+            }
+            return label;
 		}
 
         /**

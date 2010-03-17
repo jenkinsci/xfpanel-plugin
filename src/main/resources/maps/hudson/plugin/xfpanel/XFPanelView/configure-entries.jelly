@@ -31,4 +31,8 @@
 		<f:textbox name="refresh" field="refresh" />
 	</f:entry>
 
+	<f:entry title="${%Show Job descriptions}" field="showDescription">
+		<f:checkbox name="showDescription" checked="${it.showDescription}" value="true" field="showDescription" />
+	</f:entry>
+	
 </j:jelly>
