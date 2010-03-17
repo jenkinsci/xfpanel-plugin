@@ -40,6 +40,11 @@
                     <j:if test="${it.showZeroTestCounts == true}">
                         ${job.failCount}
                     </j:if>
+                    <j:if test="${it.showZeroTestCounts == false}">
+                        <j:if test="${job.testCount > 0}">
+                            ${job.failCount}
+                        </j:if>
+                    </j:if>
 				</j:if>
 			</td>
 		</tr>

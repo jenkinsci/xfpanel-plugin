@@ -6,6 +6,11 @@
         <j:if test="${it.showZeroTestCounts == true}">
             ${job.successPercentage} ${job.successCount}/${job.testCount} 
         </j:if>
+        <j:if test="${it.showZeroTestCounts == false}">
+            <j:if test="${job.testCount > 0}">
+                ${job.successPercentage} ${job.successCount}/${job.testCount}
+            </j:if>
+        </j:if>
 		<j:if test="${job.diff != ''}">
 			(<font color="${job.diffColor}">${job.diff}</font>)
 		</j:if>
