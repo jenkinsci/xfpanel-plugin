@@ -42,6 +42,8 @@ public class XFPanelView extends ListView {
 	
     private Boolean showDescription = false;
 
+    private Boolean sortDescending = false;
+
 	private transient List<XFPanelEntry> entries;
 
     private Map<hudson.model.Queue.Item, Integer> placeInQueue = new HashMap<hudson.model.Queue.Item, Integer>();
@@ -78,6 +80,13 @@ public class XFPanelView extends ListView {
         return this.showDescription;
     }
 	
+    public Boolean getSortDescending() {
+        if (this.sortDescending == null) {
+            this.sortDescending = false;
+        }
+        return this.sortDescending;
+    }
+	
 	/**
 	 * @param jobs the selected jobs
 	 * @return the jobs list wrapped into {@link XFPanelEntry} instances
@@ -94,6 +103,11 @@ public class XFPanelView extends ListView {
 			for (Job<?, ?> job : jobs) {
 				ents.add(new XFPanelEntry(job));
 			}
+
+            if (this.getSortDescending()) {
+                Collections.reverse(ents);
+            }
+
 			this.entries = ents;
     		return this.entries;
     	} 
@@ -140,6 +154,7 @@ public class XFPanelView extends ListView {
 		
 		this.fullHD = Boolean.parseBoolean(req.getParameter("fullHD"));
         this.showDescription = Boolean.parseBoolean(req.getParameter("showDescription"));
+        this.sortDescending = Boolean.parseBoolean(req.getParameter("sortDescending"));
 	}
 	
     /**
