@@ -37,7 +37,9 @@
 					<st:include page="warning.jelly" />
 				</j:if>
 				<j:if test="${job.broken == false}">
-					${job.failCount}
+                    <j:if test="${it.showZeroTestCounts == true}">
+                        ${job.failCount}
+                    </j:if>
 				</j:if>
 			</td>
 		</tr>

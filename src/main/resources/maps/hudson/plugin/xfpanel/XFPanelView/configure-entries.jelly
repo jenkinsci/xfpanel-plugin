@@ -35,6 +35,10 @@
 		<f:checkbox name="showDescription" checked="${it.showDescription}" value="true" field="showDescription" />
 	</f:entry>
 	
+	<f:entry title="${%Show test info for Jobs without tests}" field="showZeroTestCounts">
+		<f:checkbox name="showZeroTestCounts" checked="${it.showZeroTestCounts}" value="true" field="showZeroTestCounts" />
+	</f:entry>
+	
 	<f:entry title="${%Sort Jobs in descending order}" field="sortDescending">
 		<f:checkbox name="sortDescending" checked="${it.sortDescending}" value="true" field="sortDescending" />
 	</f:entry>

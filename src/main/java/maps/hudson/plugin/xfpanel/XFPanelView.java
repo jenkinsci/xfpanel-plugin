@@ -42,6 +42,8 @@ public class XFPanelView extends ListView {
 	
     private Boolean showDescription = false;
 
+    private Boolean showZeroTestCounts = true;
+
     private Boolean sortDescending = false;
 
 	private transient List<XFPanelEntry> entries;
@@ -85,6 +87,13 @@ public class XFPanelView extends ListView {
             this.sortDescending = false;
         }
         return this.sortDescending;
+    }
+	
+    public Boolean getShowZeroTestCounts() {
+        if (this.showZeroTestCounts == null) {
+            this.showZeroTestCounts = true;
+        }
+        return this.showZeroTestCounts;
     }
 	
 	/**
@@ -155,6 +164,7 @@ public class XFPanelView extends ListView {
 		this.fullHD = Boolean.parseBoolean(req.getParameter("fullHD"));
         this.showDescription = Boolean.parseBoolean(req.getParameter("showDescription"));
         this.sortDescending = Boolean.parseBoolean(req.getParameter("sortDescending"));
+        this.showZeroTestCounts = Boolean.parseBoolean(req.getParameter("showZeroTestCounts"));
 	}
 	
     /**

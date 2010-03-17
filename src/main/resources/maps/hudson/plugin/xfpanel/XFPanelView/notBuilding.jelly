@@ -3,7 +3,9 @@
 		Responsible: ${job.culprit}
 	</j:if>
 	<j:if test="${job.broken == false}">
-		${job.successPercentage} ${job.successCount}/${job.testCount} 
+        <j:if test="${it.showZeroTestCounts == true}">
+            ${job.successPercentage} ${job.successCount}/${job.testCount} 
+        </j:if>
 		<j:if test="${job.diff != ''}">
 			(<font color="${job.diffColor}">${job.diff}</font>)
 		</j:if>
