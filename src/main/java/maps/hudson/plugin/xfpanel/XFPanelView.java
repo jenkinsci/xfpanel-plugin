@@ -48,7 +48,7 @@ public class XFPanelView extends ListView {
 
 	private transient List<XFPanelEntry> entries;
 
-    private Map<hudson.model.Queue.Item, Integer> placeInQueue = new HashMap<hudson.model.Queue.Item, Integer>();
+    private transient Map<hudson.model.Queue.Item, Integer> placeInQueue = new HashMap<hudson.model.Queue.Item, Integer>();
 	
 	/**
 	 * C'tor<meta  />
@@ -228,7 +228,8 @@ public class XFPanelView extends ListView {
          * @return the job's queue number, if any
          */
         public Integer getQueueNumber() {
-            return placeInQueue.get(this.job.getQueueItem());
+            // placeInQueue==null right after deserialization because it's transient
+            return placeInQueue==null ? null : placeInQueue.get(this.job.getQueueItem());
         }
 
 		/**
