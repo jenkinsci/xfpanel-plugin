@@ -11,7 +11,7 @@
 	<artifactId>xfpanel</artifactId>
 	<packaging>hpi</packaging>
 	<name>eXtreme Feedback Panel</name>
-	<version>1.0.9</version>
+	<version>1.0.10-SNAPSHOT</version>
 	<description>Provides an eXtreme Feedback Panel for Hudson. Thanks to Mark Howard and his work on the Radiator View Plugin from which this was based.</description>
 	<url>http://wiki.hudson-ci.org/display/HUDSON/eXtreme+Feedback+Panel+Plugin</url>
 	<developers>
@@ -21,10 +21,4 @@
       			<email>julienrenaut@gmail.com</email>
     		</developer>
   	</developers>
-
-  <scm>
-    <connection>scm:svn:https://guest@svn.dev.java.net/svn/hudson/tags/xfpanel-1.0.9</connection>
-    <developerConnection>scm:svn:https://svn.dev.java.net/svn/hudson/tags/xfpanel-1.0.9</developerConnection>
-    <url>https://hudson.dev.java.net/source/browse/hudson/hudson/plugins/xfpanel/tags/xfpanel-1.0.9</url>
-  </scm>
 </project>
