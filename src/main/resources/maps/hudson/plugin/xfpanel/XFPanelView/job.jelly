@@ -4,18 +4,18 @@
 		<j:when test="${from.fullHD == true}">
 			<j:set var="height" value="165px" />
 			<j:set var="imgheight" value="138px" />
-			<j:set var="jobFont" value="60" />
-			<j:set var="failFont" value="110" />
-			<j:set var="infoFont" value="40" />
-			<j:set var="buildFont" value="30" />
+			<j:set var="jobFont" value="60px" />
+			<j:set var="failFont" value="110px" />
+			<j:set var="infoFont" value="40px" />
+			<j:set var="buildFont" value="30px" />
 		</j:when>
 		<j:otherwise>
 			<j:set var="height" value="205px" />
 			<j:set var="imgheight" value="194px" />
-			<j:set var="jobFont" value="80" />
-			<j:set var="failFont" value="150" />
-			<j:set var="infoFont" value="60" />
-			<j:set var="buildFont" value="40" />
+			<j:set var="jobFont" value="80px" />
+			<j:set var="failFont" value="150px" />
+			<j:set var="infoFont" value="60px" />
+			<j:set var="buildFont" value="40px" />
 		</j:otherwise>
 	</j:choose>
 
