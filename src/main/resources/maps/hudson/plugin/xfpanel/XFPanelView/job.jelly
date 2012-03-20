@@ -1,23 +1,11 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt">
 
-	<j:choose>
-		<j:when test="${from.fullHD == true}">
-			<j:set var="height" value="165px" />
-			<j:set var="imgheight" value="138px" />
-			<j:set var="jobFont" value="60px" />
-			<j:set var="failFont" value="110px" />
-			<j:set var="infoFont" value="40px" />
-			<j:set var="buildFont" value="30px" />
-		</j:when>
-		<j:otherwise>
-			<j:set var="height" value="205px" />
-			<j:set var="imgheight" value="194px" />
-			<j:set var="jobFont" value="80px" />
-			<j:set var="failFont" value="150px" />
-			<j:set var="infoFont" value="60px" />
-			<j:set var="buildFont" value="40px" />
-		</j:otherwise>
-	</j:choose>
+	<j:set var="height" value="${from.guiHeight}" />
+	<j:set var="imgheight" value="${from.guiImgHeight}" />
+	<j:set var="jobFont" value="${from.guiJobFont}" />
+	<j:set var="failFont" value="${from.guiFailFont}" />
+	<j:set var="infoFont" value="${from.guiInfoFont}" />
+	<j:set var="buildFont" value="${from.guiBuildFont}" />
 
 	<table align="center" style="margin: 4px; background-color:${job.backgroundColor}; -moz-border-radius:10px; width:${width}; height:${height}; float: ${float}" tooltip="${job.name}">
 		<tr>
