@@ -41,6 +41,18 @@ public class XFPanelView extends ListView {
 	
 	private Boolean fullHD = false;
 	
+	private String guiHeight = "205px";
+
+	private String guiImgHeight = "194px";
+
+	private String guiJobFont = "80px";
+
+	private String guiFailFont = "150px";
+
+	private String guiInfoFont = "60px";
+
+	private String guiBuildFont = "40px";
+
     private Boolean showDescription = false;
 
     private Boolean showZeroTestCounts = true;
@@ -72,6 +84,18 @@ public class XFPanelView extends ListView {
 		return this.colors;
 	}
 	
+	public String getGuiHeight() { return guiHeight; }
+
+	public String getGuiImgHeight() { return guiImgHeight; }
+
+	public String getGuiJobFont() { return guiJobFont; }
+
+	public String getGuiFailFont() { return guiFailFont; }
+
+	public String getGuiInfoFont() { return guiInfoFont; }
+
+	public String getGuiBuildFont() { return guiBuildFont; }
+
 	public Boolean getFullHD() {
 		return this.fullHD;
 	}
@@ -163,6 +187,12 @@ public class XFPanelView extends ListView {
 		}
 		
 		this.fullHD = Boolean.parseBoolean(req.getParameter("fullHD"));
+		this.guiHeight = req.getParameter("guiHeight");
+		this.guiImgHeight = req.getParameter("guiImgHeight");
+		this.guiJobFont = req.getParameter("guiJobFont");
+		this.guiFailFont = req.getParameter("guiFailFont");
+		this.guiInfoFont = req.getParameter("guiInfoFont");
+		this.guiBuildFont = req.getParameter("guiBuildFont");
         this.showDescription = Boolean.parseBoolean(req.getParameter("showDescription"));
         this.sortDescending = Boolean.parseBoolean(req.getParameter("sortDescending"));
         this.showZeroTestCounts = Boolean.parseBoolean(req.getParameter("showZeroTestCounts"));
@@ -319,6 +349,14 @@ public class XFPanelView extends ListView {
 			return this.getTestCount() - this.getFailCount();
 		}
 		
+		public int getLastCompletedBuildNumber() {
+			return job.getLastCompletedBuild().getNumber();
+		}
+
+		public String getLastCompletedBuildTimestampString() {
+			return job.getLastCompletedBuild().getTimestampString();
+		}
+
 		/**
 		 * @return difference between this job's last build successful tests and the previous'
 		 */

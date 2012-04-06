@@ -24,6 +24,25 @@
 		<f:checkbox name="fullHD" checked="${it.fullHD}" value="true" field="fullHD" />
 	</f:entry>
 	
+	<f:entry title="${%Height}">
+		<f:textbox name="guiHeight" field="guiHeight" />
+	</f:entry>
+	<f:entry title="${%Image height}">
+		<f:textbox name="guiImgHeight" field="guiImgHeight" />
+	</f:entry>
+	<f:entry title="${%Job font size}">
+		<f:textbox name="guiJobFont" field="guiJobFont" />
+	</f:entry>
+	<f:entry title="${%Fail font size}">
+		<f:textbox name="guiFailFont" field="guiFailFont" />
+	</f:entry>
+	<f:entry title="${%Info font size}">
+		<f:textbox name="guiInfoFont" field="guiInfoFont" />
+	</f:entry>
+	<f:entry title="${%Build font size}">
+		<f:textbox name="guiBuildFont" field="guiBuildFont" />
+	</f:entry>
+
 	<f:entry title="${%Number of columns}">
 		<f:textbox name="numColumns" field="numColumns" />
 	</f:entry>
