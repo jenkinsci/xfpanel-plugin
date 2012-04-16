@@ -1,11 +1,11 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt">
 
-	<j:set var="height" value="${from.guiHeight}" />
-	<j:set var="imgheight" value="${from.guiImgHeight}" />
-	<j:set var="jobFont" value="${from.guiJobFont}" />
-	<j:set var="failFont" value="${from.guiFailFont}" />
-	<j:set var="infoFont" value="${from.guiInfoFont}" />
-	<j:set var="buildFont" value="${from.guiBuildFont}" />
+	<j:set var="height" value="${from.guiHeight}px" />
+	<j:set var="imgheight" value="${from.guiImgHeight}px" />
+	<j:set var="jobFont" value="${from.guiJobFont}px" />
+	<j:set var="failFont" value="${from.guiFailFont}px" />
+	<j:set var="infoFont" value="${from.guiInfoFont}px" />
+	<j:set var="buildFont" value="${from.guiBuildFont}px" />
 
 	<table align="center" style="margin: 4px; background-color:${job.backgroundColor}; -moz-border-radius:10px; width:${width}; height:${height}; float: ${float}" tooltip="${job.name}">
 		<tr>
