@@ -2,9 +2,15 @@ package maps.hudson.plugin.xfpanel;
 
 import hudson.Extension;
 import hudson.Functions;
-import hudson.Util;
-import hudson.model.*;
+import hudson.model.Result;
+import hudson.model.ViewDescriptor;
+import hudson.model.AbstractBuild;
 import hudson.model.Descriptor.FormException;
+import hudson.model.Hudson;
+import hudson.model.Job;
+import hudson.model.ListView;
+import hudson.model.Run;
+import hudson.model.User;
 import hudson.tasks.test.AbstractTestResultAction;
 import hudson.util.FormValidation;
 
@@ -13,16 +19,16 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
 
 import javax.servlet.ServletException;
 
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
 
 /**
  * Represents an eXtreme Feedback Panel View.
@@ -36,11 +42,17 @@ public class XFPanelView extends ListView {
 	private XFColors colors;
 	
 	private Integer numColumns = 1;
-	
 	private Integer refresh = 3;
 	
 	private Boolean fullHD = false;
 	
+	private Integer guiHeight = 205;
+	private Integer guiImgHeight = 194;
+	private Integer guiJobFont = 80;
+	private Integer guiFailFont = 150;
+	private Integer guiInfoFont = 60;
+	private Integer guiBuildFont = 40;
+
     private Boolean showDescription = false;
 
     private Boolean showZeroTestCounts = true;
@@ -72,6 +84,18 @@ public class XFPanelView extends ListView {
 		return this.colors;
 	}
 	
+	public Integer getGuiHeight() { return guiHeight; }
+
+	public Integer getGuiImgHeight() { return guiImgHeight; }
+
+	public Integer getGuiJobFont() { return guiJobFont; }
+
+	public Integer getGuiFailFont() { return guiFailFont; }
+
+	public Integer getGuiInfoFont() { return guiInfoFont; }
+
+	public Integer getGuiBuildFont() { return guiBuildFont; }
+
 	public Boolean getFullHD() {
 		return this.fullHD;
 	}
@@ -85,14 +109,14 @@ public class XFPanelView extends ListView {
 	
     public Boolean getSortDescending() {
         if (this.sortDescending == null) {
-            this.sortDescending = false;
+            this.sortDescending = Boolean.FALSE;
         }
         return this.sortDescending;
     }
 	
     public Boolean getShowZeroTestCounts() {
         if (this.showZeroTestCounts == null) {
-            this.showZeroTestCounts = true;
+            this.showZeroTestCounts = Boolean.TRUE;
         }
         return this.showZeroTestCounts;
     }
@@ -150,22 +174,28 @@ public class XFPanelView extends ListView {
 	protected void submit(StaplerRequest req) throws ServletException, FormException, IOException {
 		super.submit(req);
 		
-		try {
-			this.numColumns = Integer.parseInt(req.getParameter("numColumns"));
-		} catch (NumberFormatException e) {
-			throw new FormException(XFPanelViewDescriptor.MSG, "numColumns");
-		}
-		
-		try {
-			this.refresh = Integer.parseInt(req.getParameter("refresh"));
-		} catch (NumberFormatException e) {
-			throw new FormException(XFPanelViewDescriptor.REFRESH_MSG, "refresh");
-		}
+		this.numColumns = asInteger(req, "numColumns");
+		this.refresh = asInteger(req, "refresh");
 		
 		this.fullHD = Boolean.parseBoolean(req.getParameter("fullHD"));
+		
+		this.guiHeight = asInteger(req, "guiHeight");
+		this.guiImgHeight = asInteger(req, "guiImgHeight");
+		this.guiJobFont = asInteger(req, "guiJobFont");
+		this.guiFailFont = asInteger(req, "guiFailFont");
+		this.guiInfoFont = asInteger(req, "guiInfoFont");
+		this.guiBuildFont = asInteger(req, "guiBuildFont");
         this.showDescription = Boolean.parseBoolean(req.getParameter("showDescription"));
         this.sortDescending = Boolean.parseBoolean(req.getParameter("sortDescending"));
         this.showZeroTestCounts = Boolean.parseBoolean(req.getParameter("showZeroTestCounts"));
+	}
+	
+	private Integer asInteger(StaplerRequest request, String parameterName) throws FormException {
+		try {
+			return Integer.parseInt(request.getParameter(parameterName));
+		} catch (NumberFormatException e) {
+			throw new FormException(parameterName + " must be a positive integer", parameterName);
+		}		
 	}
 	
     /**
@@ -319,6 +349,14 @@ public class XFPanelView extends ListView {
 			return this.getTestCount() - this.getFailCount();
 		}
 		
+		public int getLastCompletedBuildNumber() {
+			return job.getLastCompletedBuild().getNumber();
+		}
+
+		public String getLastCompletedBuildTimestampString() {
+			return job.getLastCompletedBuild().getTimestampString();
+		}
+
 		/**
 		 * @return difference between this job's last build successful tests and the previous'
 		 */
@@ -458,25 +496,48 @@ public class XFPanelView extends ListView {
 		 * @param resp response
 		 * @return a form validation
 		 */
-		public FormValidation doCheckNumColumns(StaplerRequest req, StaplerResponse resp) {
-			String num = Util.fixEmptyAndTrim(req.getParameter("numColumns"));
-			if (num != null) {
-				try {
-					int i = Integer.parseInt(num);
-					if (i < 1 || i > 2) {
-						return FormValidation.error(MSG);
-					}
-				} catch (NumberFormatException e) {
-					return FormValidation.error(MSG);
-				}
-			} else {
-				return FormValidation.error(MSG);
-			}
+		public FormValidation doCheckNumColumns(@QueryParameter String value) {
+      try {
+        int i = Integer.parseInt(value);
+        if (i < 1 || i > 2) {
+          return FormValidation.error(MSG);
+        }
+      } catch (NumberFormatException e) {
+        return FormValidation.error(MSG);
+      }
 			return FormValidation.ok();
 		}
 		
-		public FormValidation doCheckRefresh(StaplerRequest req) {
-			return FormValidation.validatePositiveInteger(req.getParameter("refresh"));
+		public FormValidation doCheckRefresh(@QueryParameter String value) {
+			return isPositiveInteger(value);
+		}
+		
+		public FormValidation doCheckGuiHeight(@QueryParameter String value) {
+			return isPositiveInteger(value);
+		}
+		
+		public FormValidation doCheckGuiImgHeight(@QueryParameter String value) {
+			return isPositiveInteger(value);
+		}		
+		
+		public FormValidation doCheckGuiJobFont(@QueryParameter String value) {
+			return isPositiveInteger(value);
+		}
+		
+		public FormValidation doCheckGuiFailFont(@QueryParameter String value) {
+			return isPositiveInteger(value);
+		}
+		
+		public FormValidation doCheckGuiInfoFont(@QueryParameter String value) {
+			return isPositiveInteger(value);
+		}
+		
+		public FormValidation doCheckGuiBuildFont(@QueryParameter String value) {
+			return isPositiveInteger(value);
+		}		
+
+		private FormValidation isPositiveInteger(String value) {
+			return FormValidation.validatePositiveInteger(value);
 		}
 		
     }
