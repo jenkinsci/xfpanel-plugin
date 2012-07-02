@@ -1,8 +1,8 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt">
-	<j:if test="${job.broken == true}">
-		Responsible: ${job.culprit}
-	</j:if>
-	<j:if test="${job.broken == false}">
+    <j:if test="${job.broken == true}">
+         ${job.culprits}
+    </j:if>
+    <j:if test="${job.broken == false}">
         <j:if test="${it.showZeroTestCounts == true}">
             ${job.successPercentage} ${job.successCount}/${job.testCount} 
         </j:if>

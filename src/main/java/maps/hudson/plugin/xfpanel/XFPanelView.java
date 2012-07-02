@@ -50,7 +50,7 @@ public class XFPanelView extends ListView {
 	private Integer guiImgHeight = 194;
 	private Integer guiJobFont = 80;
 	private Integer guiFailFont = 150;
-	private Integer guiInfoFont = 60;
+	private Integer guiInfoFont = 40;
 	private Integer guiBuildFont = 40;
 
     private Boolean showDescription = false;
@@ -61,8 +61,13 @@ public class XFPanelView extends ListView {
 
 	private transient List<XFPanelEntry> entries;
 
-    private transient Map<hudson.model.Queue.Item, Integer> placeInQueue = new HashMap<hudson.model.Queue.Item, Integer>();
-	
+	private transient Map<hudson.model.Queue.Item, Integer> placeInQueue = new HashMap<hudson.model.Queue.Item, Integer>();
+
+	protected enum Blame { NOTATALL, ONLYLASTONE, EVERYINVOLVED }
+	protected Blame BlameState = Blame.EVERYINVOLVED;
+
+	private Integer maxAmmountOfResponsibles = 3;
+
 	/**
 	 * C'tor<meta  />
 	 * @param name the name of the view
@@ -95,7 +100,8 @@ public class XFPanelView extends ListView {
 	public Integer getGuiInfoFont() { return guiInfoFont; }
 
 	public Integer getGuiBuildFont() { return guiBuildFont; }
-
+	
+	public Integer getMaxAmmountOfResponsibles(){ return maxAmmountOfResponsibles; }
 	public Boolean getFullHD() {
 		return this.fullHD;
 	}
@@ -162,6 +168,7 @@ public class XFPanelView extends ListView {
 		return this.numColumns;
 	}
 	
+	
 	/**
 	 * Gets from the request the configuration parameters
 	 * 
@@ -188,6 +195,24 @@ public class XFPanelView extends ListView {
         this.showDescription = Boolean.parseBoolean(req.getParameter("showDescription"));
         this.sortDescending = Boolean.parseBoolean(req.getParameter("sortDescending"));
         this.showZeroTestCounts = Boolean.parseBoolean(req.getParameter("showZeroTestCounts"));
+        this.maxAmmountOfResponsibles = asInteger(req,"maxAmmountOfResponsibles");
+        
+        String blameType = req.getParameter("responsibles");
+        
+        if ( blameType == null ){
+        	System.out.println("WARNING: Show responsibles == null --> Show responsibles disabled" );
+        	this.BlameState = Blame.NOTATALL;
+        }
+        else if (blameType.equals("blame.notAtAll")) {
+            this.BlameState = Blame.NOTATALL;
+        }
+        else if (blameType.equals("blame.onlyLastOne")) {
+        	this.BlameState = Blame.ONLYLASTONE;
+        }
+        else if (blameType.equals("blame.everyInvolved")) {
+        	this.BlameState = Blame.EVERYINVOLVED;
+        }
+
 	}
 	
 	private Integer asInteger(StaplerRequest request, String parameterName) throws FormException {
@@ -220,7 +245,7 @@ public class XFPanelView extends ListView {
         private Boolean queued = false;
 
         private Integer queueNumber;        
-
+        
     	/**
     	 * C'tor
     	 * @param job the job to be represented
@@ -282,6 +307,16 @@ public class XFPanelView extends ListView {
 		 */
 		public Boolean getBroken() {
 			return this.broken;
+		}
+		
+		/**
+		 *  @return 1 on success
+		 */
+		
+		public Boolean getShowState() {
+			if (BlameState == Blame.NOTATALL)
+				return false;
+			return true;
 		}
 		
 		/**
@@ -392,22 +427,41 @@ public class XFPanelView extends ListView {
 		}
 		
 		/**
-		 * Elects a culprit/responsible for a broken build by choosing the last commiter of a given build 
+		 * Elects culprit(s)/responsible(s) for a broken build by choosing the last commiter of a given build 
 		 * 
-		 * @return the culprit/responsible
+		 * @return the culprit(s)/responsible(s)
 		 */
-		public String getCulprit() {
+		public String getCulprits() {
+			if ( BlameState == Blame.NOTATALL ) return "";
+			
 			Run<?, ?> run = this.job.getLastBuild();
-			String culprit = " - ";
+			String culprit = "";
 			if (run instanceof AbstractBuild<?, ?>) {
 				AbstractBuild<?, ?> build = (AbstractBuild<?, ?>) run;
 				Iterator<User> it = build.getCulprits().iterator();
-				while (it.hasNext()) {
-					culprit = it.next().getFullName().toUpperCase();
+				
+				int i=0;
+				for (; it.hasNext(); i++ ) {
+					if ( BlameState == Blame.ONLYLASTONE )
+						culprit = it.next().getFullName().toUpperCase();
+					else if ( i < getMaxAmmountOfResponsibles()  ) 
+						culprit += it.next().getFullName() + ((it.hasNext())?", ":"");
+					else
+						it.next();
 				}
+
+				if ( BlameState == Blame.EVERYINVOLVED && i > getMaxAmmountOfResponsibles()  ){
+					culprit += "... <"+ (i-getMaxAmmountOfResponsibles()) +" more>";
+				}
+					
 			}
-			return culprit;
+			
+			if ( culprit.isEmpty() ){
+				culprit = " - ";
+			}
+			return "Responsible(s): " + culprit;
 		}
+		
 		
 		/**
 		 * @return color to be used to show the test diff
