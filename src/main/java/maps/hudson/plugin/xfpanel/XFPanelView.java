@@ -13,6 +13,7 @@ import hudson.model.Run;
 import hudson.model.User;
 import hudson.tasks.test.AbstractTestResultAction;
 import hudson.util.FormValidation;
+import hudson.scm.ChangeLogSet.Entry;
 
 import java.io.IOException;
 import java.text.NumberFormat;
@@ -23,12 +24,14 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.HashSet;
 
 import javax.servlet.ServletException;
 
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
+
 
 /**
  * Represents an eXtreme Feedback Panel View.
@@ -63,10 +66,10 @@ public class XFPanelView extends ListView {
 
 	private transient Map<hudson.model.Queue.Item, Integer> placeInQueue = new HashMap<hudson.model.Queue.Item, Integer>();
 
-	protected enum Blame { NOTATALL, ONLYLASTONE, EVERYINVOLVED }
+	protected enum Blame { NOTATALL, ONLYLASTONE, ONLYLASTFAILEDBUILD, ONLYFIRSTFAILEDBUILD, EVERYINVOLVED }
 	protected Blame BlameState = Blame.EVERYINVOLVED;
 
-	private Integer maxAmmountOfResponsibles = 3;
+	private Integer maxAmmountOfResponsibles = 2;
 
 	/**
 	 * C'tor<meta  />
@@ -206,8 +209,11 @@ public class XFPanelView extends ListView {
         else if (blameType.equals("blame.notAtAll")) {
             this.BlameState = Blame.NOTATALL;
         }
-        else if (blameType.equals("blame.onlyLastOne")) {
-        	this.BlameState = Blame.ONLYLASTONE;
+        else if (blameType.equals("blame.onlyFirstFailedBuild")) {
+        	this.BlameState = Blame.ONLYFIRSTFAILEDBUILD;
+        }
+        else if (blameType.equals("blame.onlyLastFailedBuild")) {
+        	this.BlameState = Blame.ONLYLASTFAILEDBUILD;
         }
         else if (blameType.equals("blame.everyInvolved")) {
         	this.BlameState = Blame.EVERYINVOLVED;
@@ -431,36 +437,70 @@ public class XFPanelView extends ListView {
 		 * 
 		 * @return the culprit(s)/responsible(s)
 		 */
-		public String getCulprits() {
-			if ( BlameState == Blame.NOTATALL ) return "";
-			
-			Run<?, ?> run = this.job.getLastBuild();
-			String culprit = "";
-			if (run instanceof AbstractBuild<?, ?>) {
-				AbstractBuild<?, ?> build = (AbstractBuild<?, ?>) run;
-				Iterator<User> it = build.getCulprits().iterator();
-				
-				int i=0;
-				for (; it.hasNext(); i++ ) {
-					if ( BlameState == Blame.ONLYLASTONE )
-						culprit = it.next().getFullName().toUpperCase();
-					else if ( i < getMaxAmmountOfResponsibles()  ) 
-						culprit += it.next().getFullName() + ((it.hasNext())?", ":"");
-					else
-						it.next();
-				}
-
-				if ( BlameState == Blame.EVERYINVOLVED && i > getMaxAmmountOfResponsibles()  ){
-					culprit += "... <"+ (i-getMaxAmmountOfResponsibles()) +" more>";
-				}
-					
-			}
-			
-			if ( culprit.isEmpty() ){
-				culprit = " - ";
-			}
-			return "Responsible(s): " + culprit;
+		
+		public HashSet<User> getCulpritFromBuild( AbstractBuild<?, ?> build ){
+			HashSet<User> r = new HashSet<User>();
+			for (Entry e : build.getChangeSet())
+                r.add(e.getAuthor());
+			return r;
 		}
+		
+		public String convertCulpritsToString( HashSet<User> input ){
+			String output = "";
+			Iterator<User> it = input.iterator();
+			
+			int i=0;
+	        for (; it.hasNext(); i++ ){
+				if ( i < getMaxAmmountOfResponsibles()  ) 
+					output += it.next().getFullName() + ((it.hasNext())?", ":"");
+				else
+					it.next();
+	        }
+			if ( i > getMaxAmmountOfResponsibles() ){
+				output += "... <"+ (i-getMaxAmmountOfResponsibles()) +" more>";
+			}
+			if ( !output.isEmpty() )
+				return "Responsible(s): "+output;
+			return "Responsibles: - ";
+		}
+		
+		public String getCulprits() {
+			if ( BlameState == Blame.ONLYFIRSTFAILEDBUILD){
+				Run<?, ?> run = this.job.getLastStableBuild(); //getLastSuccessfulBuild();
+				if ( run == null ){ // if there aren't any successful builds
+					run = this.job.getFirstBuild(); 
+				}
+				else {
+					run = run.getNextBuild();
+				}
+				
+				if (run instanceof AbstractBuild<?, ?>) {
+					AbstractBuild<?, ?> firstFailedBuild = (AbstractBuild<?, ?>) run;
+					return convertCulpritsToString( getCulpritFromBuild( firstFailedBuild ) );
+				}
+			}
+			else if ( BlameState == Blame.ONLYLASTFAILEDBUILD){
+				Run<?, ?> run = this.job.getLastFailedBuild(); //getLastBuild();
+				
+				if (run instanceof AbstractBuild<?, ?>) {
+					AbstractBuild<?, ?> lastFailedBuild = (AbstractBuild<?, ?>) run;
+					return convertCulpritsToString( getCulpritFromBuild( lastFailedBuild ) );
+				}
+			}
+			else if ( BlameState == Blame.EVERYINVOLVED ){
+				Run<?, ?> run = this.job.getLastBuild();
+				
+				
+				if (run instanceof AbstractBuild<?, ?>) {
+					AbstractBuild<?, ?> build = (AbstractBuild<?, ?>) run;
+					HashSet<User> BlameList = new HashSet<User>( build.getCulprits() );
+					return convertCulpritsToString( BlameList );
+				}
+			}
+			//if ( BlameState == Blame.NOTATALL )
+			return "";
+		}
+		
 		
 		
 		/**

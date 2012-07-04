@@ -56,23 +56,26 @@
 	
 	<f:entry title="${%Show Responsibles}" field="responsibles">
 		<j:choose>
-			<j:set var="notAtAll" value="" />
-			<j:set var="onlyLastOne" value="" />
-			<j:set var="everyInvolved" value="checked" />
+			<j:set var="notAtAll" value="checked" />
 		</j:choose>
 	
-		<input id="responsibles-notAtAll"      type="radio" name="responsibles" value="blame.notAtAll"      checked="${notAtAll}" /> 
+		<input id="responsibles-notAtAll" type="radio" name="responsibles" value="blame.notAtAll" checked="${notAtAll}" /> 
 		<label for="responsibles-notAtAll"> not at all </label>  <br/>
 	
-		<input id="responsibles-onlyLastOne"   type="radio" name="responsibles" value="blame.onlyLastOne"   checked="${onlyLastOne}"/>
-		<label for="responsibles-onlyLastOne"> only the last one</label>  <br/>
+		<input id="responsibles-onlyLastFailedBuild" type="radio" name="responsibles" value="blame.onlyLastFailedBuild" checked="${onlyLastFailedBuild}"/>
+		<label for="responsibles-onlyLastFailedBuild"> from the most recent failed build </label>  <br/>
+		
+		<input id="responsibles-onlyFirstFailedBuild" type="radio" name="responsibles" value="blame.onlyFirstFailedBuild" checked="${onlyFirstFailedBuild}"/>
+		<label for="responsibles-onlyFirstFailedBuild"> from the first failed build </label> <br/>
 	
 		<input id="responsibles-everyInvolved" type="radio" name="responsibles" value="blame.everyInvolved" checked="${everyInvolved}"/>
-		<label for="responsibles-everyInvolved"> every involved since last successful build</label>  <br/>
+		<label for="responsibles-everyInvolved"> every committer since the last successful build</label>  <br/>
+		
+		<f:entry title="${%Max nr. of responsibles to show}" field="maxAmmountOfResponsibles" >
+			<f:textbox id="maxAmmountOfResponsibles" name="maxAmmountOfResponsibles" />
+		</f:entry>
 	</f:entry> 
 	
-	<f:entry title="${%Max number of names in responsibles list}" field="maxAmmountOfResponsibles">
-		<f:textbox id="maxAmmountOfResponsibles" name="maxAmmountOfResponsibles" />
-	</f:entry>
+
 
 </j:jelly>
