@@ -1,6 +1,12 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt">
     <j:if test="${job.broken == true}">
-         ${job.culprits}
+		${job.culprits}
+
+		<j:if test="${it.showTimeStamp == true}">
+			<j:if test="${!job.completionTimestampString.equals('')}">
+				<br/> Built ${job.completionTimestampString} ago
+			</j:if>
+		</j:if>
     </j:if>
     <j:if test="${job.broken == false}">
         <j:if test="${it.showZeroTestCounts == true}">
@@ -18,6 +24,15 @@
             <span style="float: right;">
                    Queued: #${job.queueNumber}
             </span>                          
+		</j:if>
+		
+		<j:if test="${job.queued != true}">
+			<j:if test="${it.showTimeStamp == true}">
+				<br/>Last Successful: ${job.completionTimestampString} 
+				<j:if test="${!job.completionTimestampString.equals('')}">
+					ago
+				</j:if>
+			</j:if>
 		</j:if>
 	</j:if>
 </j:jelly>

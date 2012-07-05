@@ -53,6 +53,9 @@
 	<f:entry title="${%Sort Jobs in descending order}" field="sortDescending">
 		<f:checkbox id="xfpanel.sortDescending" name="sortDescending" checked="${it.sortDescending}" value="true"/>
 	</f:entry>
+	<f:entry title="${%Show timestamp}" field="showTimeStamp">
+		<f:checkbox id="xfpanel.showTimeStamp" name="showTimeStamp" checked="${it.showTimeStamp}" value="true"/>
+	</f:entry>
 	
 	<f:entry title="${%Show Responsibles}" field="responsibles">
 		<j:choose>

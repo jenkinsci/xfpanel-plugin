@@ -25,6 +25,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.HashSet;
+import java.util.Calendar;
 
 import javax.servlet.ServletException;
 
@@ -61,7 +62,9 @@ public class XFPanelView extends ListView {
     private Boolean showZeroTestCounts = true;
 
     private Boolean sortDescending = false;
-
+    
+    private Boolean showTimeStamp = true;
+    
 	private transient List<XFPanelEntry> entries;
 
 	private transient Map<hudson.model.Queue.Item, Integer> placeInQueue = new HashMap<hudson.model.Queue.Item, Integer>();
@@ -128,6 +131,10 @@ public class XFPanelView extends ListView {
             this.showZeroTestCounts = Boolean.TRUE;
         }
         return this.showZeroTestCounts;
+    }
+    
+    public Boolean getShowTimeStamp() {
+        return this.showTimeStamp;
     }
 	
 	/**
@@ -197,6 +204,7 @@ public class XFPanelView extends ListView {
 		this.guiBuildFont = asInteger(req, "guiBuildFont");
         this.showDescription = Boolean.parseBoolean(req.getParameter("showDescription"));
         this.sortDescending = Boolean.parseBoolean(req.getParameter("sortDescending"));
+        this.showTimeStamp = Boolean.parseBoolean(req.getParameter("showTimeStamp"));
         this.showZeroTestCounts = Boolean.parseBoolean(req.getParameter("showZeroTestCounts"));
         this.maxAmmountOfResponsibles = asInteger(req,"maxAmmountOfResponsibles");
         
@@ -252,6 +260,10 @@ public class XFPanelView extends ListView {
 
         private Integer queueNumber;        
         
+        private String completionTimestampString = "";
+        
+        private Calendar completionTimestamp;
+        
     	/**
     	 * C'tor
     	 * @param job the job to be represented
@@ -259,6 +271,7 @@ public class XFPanelView extends ListView {
 		public XFPanelEntry(Job<?, ?> job) {
 			this.job = job;
 			this.findStatus();
+			this.setTimes();
 		}
 		
 		/**
@@ -294,6 +307,30 @@ public class XFPanelView extends ListView {
             return placeInQueue==null ? null : placeInQueue.get(this.job.getQueueItem());
         }
 
+        private void setTimes() {
+            AbstractBuild lastBuild = (AbstractBuild) this.job.getLastCompletedBuild();
+            if (lastBuild != null) {
+                this.completionTimestamp = lastBuild.getTimestamp();
+                this.completionTimestampString = lastBuild.getTimestampString();
+            }
+        }
+        
+        public void setCompletionTimestamp(Calendar completionTimestamp) {
+            this.completionTimestamp = completionTimestamp;
+        }
+
+        public Calendar getCompletionTimestamp() {
+            return this.completionTimestamp;
+        }
+
+        public void setCompletionTimestampString(String completionTimestampString) {
+            this.completionTimestampString = completionTimestampString;
+        }
+
+        public String getCompletionTimestampString() {
+            return this.completionTimestampString;
+        }
+        
 		/**
 		 * @return background color for this job
 		 */
