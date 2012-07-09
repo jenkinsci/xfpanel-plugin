@@ -11,9 +11,9 @@
 			<br />
 		</j:forEach>
 	</f:entry>
-
+	
 	<f:optionalBlock name="useincluderegex"
-		title="${%Use instead a regular expression}" checked="${it.includeRegex != null}"
+		title="${%Use a regular expression instead}" checked="${it.includeRegex != null}"
 		help="/help/view-config/includeregex.html">
 		<f:entry title="${%Regular expression}">
 			<f:textbox name="includeRegex" field="includeRegex" />
@@ -50,10 +50,23 @@
 	<f:entry title="${%Show test info for Jobs without tests}" field="showZeroTestCounts">
 		<f:checkbox id="xfpanel.showZeroTestCounts" name="showZeroTestCounts" checked="${it.showZeroTestCounts}" value="true"/>
 	</f:entry>
-	<f:entry title="${%Sort Jobs in descending order}" field="sortDescending">
-		<f:checkbox id="xfpanel.sortDescending" name="sortDescending" checked="${it.sortDescending}" value="true"/>
+	
+	<f:entry title="${%Sort order}" field="sort" >
+		<j:choose>
+			<j:set var="automatic" value="checked" />
+		</j:choose>
+		<input id="sort-default" type="radio" name="sort" value="sort.default" checked="${default}" /> 
+		<label for="sort-default"> alphabetical </label> <br/>
+		
+		<input id="sort-automatic" type="radio" name="sort" value="sort.automatic" checked="${automatic}" /> 
+		<label for="sort-automatic"> failed first, secondary order by build time stamp </label>
 	</f:entry>
-	<f:entry title="${%Show timestamp}" field="showTimeStamp">
+
+	<f:entry title="${%Revert order}" field="sortDescending">
+		<f:checkbox id="xfpanel.sortDescending" name="sortDescending" checked="${it.sortDescending}" value="true"/>
+	</f:entry>	
+	
+	<f:entry title="${%Show time from the last build}" field="showTimeStamp">
 		<f:checkbox id="xfpanel.showTimeStamp" name="showTimeStamp" checked="${it.showTimeStamp}" value="true"/>
 	</f:entry>
 	
@@ -78,7 +91,5 @@
 			<f:textbox id="maxAmmountOfResponsibles" name="maxAmmountOfResponsibles" />
 		</f:entry>
 	</f:entry> 
-	
-
 
 </j:jelly>

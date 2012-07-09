@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashSet;
 import java.util.Calendar;
+import java.util.Comparator;
+import static java.util.Collections.sort;
 
 import javax.servlet.ServletException;
 
@@ -65,6 +67,8 @@ public class XFPanelView extends ListView {
     
     private Boolean showTimeStamp = true;
     
+    private Boolean enableAutomaticSort = true;
+    
 	private transient List<XFPanelEntry> entries;
 
 	private transient Map<hudson.model.Queue.Item, Integer> placeInQueue = new HashMap<hudson.model.Queue.Item, Integer>();
@@ -73,7 +77,8 @@ public class XFPanelView extends ListView {
 	protected Blame BlameState = Blame.EVERYINVOLVED;
 
 	private Integer maxAmmountOfResponsibles = 2;
-
+	
+	
 	/**
 	 * C'tor<meta  />
 	 * @param name the name of the view
@@ -137,6 +142,33 @@ public class XFPanelView extends ListView {
         return this.showTimeStamp;
     }
 	
+    static class selectComparator implements Comparator< XFPanelEntry >
+    {
+		public int compare( XFPanelEntry a, XFPanelEntry b) {
+			AbstractBuild buildA = (AbstractBuild) a.job.getLastBuild();
+			AbstractBuild buildB = (AbstractBuild) b.job.getLastBuild();
+			
+			// show empty builds on bottom (in every case)
+			if ( buildA == null || buildB == null) {
+				return (buildA == null) ? 1 : 0;
+			}
+			// if building -> show build on top
+			if ( buildA.isBuilding() || buildB.isBuilding()){
+				return (buildA.isBuilding())?0:1;
+			}
+			
+			Result resultA = buildA.getResult();
+			Result resultB = buildB.getResult();
+			int result = resultB.ordinal - resultA.ordinal; // isBetterThan(resultB) ? 1: 0;
+			
+			// if build results are same -> sort by build timestamp
+			if (result == 0 ){
+				return b.completionTimestamp.compareTo( a.completionTimestamp );
+			}
+			return result;
+		}
+    }
+	
 	/**
 	 * @param jobs the selected jobs
 	 * @return the jobs list wrapped into {@link XFPanelEntry} instances
@@ -153,7 +185,10 @@ public class XFPanelView extends ListView {
 			for (Job<?, ?> job : jobs) {
 				ents.add(new XFPanelEntry(job));
 			}
-
+			
+			if ( enableAutomaticSort == true ){
+				Collections.sort(ents, new selectComparator() );
+			}
             if (this.getSortDescending()) {
                 Collections.reverse(ents);
             }
@@ -208,6 +243,13 @@ public class XFPanelView extends ListView {
         this.showZeroTestCounts = Boolean.parseBoolean(req.getParameter("showZeroTestCounts"));
         this.maxAmmountOfResponsibles = asInteger(req,"maxAmmountOfResponsibles");
         
+        String SortType = req.getParameter("sort");
+        if ( SortType != null && SortType.equals("sort.automatic") ){
+        	this.enableAutomaticSort = true;}
+        else{
+        	this.enableAutomaticSort = false;
+        }
+        	
         String blameType = req.getParameter("responsibles");
         
         if ( blameType == null ){
