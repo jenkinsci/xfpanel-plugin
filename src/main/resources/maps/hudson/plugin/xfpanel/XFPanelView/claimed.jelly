@@ -1,0 +1,10 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt">
+		
+		<a style="font-size: 6">
+		<img src="${rootURL}/plugin/xfpanel/claimed.png" border="1" height="${imgheight}" /> <br />
+		</a>
+		<a style="color: ${job.color}; font-size: ${claimFont}">
+			${job.claimInfo}
+		</a>
+
+</j:jelly>

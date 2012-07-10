@@ -6,6 +6,7 @@
 	<j:set var="failFont" value="${from.guiFailFont}px" />
 	<j:set var="infoFont" value="${from.guiInfoFont}px" />
 	<j:set var="buildFont" value="${from.guiBuildFont}px" />
+	<j:set var="claimFont" value="${from.guiClaimFont}px" />
 
 	<table align="center" style="margin: 4px; background-color:${job.backgroundColor}; -moz-border-radius:10px; width:${width}; height:${height}; float: ${float}" tooltip="${job.name}">
 		<tr>
@@ -20,9 +21,21 @@
 				<j:set var="failColor" value="#FF0000" />
 			</j:if>
 			<td rowspan="2" align="center"
-				style="width: 20%; text-align=center; color: ${failColor}; font-size: ${failFont}; font-weight:bold;">
+				style="width: 20%; text-align=center; color: ${failColor}; font-size: ${failFont}; font-weight:bold; overflow:hidden; white-space: nowrap;">
 				<j:if test="${job.broken == true}">
-					<st:include page="warning.jelly" />
+					<j:if test="${it.showClaimInfo == true}">
+						<j:if test="${job.isClaimed() == false}" >
+							<st:include page="warning.jelly" />
+						</j:if>
+						<j:if test="${job.isClaimed() == true}" >
+							
+							<st:include page="claimed.jelly" />
+							
+						</j:if>
+					</j:if>
+					<j:if test="${it.showClaimInfo == false}">
+						<st:include page="warning.jelly" />
+					</j:if>
 				</j:if>
 				<j:if test="${job.broken == false}">
                     <j:if test="${it.showZeroTestCounts == true}">

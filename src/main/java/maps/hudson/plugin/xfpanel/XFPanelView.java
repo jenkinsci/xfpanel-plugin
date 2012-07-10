@@ -14,6 +14,12 @@ import hudson.model.User;
 import hudson.tasks.test.AbstractTestResultAction;
 import hudson.util.FormValidation;
 import hudson.scm.ChangeLogSet.Entry;
+import hudson.plugins.claim.ClaimBuildAction;
+import hudson.plugins.claim.ClaimTestAction;
+import hudson.tasks.junit.CaseResult;
+import hudson.tasks.junit.TestResultAction;
+import hudson.model.Action;
+
 
 import java.io.IOException;
 import java.text.NumberFormat;
@@ -58,7 +64,8 @@ public class XFPanelView extends ListView {
 	private Integer guiFailFont = 150;
 	private Integer guiInfoFont = 40;
 	private Integer guiBuildFont = 40;
-
+	private Integer guiClaimFont = 30;
+	
     private Boolean showDescription = false;
 
     private Boolean showZeroTestCounts = true;
@@ -68,6 +75,8 @@ public class XFPanelView extends ListView {
     private Boolean showTimeStamp = true;
     
     private Boolean enableAutomaticSort = true;
+    
+    private Boolean showClaimInfo = false;
     
 	private transient List<XFPanelEntry> entries;
 
@@ -112,6 +121,8 @@ public class XFPanelView extends ListView {
 
 	public Integer getGuiBuildFont() { return guiBuildFont; }
 	
+	public Integer getGuiClaimFont() { return guiClaimFont; }
+	
 	public Integer getMaxAmmountOfResponsibles(){ return maxAmmountOfResponsibles; }
 	public Boolean getFullHD() {
 		return this.fullHD;
@@ -140,6 +151,10 @@ public class XFPanelView extends ListView {
     
     public Boolean getShowTimeStamp() {
         return this.showTimeStamp;
+    }
+    
+    public Boolean getShowClaimInfo() {
+        return this.showClaimInfo;
     }
 	
     static class selectComparator implements Comparator< XFPanelEntry >
@@ -237,10 +252,12 @@ public class XFPanelView extends ListView {
 		this.guiFailFont = asInteger(req, "guiFailFont");
 		this.guiInfoFont = asInteger(req, "guiInfoFont");
 		this.guiBuildFont = asInteger(req, "guiBuildFont");
+		this.guiClaimFont = asInteger(req, "guiClaimFont");
         this.showDescription = Boolean.parseBoolean(req.getParameter("showDescription"));
         this.sortDescending = Boolean.parseBoolean(req.getParameter("sortDescending"));
         this.showTimeStamp = Boolean.parseBoolean(req.getParameter("showTimeStamp"));
         this.showZeroTestCounts = Boolean.parseBoolean(req.getParameter("showZeroTestCounts"));
+        this.showClaimInfo = Boolean.parseBoolean(req.getParameter("showClaimInfo"));
         this.maxAmmountOfResponsibles = asInteger(req,"maxAmmountOfResponsibles");
         
         String SortType = req.getParameter("sort");
@@ -348,7 +365,7 @@ public class XFPanelView extends ListView {
             // placeInQueue==null right after deserialization because it's transient
             return placeInQueue==null ? null : placeInQueue.get(this.job.getQueueItem());
         }
-
+        
         private void setTimes() {
             AbstractBuild lastBuild = (AbstractBuild) this.job.getLastCompletedBuild();
             if (lastBuild != null) {
@@ -581,7 +598,66 @@ public class XFPanelView extends ListView {
 		}
 		
 		
-		
+	    /**
+	     * If the claims plugin is installed, this will return ClaimBuildAction
+	     * 
+	     * @return claim on the build / null
+	     */
+	    private ClaimBuildAction getClaimAction() {
+	        ClaimBuildAction claimAction = null;
+
+	        if (Hudson.getInstance().getPlugin("claim") != null) {
+	            Run lastBuild = job.getLastBuild();
+	            if (lastBuild != null && lastBuild.isBuilding()) {
+	                // claims can only be made against builds once they've finished,
+	                // so check the previous build if currently building.
+	                lastBuild = lastBuild.getPreviousBuild();
+	            }
+	            
+	            if (lastBuild != null) {
+	                List<ClaimBuildAction> claimActionList = lastBuild.getActions(ClaimBuildAction.class);
+	                if (claimActionList.size() == 1) {
+	                    claimAction = claimActionList.get(0);
+	                }
+	            }
+	        }
+	        return claimAction;
+	    }
+
+	    /**
+	     *
+	     * @return whether build is claimed or not
+	     */
+	    public boolean isClaimed() {
+	        ClaimBuildAction cba = getClaimAction();
+	        if (cba != null) {
+	            return cba.isClaimed();
+	        }
+
+	        return false;
+	    }
+	    
+	    /**
+	     * If the claims plugin is installed, this will get details of the claimed
+	     * build failures.
+	     *
+	     * @return details of any claims for the broken build, or null if nobody has
+	     *         claimed this build.
+	     */
+	    public String getClaimInfo() {
+	        ClaimBuildAction claimAction = getClaimAction();
+	        
+	        if ( claimAction != null ){
+	        	if (claimAction.isClaimed()) {
+	        		String name = claimAction.getClaimedByName();    
+	        		// String reason = claimAction.getReason();
+	                return name;
+	            }
+	        }
+	        
+	        return "";
+	    }
+	    
 		/**
 		 * @return color to be used to show the test diff
 		 */

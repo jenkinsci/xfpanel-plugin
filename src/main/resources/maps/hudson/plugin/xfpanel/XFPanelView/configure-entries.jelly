@@ -66,6 +66,13 @@
 		<f:checkbox id="xfpanel.sortDescending" name="sortDescending" checked="${it.sortDescending}" value="true"/>
 	</f:entry>	
 	
+	<f:entry title="${%Show claim info}" field="showClaimInfo">
+		<f:checkbox id="xfpanel.showClaimInfo" name="showClaimInfo" checked="${it.showClaimInfo}" value="true"/>
+	</f:entry>	
+	<f:entry title="${%Claim font size in pixels}" field="guiClaimFont">
+		<f:textbox id="xfpanel.guiClaimFont" name="guiClaimFont" />
+	</f:entry>
+	
 	<f:entry title="${%Show time from the last build}" field="showTimeStamp">
 		<f:checkbox id="xfpanel.showTimeStamp" name="showTimeStamp" checked="${it.showTimeStamp}" value="true"/>
 	</f:entry>
