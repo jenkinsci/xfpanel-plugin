@@ -25,7 +25,9 @@
 				<j:if test="${job.broken == true}">
 					<j:if test="${it.showClaimInfo == true}">
 						<j:if test="${job.isClaimed() == false}" >
-							<st:include page="warning.jelly" />
+							<j:if test="${it.showWarningIcon == true}" >
+								<st:include page="warning.jelly" />
+							</j:if>
 						</j:if>
 						<j:if test="${job.isClaimed() == true}" >
 							
@@ -34,7 +36,9 @@
 						</j:if>
 					</j:if>
 					<j:if test="${it.showClaimInfo == false}">
-						<st:include page="warning.jelly" />
+						<j:if test="${it.showWarningIcon == true}" >
+							<st:include page="warning.jelly" />
+						</j:if>
 					</j:if>
 				</j:if>
 				<j:if test="${job.broken == false}">

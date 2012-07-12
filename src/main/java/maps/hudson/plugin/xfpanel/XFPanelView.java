@@ -78,6 +78,8 @@ public class XFPanelView extends ListView {
     
     private Boolean showClaimInfo = false;
     
+    private Boolean showWarningIcon = true;
+    
 	private transient List<XFPanelEntry> entries;
 
 	private transient Map<hudson.model.Queue.Item, Integer> placeInQueue = new HashMap<hudson.model.Queue.Item, Integer>();
@@ -155,6 +157,9 @@ public class XFPanelView extends ListView {
     
     public Boolean getShowClaimInfo() {
         return this.showClaimInfo;
+    }
+    public Boolean getShowWarningIcon(){
+    	return this.showWarningIcon;
     }
 	
     static class selectComparator implements Comparator< XFPanelEntry >
@@ -258,6 +263,7 @@ public class XFPanelView extends ListView {
         this.showTimeStamp = Boolean.parseBoolean(req.getParameter("showTimeStamp"));
         this.showZeroTestCounts = Boolean.parseBoolean(req.getParameter("showZeroTestCounts"));
         this.showClaimInfo = Boolean.parseBoolean(req.getParameter("showClaimInfo"));
+        this.showWarningIcon = Boolean.parseBoolean(req.getParameter("showWarningIcon"));
         this.maxAmmountOfResponsibles = asInteger(req,"maxAmmountOfResponsibles");
         
         String SortType = req.getParameter("sort");

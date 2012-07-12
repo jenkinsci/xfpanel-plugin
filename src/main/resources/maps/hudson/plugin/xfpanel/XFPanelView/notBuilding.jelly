@@ -2,8 +2,9 @@
     <j:if test="${job.broken == true}">
 		${job.culprits}
 		<j:if test="${it.showTimeStamp == true}">
+			<br/>
 			<j:if test="${!job.completionTimestampString.equals('')}">
-				<br/> Built ${job.completionTimestampString} ago
+				Built ${job.completionTimestampString} ago
 			</j:if>
 		</j:if>
     </j:if>
