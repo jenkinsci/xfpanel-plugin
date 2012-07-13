@@ -80,6 +80,8 @@ public class XFPanelView extends ListView {
     
     private Boolean showWarningIcon = true;
     
+    private Boolean replaceResponsibles = true;
+    
 	private transient List<XFPanelEntry> entries;
 
 	private transient Map<hudson.model.Queue.Item, Integer> placeInQueue = new HashMap<hudson.model.Queue.Item, Integer>();
@@ -160,6 +162,9 @@ public class XFPanelView extends ListView {
     }
     public Boolean getShowWarningIcon(){
     	return this.showWarningIcon;
+    }
+    public Boolean getReplaceResponsibles(){
+    	return this.replaceResponsibles;
     }
 	
     static class selectComparator implements Comparator< XFPanelEntry >
@@ -263,8 +268,10 @@ public class XFPanelView extends ListView {
         this.showTimeStamp = Boolean.parseBoolean(req.getParameter("showTimeStamp"));
         this.showZeroTestCounts = Boolean.parseBoolean(req.getParameter("showZeroTestCounts"));
         this.showClaimInfo = Boolean.parseBoolean(req.getParameter("showClaimInfo"));
+        this.replaceResponsibles = Boolean.parseBoolean(req.getParameter("replaceResponsibles"));
         this.showWarningIcon = Boolean.parseBoolean(req.getParameter("showWarningIcon"));
         this.maxAmmountOfResponsibles = asInteger(req,"maxAmmountOfResponsibles");
+        
         
         String SortType = req.getParameter("sort");
         if ( SortType != null && SortType.equals("sort.automatic") ){
@@ -421,7 +428,7 @@ public class XFPanelView extends ListView {
 		 *  @return 1 on success
 		 */
 		
-		public Boolean getShowState() {
+		public Boolean getShowResponsibles() {
 			if (BlameState == Blame.NOTATALL)
 				return false;
 			return true;
@@ -562,8 +569,8 @@ public class XFPanelView extends ListView {
 				output += "... <"+ (i-getMaxAmmountOfResponsibles()) +" more>";
 			}
 			if ( !output.isEmpty() )
-				return "Responsible(s): "+output;
-			return "Responsibles: - ";
+				return output;
+			return " - ";
 		}
 		
 		public String getCulprits() {
@@ -599,8 +606,7 @@ public class XFPanelView extends ListView {
 					return convertCulpritsToString( BlameList );
 				}
 			}
-			//if ( BlameState == Blame.NOTATALL )
-			return "";
+			return " -";
 		}
 		
 		

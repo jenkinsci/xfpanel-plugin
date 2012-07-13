@@ -87,6 +87,9 @@
 	<f:entry title="${%Show claim info}" field="showClaimInfo">
 		<f:checkbox id="xfpanel.showClaimInfo" name="showClaimInfo" checked="${it.showClaimInfo}" value="true"/>
 	</f:entry>	
+	<f:entry title="${%Replace responsibles by claimer}" field="replaceResponsibles">
+		<f:checkbox id="xfpanel.replaceResponsibles" name="replaceResponsibles" checked="${it.replaceResponsibles}" value="true"/>
+	</f:entry>	
 	<f:entry title="${%Claim font size in pixels}" field="guiClaimFont">
 		<f:textbox id="xfpanel.guiClaimFont" name="guiClaimFont" />
 	</f:entry>

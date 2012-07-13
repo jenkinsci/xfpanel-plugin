@@ -1,13 +1,66 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt">
+	<j:set var="unBuilt" value="${job.completionTimestampString.equals('')}" />
+	
+	<!-- failed / unbuilt build -->
     <j:if test="${job.broken == true}">
-		${job.culprits}
+    	
+    	<!-- NormalClaim = !(claim enabled && replaceResponsibles enabled && showResponsibles enabled) -->
+    	<j:set var="normalClaim" value="true" />
+    	<j:if test="${job.showResponsibles == true}">
+	    	<j:if test="${it.replaceResponsibles == true}">
+	    		<j:if test="${it.showClaimInfo == true}">
+	    			<j:set var="normalClaim" value="false" />
+	    		</j:if>
+	    	</j:if>
+    	</j:if>
+    	
+    	<j:choose>
+    	
+    		<j:when test="${normalClaim == true}">
+			    <j:if test="${job.showResponsibles == true}">
+			    	Responsible(s): ${job.culprits} <br />
+				</j:if>
+				<j:if test="${it.showClaimInfo == true}">
+					<a style="color: ${job.color}; font-size: ${claimFont}">
+						<j:if test="${job.isClaimed() == true}" >
+							Claimed by: ${job.claimInfo} 
+						</j:if>
+						<br />
+					</a>
+				</j:if>
+			</j:when>
+			
+			<j:otherwise>
+				<j:if test="${job.isClaimed() == true}" >
+					<a style="color: ${job.color}; font-size: ${claimFont}">
+						<j:if test="${job.isClaimed() == true}" >
+							Claimed by: ${job.claimInfo} 
+						</j:if>
+						<br />
+					</a>
+				</j:if>
+				
+				<j:if test="${job.isClaimed() == false}" >
+					Responsible(s): ${job.culprits}
+					<a style="color: ${job.color}; font-size: ${claimFont}"> <br /> </a>
+				</j:if>
+			</j:otherwise>
+		</j:choose> 
+		
 		<j:if test="${it.showTimeStamp == true}">
-			<br/>
-			<j:if test="${!job.completionTimestampString.equals('')}">
+
+			<j:if test="${unBuilt == false}">
 				Built ${job.completionTimestampString} ago
+			</j:if>
+			
+			<!-- unbuilt build -->
+			<j:if test="${unBuilt == true}">
+				Last Successful: -
 			</j:if>
 		</j:if>
     </j:if>
+    
+    <!-- successful build -->
     <j:if test="${job.broken == false}">
         <j:if test="${it.showZeroTestCounts == true}">
             ${job.successPercentage} ${job.successCount}/${job.testCount} 
@@ -26,9 +79,28 @@
             </span>                          
 		</j:if>
 		
+		<!-- Line breaks -->
+		<j:if test="${it.showClaimInfo == true}">
+			<a style="color: ${job.color}; font-size: ${claimFont}">
+				<br />
+			</a>
+			<j:if test="${job.showResponsibles == true}">
+				<j:if test="${it.replaceResponsibles == false}">
+					<br />
+				</j:if>
+			</j:if>
+		</j:if>
+		<j:if test="${it.showClaimInfo == false}">
+			<j:if test="${job.showResponsibles == true}">
+				<j:if test="${it.showTimeStamp == true}">
+					<br />
+				</j:if>
+			</j:if>
+		</j:if>
+		
 		<j:if test="${job.queued != true}">
 			<j:if test="${it.showTimeStamp == true}">
-				<br/>Last Successful: ${job.completionTimestampString} 
+				Last Successful: ${job.completionTimestampString} 
 				<j:if test="${!job.completionTimestampString.equals('')}">
 					ago
 				</j:if>
