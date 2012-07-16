@@ -53,17 +53,17 @@ public class XFPanelView extends ListView {
 
 	private XFColors colors;
 	
-	private Integer numColumns = 1;
+	private Integer numColumns = 2;
 	private Integer refresh = 3;
 	
 	private Boolean fullHD = false;
 	
 	private Integer guiHeight = 205;
-	private Integer guiImgHeight = 194;
+	private Integer guiImgHeight = 180;
 	private Integer guiJobFont = 80;
 	private Integer guiFailFont = 150;
-	private Integer guiInfoFont = 40;
-	private Integer guiBuildFont = 40;
+	private Integer guiInfoFont = 30;
+	private Integer guiBuildFont = 30;
 	private Integer guiClaimFont = 30;
 	
     private Boolean showDescription = false;
@@ -76,9 +76,9 @@ public class XFPanelView extends ListView {
     
     private Boolean enableAutomaticSort = true;
     
-    private Boolean showClaimInfo = false;
+    private Boolean showClaimInfo = true;
     
-    private Boolean showWarningIcon = true;
+    private Boolean showWarningIcon = false;
     
     private Boolean replaceResponsibles = true;
     
@@ -86,10 +86,10 @@ public class XFPanelView extends ListView {
 
 	private transient Map<hudson.model.Queue.Item, Integer> placeInQueue = new HashMap<hudson.model.Queue.Item, Integer>();
 
-	protected enum Blame { NOTATALL, ONLYLASTONE, ONLYLASTFAILEDBUILD, ONLYFIRSTFAILEDBUILD, EVERYINVOLVED }
+	protected enum Blame { NOTATALL, ONLYLASTFAILEDBUILD, ONLYFIRSTFAILEDBUILD, EVERYINVOLVED }
 	protected Blame BlameState = Blame.EVERYINVOLVED;
 
-	private Integer maxAmmountOfResponsibles = 2;
+	private Integer maxAmmountOfResponsibles = 1;
 	
 	
 	/**
@@ -100,7 +100,7 @@ public class XFPanelView extends ListView {
 	@DataBoundConstructor
 	public XFPanelView(String name, Integer numColumns) {
 		super(name);
-		this.numColumns = numColumns != null ? numColumns : 1;
+		this.numColumns = numColumns != null ? numColumns : 2;
 	}
 
 	/**
