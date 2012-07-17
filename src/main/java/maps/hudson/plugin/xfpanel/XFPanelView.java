@@ -178,26 +178,54 @@ public class XFPanelView extends ListView {
 	
     static class selectComparator implements Comparator< XFPanelEntry >
     {
+    	private int getPriority( Result result )
+    	{
+    		if ( result != null ){
+	    		// priority order: the least important -> the most important
+	    		Result allResults[] = { Result.SUCCESS, Result.ABORTED, Result.NOT_BUILT, Result.UNSTABLE, Result.FAILURE };
+				for (int i=0; i < allResults.length; i++ ){
+					if (result == allResults[i] ){
+						return i;
+					}
+				}
+    		}
+			return -1;
+    	}
+    	
 		public int compare( XFPanelEntry a, XFPanelEntry b) {
 			AbstractBuild buildA = (AbstractBuild) a.job.getLastBuild();
 			AbstractBuild buildB = (AbstractBuild) b.job.getLastBuild();
 			
 			// show empty builds on bottom (in every case)
 			if ( buildA == null || buildB == null) {
-				return (buildA == null) ? 1 : 0;
-			}
-			// if building -> show build on top
-			if ( buildA.isBuilding() || buildB.isBuilding()){
-				return (buildA.isBuilding())?0:1;
+				return (buildA == null) ? 1 : -1;
 			}
 			
-			Result resultA = buildA.getResult();
-			Result resultB = buildB.getResult();
-
-			int result = resultB.ordinal - resultA.ordinal; // isBetterThan(resultB) ? 1: 0;
+			Boolean isBuildingA = buildA.isBuilding();
+			Boolean isBuildingB = buildB.isBuilding();
 			
-			// if build results are same -> sort by build timestamp
+			// if building -> get previous build
+			if ( isBuildingA ){
+				buildA = (AbstractBuild) buildA.getPreviousBuild();
+				if (buildA == null ) return -1;
+			}
+			
+			if ( isBuildingB ){
+				buildB = (AbstractBuild) buildB.getPreviousBuild();
+				if (buildB == null ) return -1;
+			}
+			
+			
+			int result = getPriority( buildB.getResult() ) - getPriority( buildA.getResult() );
+				
+			// if build results are same -> sort by build timestamp	
 			if (result == 0 ){
+				
+				// if building atm -> show build on top of its class
+				if ( isBuildingA || isBuildingB ){
+					return ( isBuildingA ) ? 0 : 1;
+				}
+				
 				return b.completionTimestamp.compareTo( a.completionTimestamp );
 			}
 			return result;
