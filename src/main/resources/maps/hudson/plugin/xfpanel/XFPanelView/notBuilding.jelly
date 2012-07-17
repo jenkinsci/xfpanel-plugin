@@ -18,7 +18,7 @@
     	
     		<j:when test="${normalClaim == true}">
 			    <j:if test="${job.showResponsibles == true}">
-			    	Responsible(s): ${job.culprits} <br />
+			    	${it.responsiblesTopic} ${job.culprits} <br />
 				</j:if>
 				<j:if test="${it.showClaimInfo == true}">
 					<a style="color: ${job.color}; font-size: ${claimFont}">
@@ -41,7 +41,7 @@
 				</j:if>
 				
 				<j:if test="${job.isClaimed() == false}" >
-					Responsible(s): ${job.culprits}
+					${it.responsiblesTopic} ${job.culprits}
 					<a style="color: ${job.color}; font-size: ${claimFont}"> <br /> </a>
 				</j:if>
 			</j:otherwise>

@@ -91,6 +91,8 @@ public class XFPanelView extends ListView {
 
 	private Integer maxAmmountOfResponsibles = 1;
 	
+	private String responsiblesTopic = "Responsible(s): ";
+	
 	
 	/**
 	 * C'tor<meta  />
@@ -166,6 +168,13 @@ public class XFPanelView extends ListView {
     public Boolean getReplaceResponsibles(){
     	return this.replaceResponsibles;
     }
+    
+    public String getResponsiblesTopic(){
+    	if (this.responsiblesTopic == null){
+    		return "";
+    	}
+    	return this.responsiblesTopic;
+    }
 	
     static class selectComparator implements Comparator< XFPanelEntry >
     {
@@ -184,6 +193,7 @@ public class XFPanelView extends ListView {
 			
 			Result resultA = buildA.getResult();
 			Result resultB = buildB.getResult();
+
 			int result = resultB.ordinal - resultA.ordinal; // isBetterThan(resultB) ? 1: 0;
 			
 			// if build results are same -> sort by build timestamp
@@ -279,6 +289,8 @@ public class XFPanelView extends ListView {
         else{
         	this.enableAutomaticSort = false;
         }
+        
+        this.responsiblesTopic = req.getParameter("responsiblesTopic");
         	
         String blameType = req.getParameter("responsibles");
         

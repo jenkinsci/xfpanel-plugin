@@ -81,6 +81,9 @@
 		<f:entry title="${%Max nr. of responsibles to show}" field="maxAmmountOfResponsibles" >
 			<f:textbox id="maxAmmountOfResponsibles" name="maxAmmountOfResponsibles" />
 		</f:entry>
+		<f:entry title="${%Text before responsible list}" field="responsiblesTopic" >
+			<f:textbox id="responsiblesTopic" name="responsiblesTopic" />
+		</f:entry>
 	</f:entry>
 	
 	<td colspan="3" style="font-weight:bold;" >Claim plugin support <hr /> </td>
