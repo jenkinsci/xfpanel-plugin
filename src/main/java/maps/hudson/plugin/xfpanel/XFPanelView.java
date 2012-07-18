@@ -184,52 +184,48 @@ public class XFPanelView extends ListView {
 	
     static class selectComparator implements Comparator< XFPanelEntry >
     {
-    	private int getPriority( Result result )
+    	private int getPriority( AbstractBuild build )
     	{
+    		// never built build
+    		if (build == null ) {
+    			return 1;
+    		}
+    		
+    		if ( build.isBuilding() ){
+				build = (AbstractBuild) build.getPreviousBuild();
+				return getPriority( build );
+    		}
+    		
+    		Result result = build.getResult();
     		if ( result != null ){
-	    		// priority order: the least important -> the most important
+    			// priority order: the least important -> the most important 
 	    		Result allResults[] = { Result.SUCCESS, Result.ABORTED, Result.NOT_BUILT, Result.UNSTABLE, Result.FAILURE };
+	    		int resultValues[]  = {       0,              1,              1,                2,               3        };
 				for (int i=0; i < allResults.length; i++ ){
 					if (result == allResults[i] ){
-						return i;
+						return resultValues[i];
 					}
 				}
     		}
-			return -1;
+			return 1;
     	}
     	
 		public int compare( XFPanelEntry a, XFPanelEntry b) {
 			AbstractBuild buildA = (AbstractBuild) a.job.getLastBuild();
 			AbstractBuild buildB = (AbstractBuild) b.job.getLastBuild();
-			
-			// show empty builds on bottom (in every case)
-			if ( buildA == null || buildB == null) {
-				return (buildA == null) ? 1 : -1;
-			}
-			
-			Boolean isBuildingA = buildA.isBuilding();
-			Boolean isBuildingB = buildB.isBuilding();
-			
-			// if building -> get previous build
-			if ( isBuildingA ){
-				buildA = (AbstractBuild) buildA.getPreviousBuild();
-				if (buildA == null ) return -1;
-			}
-			
-			if ( isBuildingB ){
-				buildB = (AbstractBuild) buildB.getPreviousBuild();
-				if (buildB == null ) return -1;
-			}
-			
-			
-			int result = getPriority( buildB.getResult() ) - getPriority( buildA.getResult() );
+			int result = getPriority( buildB ) - getPriority( buildA );
 				
-			// if build results are same -> sort by build timestamp	
+			// if build results are same and builds exists-> sort by build timestamp	
 			if (result == 0 ){
 				
+				// if build is null, show it on bottom of its class
+				if ( buildA == null || buildB == null ){
+					return  ( buildA == null ) ? 1 : 0;
+				}
+				
 				// if building atm -> show build on top of its class
-				if ( isBuildingA || isBuildingB ){
-					return ( isBuildingA ) ? 0 : 1;
+				if ( buildA.isBuilding() || buildB.isBuilding() ){
+					return ( buildA.isBuilding() ) ? 0 : 1;
 				}
 				
 				return b.completionTimestamp.compareTo( a.completionTimestamp );
