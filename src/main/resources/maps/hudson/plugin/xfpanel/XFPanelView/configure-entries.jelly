@@ -86,17 +86,35 @@
 		</f:entry>
 	</f:entry>
 	
-	<td colspan="3" style="font-weight:bold;" >Claim plugin support <hr /> </td>
-	<f:entry title="${%Show claim info}" field="showClaimInfo">
-		<f:checkbox id="xfpanel.showClaimInfo" name="showClaimInfo" checked="${it.showClaimInfo}" value="true"/>
-	</f:entry>	
-	<f:entry title="${%Replace responsibles by claimer}" field="replaceResponsibles">
-		<f:checkbox id="xfpanel.replaceResponsibles" name="replaceResponsibles" checked="${it.replaceResponsibles}" value="true"/>
-	</f:entry>	
-	<f:entry title="${%Claim font size in pixels}" field="guiClaimFont">
-		<f:textbox id="xfpanel.guiClaimFont" name="guiClaimFont" />
-	</f:entry>
-
+	<td colspan="3" style="font-weight:bold;" >Claim plugin support <hr /> 
+		<j:choose>
+		
+			<j:when test="${it.IsClaimPluginInstalled == true}">
+				<f:entry title="${%Show claim info}" field="showClaimInfo" >
+					<f:checkbox id="xfpanel.showClaimInfo" name="showClaimInfo" checked="${it.showClaimInfo}" value="true"/>
+				</f:entry>	
+				<f:entry title="${%Replace responsibles by claimer}" field="replaceResponsibles">
+					<f:checkbox id="xfpanel.replaceResponsibles" name="replaceResponsibles" checked="${it.replaceResponsibles}" value="true"/>
+				</f:entry>	
+				<f:entry title="${%Claim font size in pixels}" field="guiClaimFont">
+					<f:textbox id="xfpanel.guiClaimFont" name="guiClaimFont" />
+				</f:entry>
+			</j:when>
+			
+			<j:otherwise>
+				<a style="color:orange; font-weight:bold;">INFO: No claim plugin installed</a>
+				<a style="color:gray; font-weight:normal;"> <br/><br/>
+					Show claim info<br/>
+					Replace responsibles by claimer<br/>
+					Claim font size in pixels<br/>
+				</a>
+			</j:otherwise>
+		</j:choose>
+	</td>
+	
+	<!-- between every <hr/> tag must be at least one <entry> tag -->
+	<f:entry></f:entry>
+	
 	<td colspan="3" style="font-weight:bold;" >Font sizes <hr /> </td>
 	<f:entry title="${%Entry height in pixels}" field="guiHeight">
 		<f:textbox id="xfpanel.guiHeight" name="guiHeight" />

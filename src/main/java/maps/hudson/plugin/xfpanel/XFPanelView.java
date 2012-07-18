@@ -175,6 +175,12 @@ public class XFPanelView extends ListView {
     	}
     	return this.responsiblesTopic;
     }
+    /**
+     * Return true, if claim-plugin is installed
+     */
+    public Boolean getIsClaimPluginInstalled(){
+    	return (Hudson.getInstance().getPlugin("claim") != null);  
+    }
 	
     static class selectComparator implements Comparator< XFPanelEntry >
     {
@@ -300,16 +306,18 @@ public class XFPanelView extends ListView {
 		this.guiFailFont = asInteger(req, "guiFailFont");
 		this.guiInfoFont = asInteger(req, "guiInfoFont");
 		this.guiBuildFont = asInteger(req, "guiBuildFont");
-		this.guiClaimFont = asInteger(req, "guiClaimFont");
         this.showDescription = Boolean.parseBoolean(req.getParameter("showDescription"));
         this.sortDescending = Boolean.parseBoolean(req.getParameter("sortDescending"));
         this.showTimeStamp = Boolean.parseBoolean(req.getParameter("showTimeStamp"));
         this.showZeroTestCounts = Boolean.parseBoolean(req.getParameter("showZeroTestCounts"));
-        this.showClaimInfo = Boolean.parseBoolean(req.getParameter("showClaimInfo"));
-        this.replaceResponsibles = Boolean.parseBoolean(req.getParameter("replaceResponsibles"));
         this.showWarningIcon = Boolean.parseBoolean(req.getParameter("showWarningIcon"));
         this.maxAmmountOfResponsibles = asInteger(req,"maxAmmountOfResponsibles");
         
+        if ( getIsClaimPluginInstalled() ){
+        	this.guiClaimFont = asInteger(req, "guiClaimFont");
+        	this.showClaimInfo = Boolean.parseBoolean(req.getParameter("showClaimInfo"));
+        	this.replaceResponsibles = Boolean.parseBoolean(req.getParameter("replaceResponsibles"));
+        }
         
         String SortType = req.getParameter("sort");
         if ( SortType != null && SortType.equals("sort.automatic") ){
