@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.HashSet;
 import java.util.Calendar;
 import java.util.Comparator;
+import java.lang.Math;
 import static java.util.Collections.sort;
 
 import javax.servlet.ServletException;
@@ -82,6 +83,8 @@ public class XFPanelView extends ListView {
     
     private Boolean replaceResponsibles = true;
     
+    private Boolean autoResizeEntryHeight = true;
+    
 	private transient List<XFPanelEntry> entries;
 
 	private transient Map<hudson.model.Queue.Item, Integer> placeInQueue = new HashMap<hudson.model.Queue.Item, Integer>();
@@ -115,7 +118,49 @@ public class XFPanelView extends ListView {
 		return this.colors;
 	}
 	
-	public Integer getGuiHeight() { return guiHeight; }
+	public Integer getGuiHeight() { 
+		if ( autoResizeEntryHeight	){
+			Integer entryHeight = guiJobFont + guiInfoFont;
+				
+			if ( showClaimInfo ){
+				if ( BlameState != Blame.NOTATALL ){
+					if ( replaceResponsibles ){
+						entryHeight += guiClaimFont;
+					}
+					else{
+						entryHeight += guiClaimFont + guiInfoFont + guiInfoFont/2;
+					}
+				}
+				else {
+					entryHeight += guiClaimFont;
+				}
+			}
+			else if ( BlameState != Blame.NOTATALL ){
+				entryHeight += guiInfoFont;
+			}
+			
+			
+			if ( showTimeStamp ){ 
+				entryHeight += guiInfoFont + guiInfoFont/2;
+			}
+			
+			entryHeight = Math.max( entryHeight, guiFailFont );
+			entryHeight = Math.max( entryHeight, guiJobFont );
+			
+			if ( showWarningIcon || showClaimInfo ){
+				entryHeight = Math.max( entryHeight, guiImgHeight );
+			}
+			
+			if ( showZeroTestCounts && showTimeStamp ){
+				entryHeight = Math.max( entryHeight, guiJobFont + guiInfoFont*3 );
+			}
+			
+			Integer padding = 15; 
+			return entryHeight + padding;
+		}
+
+		return guiHeight; 
+	}
 
 	public Integer getGuiImgHeight() { return guiImgHeight; }
 
@@ -308,6 +353,7 @@ public class XFPanelView extends ListView {
         this.showZeroTestCounts = Boolean.parseBoolean(req.getParameter("showZeroTestCounts"));
         this.showWarningIcon = Boolean.parseBoolean(req.getParameter("showWarningIcon"));
         this.maxAmmountOfResponsibles = asInteger(req,"maxAmmountOfResponsibles");
+        this.autoResizeEntryHeight = Boolean.parseBoolean(req.getParameter("autoResizeEntryHeight"));
         
         if ( getIsClaimPluginInstalled() ){
         	this.guiClaimFont = asInteger(req, "guiClaimFont");

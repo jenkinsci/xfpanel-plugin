@@ -116,6 +116,9 @@
 	<f:entry></f:entry>
 	
 	<td colspan="3" style="font-weight:bold;" >Font sizes <hr /> </td>
+	<f:entry title="${%Automatic resize entry height}" field="autoResizeEntryHeight" >
+		<f:checkbox id="xfpanel.autoResizeEntryHeight" name="autoResizeEntryHeight" checked="${it.autoResizeEntryHeight}" value="true"/>
+	</f:entry>	
 	<f:entry title="${%Entry height in pixels}" field="guiHeight">
 		<f:textbox id="xfpanel.guiHeight" name="guiHeight" />
 	</f:entry>
