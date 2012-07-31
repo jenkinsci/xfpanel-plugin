@@ -140,4 +140,11 @@
       </plugins>
     </pluginManagement>
   </build>
+  <dependencies>
+  	<dependency>
+  		<groupId>org.jvnet.hudson.plugins</groupId>
+  		<artifactId>claim</artifactId>
+  		<version>1.7</version>
+  	</dependency>
+  </dependencies>
 </project>
