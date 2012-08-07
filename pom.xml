@@ -5,14 +5,14 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>1.396</version><!-- which version of Hudson is this plugin built against? -->
+    <version>1.475</version><!-- which version of Hudson is this plugin built against? -->
     <relativePath>../pom.xml</relativePath>
   </parent>
 
   <artifactId>xfpanel</artifactId>
   <packaging>hpi</packaging>
   <name>eXtreme Feedback Panel</name>
-  <version>1.0.12-SNAPSHOT</version>
+  <version>1.1.0</version>
   <description>
     Provides an eXtreme Feedback Panel for Hudson. Thanks to Mark Howard and his work on the Radiator View Plugin from which this was based.
   </description>
