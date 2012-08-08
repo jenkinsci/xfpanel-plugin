@@ -34,7 +34,6 @@ import java.util.HashSet;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.lang.Math;
-import static java.util.Collections.sort;
 
 import javax.servlet.ServletException;
 
