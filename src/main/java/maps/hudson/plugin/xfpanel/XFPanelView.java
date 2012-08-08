@@ -84,6 +84,8 @@ public class XFPanelView extends ListView {
     
     private Boolean autoResizeEntryHeight = true;
     
+    private Boolean hideSuccessfulBuilds = false;
+    
 	private transient List<XFPanelEntry> entries;
 
 	private transient Map<hudson.model.Queue.Item, Integer> placeInQueue = new HashMap<hudson.model.Queue.Item, Integer>();
@@ -219,6 +221,9 @@ public class XFPanelView extends ListView {
     	}
     	return this.responsiblesTopic;
     }
+    public Boolean getHideSuccessfulBuilds(){
+    	return this.hideSuccessfulBuilds;
+    }
     /**
      * Return true, if claim-plugin is installed
      */
@@ -353,6 +358,7 @@ public class XFPanelView extends ListView {
         this.showWarningIcon = Boolean.parseBoolean(req.getParameter("showWarningIcon"));
         this.maxAmmountOfResponsibles = asInteger(req,"maxAmmountOfResponsibles");
         this.autoResizeEntryHeight = Boolean.parseBoolean(req.getParameter("autoResizeEntryHeight"));
+        this.hideSuccessfulBuilds = Boolean.parseBoolean(req.getParameter("hideSuccessfulBuilds"));
         
         if ( getIsClaimPluginInstalled() ){
         	this.guiClaimFont = asInteger(req, "guiClaimFont");
