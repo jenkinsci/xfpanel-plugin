@@ -24,6 +24,10 @@
 		<f:checkbox name="fullHD" checked="${it.fullHD}" value="true" field="fullHD" />
 	</f:entry>
 	
+	<f:entry title="${%FontSize}" field="fontSize">
+		<f:textbox name="fontSize" field="fontSize" />
+	</f:entry>
+	
 	<f:entry title="${%Number of columns}">
 		<f:textbox name="numColumns" field="numColumns" />
 	</f:entry>

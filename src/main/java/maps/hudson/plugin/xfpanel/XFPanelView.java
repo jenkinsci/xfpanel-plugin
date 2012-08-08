@@ -41,6 +41,8 @@ public class XFPanelView extends ListView {
 	
 	private Boolean fullHD = false;
 	
+	private Integer fontSize = 48;
+	
     private Boolean showDescription = false;
 
     private Boolean showZeroTestCounts = true;
@@ -75,6 +77,11 @@ public class XFPanelView extends ListView {
 	public Boolean getFullHD() {
 		return this.fullHD;
 	}
+
+	public Integer getFontSize() {
+		return this.fontSize;
+	}
+
 
     public Boolean getShowDescription() {
         if (this.showDescription == null) {
@@ -160,6 +167,12 @@ public class XFPanelView extends ListView {
 			this.refresh = Integer.parseInt(req.getParameter("refresh"));
 		} catch (NumberFormatException e) {
 			throw new FormException(XFPanelViewDescriptor.REFRESH_MSG, "refresh");
+		}
+		
+		try {
+		  this.fontSize = Integer.parseInt(req.getParameter("fontSize"));
+		} catch (NumberFormatException e) {
+			this.fontSize = 60;
 		}
 		
 		this.fullHD = Boolean.parseBoolean(req.getParameter("fullHD"));
