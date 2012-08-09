@@ -6,6 +6,12 @@
 	xmlns:i="jelly:fmt">
 	
 	<meta http-equiv="refresh" content="${from.refresh}" />
+
+	<SCRIPT type="text/javascript">
+		Behaviour.addLoadEvent(function(){
+			document.getElementById("side-panel").style.display="none";
+		});
+	</SCRIPT>
 	
 	<j:choose>
 		<j:when test="${empty(items)}">
