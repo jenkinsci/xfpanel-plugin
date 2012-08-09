@@ -34,7 +34,6 @@ import java.util.HashSet;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.lang.Math;
-import static java.util.Collections.sort;
 
 import javax.servlet.ServletException;
 
@@ -84,6 +83,8 @@ public class XFPanelView extends ListView {
     private Boolean replaceResponsibles = true;
     
     private Boolean autoResizeEntryHeight = true;
+    
+    private Boolean hideSuccessfulBuilds = false;
     
 	private transient List<XFPanelEntry> entries;
 
@@ -220,6 +221,9 @@ public class XFPanelView extends ListView {
     	}
     	return this.responsiblesTopic;
     }
+    public Boolean getHideSuccessfulBuilds(){
+    	return this.hideSuccessfulBuilds;
+    }
     /**
      * Return true, if claim-plugin is installed
      */
@@ -354,6 +358,7 @@ public class XFPanelView extends ListView {
         this.showWarningIcon = Boolean.parseBoolean(req.getParameter("showWarningIcon"));
         this.maxAmmountOfResponsibles = asInteger(req,"maxAmmountOfResponsibles");
         this.autoResizeEntryHeight = Boolean.parseBoolean(req.getParameter("autoResizeEntryHeight"));
+        this.hideSuccessfulBuilds = Boolean.parseBoolean(req.getParameter("hideSuccessfulBuilds"));
         
         if ( getIsClaimPluginInstalled() ){
         	this.guiClaimFont = asInteger(req, "guiClaimFont");
