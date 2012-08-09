@@ -2,27 +2,46 @@ package maps.hudson.plugin.xfpanel;
 
 import hudson.Extension;
 import hudson.Functions;
-import hudson.Util;
-import hudson.model.*;
+import hudson.model.Result;
+import hudson.model.ViewDescriptor;
+import hudson.model.AbstractBuild;
 import hudson.model.Descriptor.FormException;
+import hudson.model.Hudson;
+import hudson.model.Job;
+import hudson.model.ListView;
+import hudson.model.Run;
+import hudson.model.User;
 import hudson.tasks.test.AbstractTestResultAction;
 import hudson.util.FormValidation;
+import hudson.scm.ChangeLogSet.Entry;
+import hudson.plugins.claim.ClaimBuildAction;
+import hudson.plugins.claim.ClaimTestAction;
+import hudson.tasks.junit.CaseResult;
+import hudson.tasks.junit.TestResultAction;
+import hudson.model.Action;
+
 
 import java.io.IOException;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Calendar;
+import java.util.Comparator;
+import java.lang.Math;
+import static java.util.Collections.sort;
 
 import javax.servlet.ServletException;
 
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
+
 
 /**
  * Represents an eXtreme Feedback Panel View.
@@ -35,23 +54,48 @@ public class XFPanelView extends ListView {
 
 	private XFColors colors;
 	
-	private Integer numColumns = 1;
-	
+	private Integer numColumns = 2;
 	private Integer refresh = 3;
 	
 	private Boolean fullHD = false;
 	
-	private Integer fontSize = 48;
+	private Integer guiHeight = 205;
+	private Integer guiImgHeight = 180;
+	private Integer guiJobFont = 80;
+	private Integer guiFailFont = 150;
+	private Integer guiInfoFont = 30;
+	private Integer guiBuildFont = 30;
+	private Integer guiClaimFont = 30;
 	
     private Boolean showDescription = false;
 
     private Boolean showZeroTestCounts = true;
 
     private Boolean sortDescending = false;
-
+    
+    private Boolean showTimeStamp = true;
+    
+    private Boolean enableAutomaticSort = true;
+    
+    private Boolean showClaimInfo = true;
+    
+    private Boolean showWarningIcon = false;
+    
+    private Boolean replaceResponsibles = true;
+    
+    private Boolean autoResizeEntryHeight = true;
+    
 	private transient List<XFPanelEntry> entries;
 
-    private transient Map<hudson.model.Queue.Item, Integer> placeInQueue = new HashMap<hudson.model.Queue.Item, Integer>();
+	private transient Map<hudson.model.Queue.Item, Integer> placeInQueue = new HashMap<hudson.model.Queue.Item, Integer>();
+
+	protected enum Blame { NOTATALL, ONLYLASTFAILEDBUILD, ONLYFIRSTFAILEDBUILD, EVERYINVOLVED }
+	protected Blame BlameState = Blame.EVERYINVOLVED;
+
+	private Integer maxAmmountOfResponsibles = 1;
+	
+	private String responsiblesTopic = "Responsible(s): ";
+	
 	
 	/**
 	 * C'tor<meta  />
@@ -61,7 +105,7 @@ public class XFPanelView extends ListView {
 	@DataBoundConstructor
 	public XFPanelView(String name, Integer numColumns) {
 		super(name);
-		this.numColumns = numColumns != null ? numColumns : 1;
+		this.numColumns = numColumns != null ? numColumns : 2;
 	}
 
 	/**
@@ -74,14 +118,66 @@ public class XFPanelView extends ListView {
 		return this.colors;
 	}
 	
+	public Integer getGuiHeight() { 
+		if ( autoResizeEntryHeight	){
+			Integer entryHeight = guiJobFont + guiInfoFont;
+				
+			if ( showClaimInfo ){
+				if ( BlameState != Blame.NOTATALL ){
+					if ( replaceResponsibles ){
+						entryHeight += guiClaimFont;
+					}
+					else{
+						entryHeight += guiClaimFont + guiInfoFont + guiInfoFont/2;
+					}
+				}
+				else {
+					entryHeight += guiClaimFont;
+				}
+			}
+			else if ( BlameState != Blame.NOTATALL ){
+				entryHeight += guiInfoFont;
+			}
+			
+			
+			if ( showTimeStamp ){ 
+				entryHeight += guiInfoFont + guiInfoFont/2;
+			}
+			
+			entryHeight = Math.max( entryHeight, guiFailFont );
+			entryHeight = Math.max( entryHeight, guiJobFont );
+			
+			if ( showWarningIcon || showClaimInfo ){
+				entryHeight = Math.max( entryHeight, guiImgHeight );
+			}
+			
+			if ( showZeroTestCounts && showTimeStamp ){
+				entryHeight = Math.max( entryHeight, guiJobFont + guiInfoFont*3 );
+			}
+			
+			Integer padding = 15; 
+			return entryHeight + padding;
+		}
+
+		return guiHeight; 
+	}
+
+	public Integer getGuiImgHeight() { return guiImgHeight; }
+
+	public Integer getGuiJobFont() { return guiJobFont; }
+
+	public Integer getGuiFailFont() { return guiFailFont; }
+
+	public Integer getGuiInfoFont() { return guiInfoFont; }
+
+	public Integer getGuiBuildFont() { return guiBuildFont; }
+	
+	public Integer getGuiClaimFont() { return guiClaimFont; }
+	
+	public Integer getMaxAmmountOfResponsibles(){ return maxAmmountOfResponsibles; }
 	public Boolean getFullHD() {
 		return this.fullHD;
 	}
-
-	public Integer getFontSize() {
-		return this.fontSize;
-	}
-
 
     public Boolean getShowDescription() {
         if (this.showDescription == null) {
@@ -92,16 +188,95 @@ public class XFPanelView extends ListView {
 	
     public Boolean getSortDescending() {
         if (this.sortDescending == null) {
-            this.sortDescending = false;
+            this.sortDescending = Boolean.FALSE;
         }
         return this.sortDescending;
     }
 	
     public Boolean getShowZeroTestCounts() {
         if (this.showZeroTestCounts == null) {
-            this.showZeroTestCounts = true;
+            this.showZeroTestCounts = Boolean.TRUE;
         }
         return this.showZeroTestCounts;
+    }
+    
+    public Boolean getShowTimeStamp() {
+        return this.showTimeStamp;
+    }
+    
+    public Boolean getShowClaimInfo() {
+        return this.showClaimInfo;
+    }
+    public Boolean getShowWarningIcon(){
+    	return this.showWarningIcon;
+    }
+    public Boolean getReplaceResponsibles(){
+    	return this.replaceResponsibles;
+    }
+    
+    public String getResponsiblesTopic(){
+    	if (this.responsiblesTopic == null){
+    		return "";
+    	}
+    	return this.responsiblesTopic;
+    }
+    /**
+     * Return true, if claim-plugin is installed
+     */
+    public Boolean getIsClaimPluginInstalled(){
+    	return (Hudson.getInstance().getPlugin("claim") != null);  
+    }
+	
+    static class selectComparator implements Comparator< XFPanelEntry >
+    {
+    	private int getPriority( AbstractBuild build )
+    	{
+    		// never built build
+    		if (build == null ) {
+    			return 1;
+    		}
+    		
+    		if ( build.isBuilding() ){
+				build = (AbstractBuild) build.getPreviousBuild();
+				return getPriority( build );
+    		}
+    		
+    		Result result = build.getResult();
+    		if ( result != null ){
+    			// priority order: the least important -> the most important 
+	    		Result allResults[] = { Result.SUCCESS, Result.ABORTED, Result.NOT_BUILT, Result.UNSTABLE, Result.FAILURE };
+	    		int resultValues[]  = {       0,              1,              1,                2,               3        };
+				for (int i=0; i < allResults.length; i++ ){
+					if (result == allResults[i] ){
+						return resultValues[i];
+					}
+				}
+    		}
+			return 1;
+    	}
+    	
+		public int compare( XFPanelEntry a, XFPanelEntry b) {
+			AbstractBuild buildA = (AbstractBuild) a.job.getLastBuild();
+			AbstractBuild buildB = (AbstractBuild) b.job.getLastBuild();
+			int result = getPriority( buildB ) - getPriority( buildA );
+				
+			// if build results are same and builds exists-> sort by build timestamp	
+			if (result == 0 ){
+				
+				// if build is null, show it on bottom of its class
+				if ( buildA == null || buildB == null ){
+					return  ( buildA == null ) ? 1 : 0;
+				}
+				
+				// if building atm -> show build on top of its class
+				if ( buildA.isBuilding() || buildB.isBuilding() ){
+					return ( buildA.isBuilding() ) ? 0 : 1;
+				}
+				
+				return b.completionTimestamp.compareTo( a.completionTimestamp );
+			}
+			return result;
+		}
     }
 	
 	/**
@@ -120,7 +295,10 @@ public class XFPanelView extends ListView {
 			for (Job<?, ?> job : jobs) {
 				ents.add(new XFPanelEntry(job));
 			}
-
+			
+			if ( enableAutomaticSort == true ){
+				Collections.sort(ents, new selectComparator() );
+			}
             if (this.getSortDescending()) {
                 Collections.reverse(ents);
             }
@@ -145,6 +323,7 @@ public class XFPanelView extends ListView {
 		return this.numColumns;
 	}
 	
+	
 	/**
 	 * Gets from the request the configuration parameters
 	 * 
@@ -157,28 +336,67 @@ public class XFPanelView extends ListView {
 	protected void submit(StaplerRequest req) throws ServletException, FormException, IOException {
 		super.submit(req);
 		
-		try {
-			this.numColumns = Integer.parseInt(req.getParameter("numColumns"));
-		} catch (NumberFormatException e) {
-			throw new FormException(XFPanelViewDescriptor.MSG, "numColumns");
-		}
-		
-		try {
-			this.refresh = Integer.parseInt(req.getParameter("refresh"));
-		} catch (NumberFormatException e) {
-			throw new FormException(XFPanelViewDescriptor.REFRESH_MSG, "refresh");
-		}
-		
-		try {
-		  this.fontSize = Integer.parseInt(req.getParameter("fontSize"));
-		} catch (NumberFormatException e) {
-			this.fontSize = 60;
-		}
+		this.numColumns = asInteger(req, "numColumns");
+		this.refresh = asInteger(req, "refresh");
 		
 		this.fullHD = Boolean.parseBoolean(req.getParameter("fullHD"));
+		
+		this.guiHeight = asInteger(req, "guiHeight");
+		this.guiImgHeight = asInteger(req, "guiImgHeight");
+		this.guiJobFont = asInteger(req, "guiJobFont");
+		this.guiFailFont = asInteger(req, "guiFailFont");
+		this.guiInfoFont = asInteger(req, "guiInfoFont");
+		this.guiBuildFont = asInteger(req, "guiBuildFont");
         this.showDescription = Boolean.parseBoolean(req.getParameter("showDescription"));
         this.sortDescending = Boolean.parseBoolean(req.getParameter("sortDescending"));
+        this.showTimeStamp = Boolean.parseBoolean(req.getParameter("showTimeStamp"));
         this.showZeroTestCounts = Boolean.parseBoolean(req.getParameter("showZeroTestCounts"));
+        this.showWarningIcon = Boolean.parseBoolean(req.getParameter("showWarningIcon"));
+        this.maxAmmountOfResponsibles = asInteger(req,"maxAmmountOfResponsibles");
+        this.autoResizeEntryHeight = Boolean.parseBoolean(req.getParameter("autoResizeEntryHeight"));
+        
+        if ( getIsClaimPluginInstalled() ){
+        	this.guiClaimFont = asInteger(req, "guiClaimFont");
+        	this.showClaimInfo = Boolean.parseBoolean(req.getParameter("showClaimInfo"));
+        	this.replaceResponsibles = Boolean.parseBoolean(req.getParameter("replaceResponsibles"));
+        }
+        
+        String SortType = req.getParameter("sort");
+        if ( SortType != null && SortType.equals("sort.automatic") ){
+        	this.enableAutomaticSort = true;}
+        else{
+        	this.enableAutomaticSort = false;
+        }
+        
+        this.responsiblesTopic = req.getParameter("responsiblesTopic");
+        	
+        String blameType = req.getParameter("responsibles");
+        
+        if ( blameType == null ){
+        	System.out.println("WARNING: Show responsibles == null --> Show responsibles disabled" );
+        	this.BlameState = Blame.NOTATALL;
+        }
+        else if (blameType.equals("blame.notAtAll")) {
+            this.BlameState = Blame.NOTATALL;
+        }
+        else if (blameType.equals("blame.onlyFirstFailedBuild")) {
+        	this.BlameState = Blame.ONLYFIRSTFAILEDBUILD;
+        }
+        else if (blameType.equals("blame.onlyLastFailedBuild")) {
+        	this.BlameState = Blame.ONLYLASTFAILEDBUILD;
+        }
+        else if (blameType.equals("blame.everyInvolved")) {
+        	this.BlameState = Blame.EVERYINVOLVED;
+        }
+
+	}
+	
+	private Integer asInteger(StaplerRequest request, String parameterName) throws FormException {
+		try {
+			return Integer.parseInt(request.getParameter(parameterName));
+		} catch (NumberFormatException e) {
+			throw new FormException(parameterName + " must be a positive integer", parameterName);
+		}		
 	}
 	
     /**
@@ -203,7 +421,11 @@ public class XFPanelView extends ListView {
         private Boolean queued = false;
 
         private Integer queueNumber;        
-
+        
+        private String completionTimestampString = "";
+        
+        private Calendar completionTimestamp;
+        
     	/**
     	 * C'tor
     	 * @param job the job to be represented
@@ -211,6 +433,7 @@ public class XFPanelView extends ListView {
 		public XFPanelEntry(Job<?, ?> job) {
 			this.job = job;
 			this.findStatus();
+			this.setTimes();
 		}
 		
 		/**
@@ -245,7 +468,31 @@ public class XFPanelView extends ListView {
             // placeInQueue==null right after deserialization because it's transient
             return placeInQueue==null ? null : placeInQueue.get(this.job.getQueueItem());
         }
+        
+        private void setTimes() {
+            AbstractBuild lastBuild = (AbstractBuild) this.job.getLastCompletedBuild();
+            if (lastBuild != null) {
+                this.completionTimestamp = lastBuild.getTimestamp();
+                this.completionTimestampString = lastBuild.getTimestampString();
+            }
+        }
+        
+        public void setCompletionTimestamp(Calendar completionTimestamp) {
+            this.completionTimestamp = completionTimestamp;
+        }
 
+        public Calendar getCompletionTimestamp() {
+            return this.completionTimestamp;
+        }
+
+        public void setCompletionTimestampString(String completionTimestampString) {
+            this.completionTimestampString = completionTimestampString;
+        }
+
+        public String getCompletionTimestampString() {
+            return this.completionTimestampString;
+        }
+        
 		/**
 		 * @return background color for this job
 		 */
@@ -265,6 +512,16 @@ public class XFPanelView extends ListView {
 		 */
 		public Boolean getBroken() {
 			return this.broken;
+		}
+		
+		/**
+		 *  @return 1 on success
+		 */
+		
+		public Boolean getShowResponsibles() {
+			if (BlameState == Blame.NOTATALL)
+				return false;
+			return true;
 		}
 		
 		/**
@@ -332,6 +589,14 @@ public class XFPanelView extends ListView {
 			return this.getTestCount() - this.getFailCount();
 		}
 		
+		public int getLastCompletedBuildNumber() {
+			return job.getLastCompletedBuild().getNumber();
+		}
+
+		public String getLastCompletedBuildTimestampString() {
+			return job.getLastCompletedBuild().getTimestampString();
+		}
+
 		/**
 		 * @return difference between this job's last build successful tests and the previous'
 		 */
@@ -367,23 +632,134 @@ public class XFPanelView extends ListView {
 		}
 		
 		/**
-		 * Elects a culprit/responsible for a broken build by choosing the last commiter of a given build 
+		 * Elects culprit(s)/responsible(s) for a broken build by choosing the last commiter of a given build 
 		 * 
-		 * @return the culprit/responsible
+		 * @return the culprit(s)/responsible(s)
 		 */
-		public String getCulprit() {
-			Run<?, ?> run = this.job.getLastBuild();
-			String culprit = " - ";
-			if (run instanceof AbstractBuild<?, ?>) {
-				AbstractBuild<?, ?> build = (AbstractBuild<?, ?>) run;
-				Iterator<User> it = build.getCulprits().iterator();
-				while (it.hasNext()) {
-					culprit = it.next().getFullName().toUpperCase();
-				}
-			}
-			return culprit;
+		
+		public HashSet<User> getCulpritFromBuild( AbstractBuild<?, ?> build ){
+			HashSet<User> r = new HashSet<User>();
+			for (Entry e : build.getChangeSet())
+                r.add(e.getAuthor());
+			return r;
 		}
 		
+		public String convertCulpritsToString( HashSet<User> input ){
+			String output = "";
+			Iterator<User> it = input.iterator();
+			
+			int i=0;
+	        for (; it.hasNext(); i++ ){
+				if ( i < getMaxAmmountOfResponsibles()  ) 
+					output += it.next().getFullName() + ((it.hasNext())?", ":"");
+				else
+					it.next();
+	        }
+			if ( i > getMaxAmmountOfResponsibles() ){
+				output += "... <"+ (i-getMaxAmmountOfResponsibles()) +" more>";
+			}
+			if ( !output.isEmpty() )
+				return output;
+			return " - ";
+		}
+		
+		public String getCulprits() {
+			if ( BlameState == Blame.ONLYFIRSTFAILEDBUILD){
+				Run<?, ?> run = this.job.getLastStableBuild(); //getLastSuccessfulBuild();
+				if ( run == null ){ // if there aren't any successful builds
+					run = this.job.getFirstBuild(); 
+				}
+				else {
+					run = run.getNextBuild();
+				}
+				
+				if (run instanceof AbstractBuild<?, ?>) {
+					AbstractBuild<?, ?> firstFailedBuild = (AbstractBuild<?, ?>) run;
+					return convertCulpritsToString( getCulpritFromBuild( firstFailedBuild ) );
+				}
+			}
+			else if ( BlameState == Blame.ONLYLASTFAILEDBUILD){
+				Run<?, ?> run = this.job.getLastFailedBuild(); //getLastBuild();
+				
+				if (run instanceof AbstractBuild<?, ?>) {
+					AbstractBuild<?, ?> lastFailedBuild = (AbstractBuild<?, ?>) run;
+					return convertCulpritsToString( getCulpritFromBuild( lastFailedBuild ) );
+				}
+			}
+			else if ( BlameState == Blame.EVERYINVOLVED ){
+				Run<?, ?> run = this.job.getLastBuild();
+				
+				
+				if (run instanceof AbstractBuild<?, ?>) {
+					AbstractBuild<?, ?> build = (AbstractBuild<?, ?>) run;
+					HashSet<User> BlameList = new HashSet<User>( build.getCulprits() );
+					return convertCulpritsToString( BlameList );
+				}
+			}
+			return " -";
+		}
+		
+		
+	    /**
+	     * If the claims plugin is installed, this will return ClaimBuildAction
+	     * 
+	     * @return claim on the build / null
+	     */
+	    private ClaimBuildAction getClaimAction() {
+	        ClaimBuildAction claimAction = null;
+
+	        if (Hudson.getInstance().getPlugin("claim") != null) {
+	            Run lastBuild = job.getLastBuild();
+	            if (lastBuild != null && lastBuild.isBuilding()) {
+	                // claims can only be made against builds once they've finished,
+	                // so check the previous build if currently building.
+	                lastBuild = lastBuild.getPreviousBuild();
+	            }
+	            
+	            if (lastBuild != null) {
+	                List<ClaimBuildAction> claimActionList = lastBuild.getActions(ClaimBuildAction.class);
+	                if (claimActionList.size() == 1) {
+	                    claimAction = claimActionList.get(0);
+	                }
+	            }
+	        }
+	        return claimAction;
+	    }
+
+	    /**
+	     *
+	     * @return whether build is claimed or not
+	     */
+	    public boolean isClaimed() {
+	        ClaimBuildAction cba = getClaimAction();
+	        if (cba != null) {
+	            return cba.isClaimed();
+	        }
+
+	        return false;
+	    }
+	    
+	    /**
+	     * If the claims plugin is installed, this will get details of the claimed
+	     * build failures.
+	     *
+	     * @return details of any claims for the broken build, or null if nobody has
+	     *         claimed this build.
+	     */
+	    public String getClaimInfo() {
+	        ClaimBuildAction claimAction = getClaimAction();
+	        
+	        if ( claimAction != null ){
+	        	if (claimAction.isClaimed()) {
+	        		String name = claimAction.getClaimedByName();    
+	        		// String reason = claimAction.getReason();
+	                return name;
+	            }
+	        }
+	        
+	        return "";
+	    }
+	    
 		/**
 		 * @return color to be used to show the test diff
 		 */
@@ -471,25 +847,48 @@ public class XFPanelView extends ListView {
 		 * @param resp response
 		 * @return a form validation
 		 */
-		public FormValidation doCheckNumColumns(StaplerRequest req, StaplerResponse resp) {
-			String num = Util.fixEmptyAndTrim(req.getParameter("numColumns"));
-			if (num != null) {
-				try {
-					int i = Integer.parseInt(num);
-					if (i < 1 || i > 2) {
-						return FormValidation.error(MSG);
-					}
-				} catch (NumberFormatException e) {
-					return FormValidation.error(MSG);
-				}
-			} else {
-				return FormValidation.error(MSG);
-			}
+		public FormValidation doCheckNumColumns(@QueryParameter String value) {
+      try {
+        int i = Integer.parseInt(value);
+        if (i < 1 || i > 2) {
+          return FormValidation.error(MSG);
+        }
+      } catch (NumberFormatException e) {
+        return FormValidation.error(MSG);
+      }
 			return FormValidation.ok();
 		}
 		
-		public FormValidation doCheckRefresh(StaplerRequest req) {
-			return FormValidation.validatePositiveInteger(req.getParameter("refresh"));
+		public FormValidation doCheckRefresh(@QueryParameter String value) {
+			return isPositiveInteger(value);
+		}
+		
+		public FormValidation doCheckGuiHeight(@QueryParameter String value) {
+			return isPositiveInteger(value);
+		}
+		
+		public FormValidation doCheckGuiImgHeight(@QueryParameter String value) {
+			return isPositiveInteger(value);
+		}		
+		
+		public FormValidation doCheckGuiJobFont(@QueryParameter String value) {
+			return isPositiveInteger(value);
+		}
+		
+		public FormValidation doCheckGuiFailFont(@QueryParameter String value) {
+			return isPositiveInteger(value);
+		}
+		
+		public FormValidation doCheckGuiInfoFont(@QueryParameter String value) {
+			return isPositiveInteger(value);
+		}
+		
+		public FormValidation doCheckGuiBuildFont(@QueryParameter String value) {
+			return isPositiveInteger(value);
+		}		
+
+		private FormValidation isPositiveInteger(String value) {
+			return FormValidation.validatePositiveInteger(value);
 		}
 		
     }
