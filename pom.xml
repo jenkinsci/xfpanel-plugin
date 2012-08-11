@@ -63,24 +63,33 @@
 
   <build>
     <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>2.5.1</version>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-resources-plugin</artifactId>
-        <version>2.5</version>
-      </plugin>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-enforcer-plugin</artifactId>
+            <version>1.0.1</version>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>enforce</goal>
+                </goals>
+                <configuration>
+                  <rules>
+                    <requireMavenVersion>
+                      <version>3.0</version>
+                    </requireMavenVersion>
+                  </rules>
+                </configuration>
+              </execution>
+            </executions>
+        </plugin>
     </plugins>
   </build>
 
   <dependencies>
-  	<dependency>
-  		<groupId>org.jvnet.hudson.plugins</groupId>
-  		<artifactId>claim</artifactId>
-  		<version>1.7</version>
-  	</dependency>
+      <dependency>
+          <groupId>org.jvnet.hudson.plugins</groupId>
+          <artifactId>claim</artifactId>
+          <version>1.7</version>
+      </dependency>
   </dependencies>
 </project>
