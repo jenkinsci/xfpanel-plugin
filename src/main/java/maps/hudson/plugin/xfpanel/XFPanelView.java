@@ -86,6 +86,8 @@ public class XFPanelView extends ListView {
     
     private Boolean hideSuccessfulBuilds = false;
     
+    private Boolean replaceNumberOfTestCases = true;
+    
 	private transient List<XFPanelEntry> entries;
 
 	private transient Map<hudson.model.Queue.Item, Integer> placeInQueue = new HashMap<hudson.model.Queue.Item, Integer>();
@@ -230,6 +232,13 @@ public class XFPanelView extends ListView {
     public Boolean getIsClaimPluginInstalled(){
     	return (Hudson.getInstance().getPlugin("claim") != null);  
     }
+    
+    public Boolean getReplaceNumberOfTestCases(){
+    	if ( getIsClaimPluginInstalled() ){
+    		return this.replaceNumberOfTestCases;
+    	}
+    	return false;
+    }
 	
     static class selectComparator implements Comparator< XFPanelEntry >
     {
@@ -364,6 +373,7 @@ public class XFPanelView extends ListView {
         	this.guiClaimFont = asInteger(req, "guiClaimFont");
         	this.showClaimInfo = Boolean.parseBoolean(req.getParameter("showClaimInfo"));
         	this.replaceResponsibles = Boolean.parseBoolean(req.getParameter("replaceResponsibles"));
+        	this.replaceNumberOfTestCases = Boolean.parseBoolean(req.getParameter("replaceNumberOfTestCases"));
         }
         
         String SortType = req.getParameter("sort");
@@ -763,6 +773,57 @@ public class XFPanelView extends ListView {
 	        }
 	        
 	        return "";
+	    }
+	    
+
+	    public int getNumClaimedTests() {
+	        if (Hudson.getInstance().getPlugin("claim") != null) {
+	            Run lastBuild = job.getLastBuild();
+	            if (lastBuild == null) {
+	                return 0;
+	            }
+	            List<Action> claimTestActionList = lastBuild.getActions();
+	            List<TestResultAction> results = lastBuild.getActions(TestResultAction.class);
+
+	            if ( results == null || claimTestActionList == null || results.size() == 0) {
+	                return 0;
+	            }
+
+	            int numClaimedTests = 0;
+	            hudson.tasks.junit.TestResult testResult = results.get(0).getResult();
+
+	            for (CaseResult result : testResult.getFailedTests()) {
+	                ClaimTestAction claimTestAction = result.getTestAction(ClaimTestAction.class);
+	                if (claimTestAction != null) {
+	                    if (claimTestAction.isClaimed() == true) {
+	                        numClaimedTests++;
+	                    }
+	                }
+	            }
+	            return numClaimedTests;
+	        }
+
+	        return -1;
+	    }
+	    
+	    /**
+	     * Returns number of failed tests or number of unclaimed failed tests
+	     * 
+	     */
+	    public String getNumberOfTests(){
+	    	final int failedTests = getFailCount();
+	    	if (failedTests == 0 && getShowZeroTestCounts() == false ){
+	    			return "";
+	    	}
+	    	
+	    	if ( getReplaceNumberOfTestCases() ){
+		    	final int claimedTests = getNumClaimedTests();
+		    	if ( claimedTests >= 0 ){
+		    		return Integer.toString(failedTests - claimedTests);
+		    	}
+	    	}
+
+	    	return Integer.toString(failedTests);
 	    }
 	    
 		/**
