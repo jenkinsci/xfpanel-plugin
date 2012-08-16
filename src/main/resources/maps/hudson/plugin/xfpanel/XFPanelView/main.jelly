@@ -30,14 +30,11 @@
 						<j:set var="width" value="99%" />
 						<j:set var="float" value="left" />
 						<j:forEach var="job" items="${jobs}">
-						
-							<!-- dontShowJob = successfulBuild && hidesuccessful && (job.successCount == job.testCount ) -->
-							<j:set var="dontShowJob" value="${it.hideSuccessfulBuilds == true}" />
-							<j:if test="${dontShowJob == true}">
-								<j:if test="${ job.successCount == job.testCount }">
-									<j:set var="dontShowJob" value="${job.broken == false}" />
-								</j:if>	
-							</j:if>			
+
+							<j:set var="dontShowJob" value="false" />
+							<j:if test="${job.isBuildSuccessful() == true}" >
+								<j:set var="dontShowJob" value="${it.hideSuccessfulBuilds == true}" />
+							</j:if>	
 							
 							<j:if test="${ dontShowJob == false }">
 								<st:include page="job.jelly" />						
@@ -48,13 +45,10 @@
 						<j:set var="width" value="49%" />
 						<j:forEach var="job" items="${jobs}">
 						
-							<!-- dontShowJob = successfulBuild && hidesuccessful && (job.successCount == job.testCount ) -->
-							<j:set var="dontShowJob" value="${it.hideSuccessfulBuilds == true}" />
-							<j:if test="${dontShowJob == true}">
-								<j:if test="${ job.successCount == job.testCount }">
-									<j:set var="dontShowJob" value="${job.broken == false}" />
-								</j:if>	
-							</j:if>		
+							<j:set var="dontShowJob" value="false" />
+							<j:if test="${job.isBuildSuccessful() == true}" >
+								<j:set var="dontShowJob" value="${it.hideSuccessfulBuilds == true}" />
+							</j:if>	
 							
 							<j:if test="${dontShowJob == false}">
 								<j:choose>

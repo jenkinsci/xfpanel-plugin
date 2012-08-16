@@ -790,7 +790,38 @@ public class XFPanelView extends ListView {
 			}
 			return "";
 		}
-			
+		
+		public String getBuildStatus()
+		{
+			Run<?, ?> run = this.job.getLastBuild();
+			if ( run == null ){
+				return "UNBUILT";
+			}
+
+			if (run instanceof AbstractBuild<?, ?>) {
+				AbstractBuild<?, ?> build = (AbstractBuild<?, ?>) run;
+				if ( build == null ){
+					return "UNBUILT";
+				}
+				
+				Result result = build.getResult();
+	    		if ( result != null ){ 
+		    		Result allResults[] = { Result.SUCCESS, Result.ABORTED, Result.NOT_BUILT, Result.UNSTABLE, Result.FAILURE };
+		    		String resultStr[]  = { "SUCCESS","ABORTED","NOT_BUILT","UNSTABLE","FAILURE"};
+					for (int i=0; i < allResults.length; i++ ){
+						if (result == allResults[i] ){
+							return resultStr[i];
+						}
+					}
+	    		}
+			}
+			return "UNKNOWN";
+    	}
+		
+		public boolean isBuildSuccessful(){
+			return getBuildStatus().equals("SUCCESS");
+		}
+		
 		/**
 		 * Determines some information of the current job like which colors use, wether it's building or not or broken.
 		 */
