@@ -9,8 +9,8 @@
 	<td colspan="3" style="font-weight:bold;" >Job options <hr /> </td>
 	<f:entry title="${%Jobs}">
 		<j:forEach var="job" items="${app.items}">
-			<f:checkbox name="${job.name}" checked="${it.contains(job)}" />
-			${job.name}
+			<f:checkbox id="xfpanel-jobs-${job.name}" name="${job.name}" checked="${it.contains(job)}" />
+			<label for="xfpanel-jobs-${job.name}"> ${job.name} </label>
 			<br />
 		</j:forEach>
 	</f:entry>
