@@ -34,7 +34,6 @@ import java.util.HashSet;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.lang.Math;
-import static java.util.Collections.sort;
 
 import javax.servlet.ServletException;
 
@@ -84,6 +83,10 @@ public class XFPanelView extends ListView {
     private Boolean replaceResponsibles = true;
     
     private Boolean autoResizeEntryHeight = true;
+    
+    private Boolean hideSuccessfulBuilds = false;
+    
+    private Boolean replaceNumberOfTestCases = true;
     
 	private transient List<XFPanelEntry> entries;
 
@@ -220,11 +223,21 @@ public class XFPanelView extends ListView {
     	}
     	return this.responsiblesTopic;
     }
+    public Boolean getHideSuccessfulBuilds(){
+    	return this.hideSuccessfulBuilds;
+    }
     /**
      * Return true, if claim-plugin is installed
      */
     public Boolean getIsClaimPluginInstalled(){
     	return (Hudson.getInstance().getPlugin("claim") != null);  
+    }
+    
+    public Boolean getReplaceNumberOfTestCases(){
+    	if ( getIsClaimPluginInstalled() ){
+    		return this.replaceNumberOfTestCases;
+    	}
+    	return false;
     }
 	
     static class selectComparator implements Comparator< XFPanelEntry >
@@ -354,11 +367,13 @@ public class XFPanelView extends ListView {
         this.showWarningIcon = Boolean.parseBoolean(req.getParameter("showWarningIcon"));
         this.maxAmmountOfResponsibles = asInteger(req,"maxAmmountOfResponsibles");
         this.autoResizeEntryHeight = Boolean.parseBoolean(req.getParameter("autoResizeEntryHeight"));
+        this.hideSuccessfulBuilds = Boolean.parseBoolean(req.getParameter("hideSuccessfulBuilds"));
         
         if ( getIsClaimPluginInstalled() ){
         	this.guiClaimFont = asInteger(req, "guiClaimFont");
         	this.showClaimInfo = Boolean.parseBoolean(req.getParameter("showClaimInfo"));
         	this.replaceResponsibles = Boolean.parseBoolean(req.getParameter("replaceResponsibles"));
+        	this.replaceNumberOfTestCases = Boolean.parseBoolean(req.getParameter("replaceNumberOfTestCases"));
         }
         
         String SortType = req.getParameter("sort");
@@ -760,6 +775,57 @@ public class XFPanelView extends ListView {
 	        return "";
 	    }
 	    
+
+	    public int getNumClaimedTests() {
+	        if (Hudson.getInstance().getPlugin("claim") != null) {
+	            Run lastBuild = job.getLastBuild();
+	            if (lastBuild == null) {
+	                return 0;
+	            }
+	            List<Action> claimTestActionList = lastBuild.getActions();
+	            List<TestResultAction> results = lastBuild.getActions(TestResultAction.class);
+
+	            if ( results == null || claimTestActionList == null || results.size() == 0) {
+	                return 0;
+	            }
+
+	            int numClaimedTests = 0;
+	            hudson.tasks.junit.TestResult testResult = results.get(0).getResult();
+
+	            for (CaseResult result : testResult.getFailedTests()) {
+	                ClaimTestAction claimTestAction = result.getTestAction(ClaimTestAction.class);
+	                if (claimTestAction != null) {
+	                    if (claimTestAction.isClaimed() == true) {
+	                        numClaimedTests++;
+	                    }
+	                }
+	            }
+	            return numClaimedTests;
+	        }
+
+	        return -1;
+	    }
+	    
+	    /**
+	     * Returns number of failed tests or number of unclaimed failed tests
+	     * 
+	     */
+	    public String getNumberOfTests(){
+	    	final int failedTests = getFailCount();
+	    	if (failedTests == 0 && getShowZeroTestCounts() == false ){
+	    			return "";
+	    	}
+	    	
+	    	if ( getReplaceNumberOfTestCases() ){
+		    	final int claimedTests = getNumClaimedTests();
+		    	if ( claimedTests >= 0 ){
+		    		return Integer.toString(failedTests - claimedTests);
+		    	}
+	    	}
+
+	    	return Integer.toString(failedTests);
+	    }
+	    
 		/**
 		 * @return color to be used to show the test diff
 		 */
@@ -785,7 +851,38 @@ public class XFPanelView extends ListView {
 			}
 			return "";
 		}
-			
+		
+		public String getBuildStatus()
+		{
+			Run<?, ?> run = this.job.getLastBuild();
+			if ( run == null ){
+				return "UNBUILT";
+			}
+
+			if (run instanceof AbstractBuild<?, ?>) {
+				AbstractBuild<?, ?> build = (AbstractBuild<?, ?>) run;
+				if ( build == null ){
+					return "UNBUILT";
+				}
+				
+				Result result = build.getResult();
+	    		if ( result != null ){ 
+		    		Result allResults[] = { Result.SUCCESS, Result.ABORTED, Result.NOT_BUILT, Result.UNSTABLE, Result.FAILURE };
+		    		String resultStr[]  = { "SUCCESS","ABORTED","NOT_BUILT","UNSTABLE","FAILURE"};
+					for (int i=0; i < allResults.length; i++ ){
+						if (result == allResults[i] ){
+							return resultStr[i];
+						}
+					}
+	    		}
+			}
+			return "UNKNOWN";
+    	}
+		
+		public boolean isBuildSuccessful(){
+			return getBuildStatus().equals("SUCCESS");
+		}
+		
 		/**
 		 * Determines some information of the current job like which colors use, wether it's building or not or broken.
 		 */

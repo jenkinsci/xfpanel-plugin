@@ -9,8 +9,8 @@
 	<td colspan="3" style="font-weight:bold;" >Job options <hr /> </td>
 	<f:entry title="${%Jobs}">
 		<j:forEach var="job" items="${app.items}">
-			<f:checkbox name="${job.name}" checked="${it.contains(job)}" />
-			${job.name}
+			<f:checkbox id="xfpanel-jobs-${job.name}" name="${job.name}" checked="${it.contains(job)}" />
+			<label for="xfpanel-jobs-${job.name}"> ${job.name} </label>
 			<br />
 		</j:forEach>
 	</f:entry>
@@ -59,6 +59,9 @@
 	<f:entry title="${%Revert order}" field="sortDescending">
 		<f:checkbox id="xfpanel.sortDescending" name="sortDescending" checked="${it.sortDescending}" value="true"/>
 	</f:entry>	
+	<f:entry title="${%Hide successful builds}" field="hideSuccessfulBuilds">
+		<f:checkbox id="xfpanel.hideSuccessfulBuilds" name="hideSuccessfulBuilds" checked="${it.hideSuccessfulBuilds}" value="true"/>
+	</f:entry>	
 	
 	<td colspan="3" style="font-weight:bold;" >Build responsibles <hr /> </td>
 	<f:entry title="${%Show Responsibles}" field="responsibles">
@@ -96,6 +99,10 @@
 				<f:entry title="${%Replace responsibles by claimer}" field="replaceResponsibles">
 					<f:checkbox id="xfpanel.replaceResponsibles" name="replaceResponsibles" checked="${it.replaceResponsibles}" value="true"/>
 				</f:entry>	
+				<f:entry title="${%Replace nr. of failed test cases }" field="replaceNumberOfTestCases">
+					<f:checkbox id="xfpanel.replaceNumberOfTestCases" name="replaceNumberOfTestCases" checked="${it.replaceNumberOfTestCases}" value="true"/>
+					<label for="xfpanel.replaceNumberOfTestCases">  by nr. of unclaimed test cases</label> <br />
+				</f:entry>	
 				<f:entry title="${%Claim font size in pixels}" field="guiClaimFont">
 					<f:textbox id="xfpanel.guiClaimFont" name="guiClaimFont" />
 				</f:entry>
@@ -106,6 +113,7 @@
 				<a style="color:gray; font-weight:normal;"> <br/><br/>
 					Show claim info<br/>
 					Replace responsibles by claimer<br/>
+					Replace nr. of failed test cases by nr. of unclaimed test cases<br/>
 					Claim font size in pixels<br/>
 				</a>
 			</j:otherwise>

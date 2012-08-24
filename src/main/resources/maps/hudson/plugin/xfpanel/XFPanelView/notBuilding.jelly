@@ -62,7 +62,7 @@
 		</j:if>
     </j:if>
     
-    <!-- successful build -->
+    <!-- successful build, but there may be failed test cases  -->
     <j:if test="${job.broken == false}">
     	<div style="width 80%; overflow: hidden;"  >
 	        <j:if test="${it.showZeroTestCounts == true}">

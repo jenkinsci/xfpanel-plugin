@@ -30,21 +30,37 @@
 						<j:set var="width" value="99%" />
 						<j:set var="float" value="left" />
 						<j:forEach var="job" items="${jobs}">
-							<st:include page="job.jelly" />						
+
+							<j:set var="dontShowJob" value="false" />
+							<j:if test="${job.isBuildSuccessful() == true}" >
+								<j:set var="dontShowJob" value="${it.hideSuccessfulBuilds == true}" />
+							</j:if>	
+							
+							<j:if test="${ dontShowJob == false }">
+								<st:include page="job.jelly" />						
+							</j:if>
 						</j:forEach>
 					</j:when>
 					<j:otherwise>
 						<j:set var="width" value="49%" />
 						<j:forEach var="job" items="${jobs}">
-							<j:choose>
-								<j:when test="${float == 'left'}">
-									<j:set var="float" value="right" />
-								</j:when>
-								<j:otherwise>
-									<j:set var="float" value="left" />
-								</j:otherwise>
-							</j:choose>
-							<st:include page="job.jelly" />						
+						
+							<j:set var="dontShowJob" value="false" />
+							<j:if test="${job.isBuildSuccessful() == true}" >
+								<j:set var="dontShowJob" value="${it.hideSuccessfulBuilds == true}" />
+							</j:if>	
+							
+							<j:if test="${dontShowJob == false}">
+								<j:choose>
+									<j:when test="${float == 'left'}">
+										<j:set var="float" value="right" />
+									</j:when>
+									<j:otherwise>
+										<j:set var="float" value="left" />
+									</j:otherwise>
+								</j:choose>
+								<st:include page="job.jelly" />	
+							</j:if>					
 						</j:forEach>
 					</j:otherwise>
 				</j:choose>
