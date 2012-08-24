@@ -852,8 +852,7 @@ public class XFPanelView extends ListView {
 			return "";
 		}
 		
-		public String getBuildStatus()
-		{
+		public String getBuildStatus(){
 			Run<?, ?> run = this.job.getLastBuild();
 			if ( run == null ){
 				return "UNBUILT";
@@ -864,23 +863,20 @@ public class XFPanelView extends ListView {
 				if ( build == null ){
 					return "UNBUILT";
 				}
-				
+				if ( build.isBuilding() ){
+					return "BUILDING";
+				}
 				Result result = build.getResult();
-	    		if ( result != null ){ 
-		    		Result allResults[] = { Result.SUCCESS, Result.ABORTED, Result.NOT_BUILT, Result.UNSTABLE, Result.FAILURE };
-		    		String resultStr[]  = { "SUCCESS","ABORTED","NOT_BUILT","UNSTABLE","FAILURE"};
-					for (int i=0; i < allResults.length; i++ ){
-						if (result == allResults[i] ){
-							return resultStr[i];
-						}
-					}
-	    		}
+				if ( result != null ){
+					return result.toString();
+				}
 			}
 			return "UNKNOWN";
     	}
 		
-		public boolean isBuildSuccessful(){
-			return getBuildStatus().equals("SUCCESS");
+		public boolean isBuildSuccessfulOrRunning(){
+			String buildStatus = getBuildStatus();
+			return buildStatus.equals("SUCCESS") || buildStatus.equals("BUILDING");
 		}
 		
 		/**
