@@ -64,7 +64,7 @@
     
     <!-- successful build, but there may be failed test cases  -->
     <j:if test="${job.broken == false}">
-    	<div style="width 80%; overflow: hidden;"  >
+    	<div style="width 80%;"  >
 	        <j:if test="${it.showZeroTestCounts == true}">
 	            ${job.successPercentage} ${job.successCount}/${job.testCount} 
 	        </j:if>
@@ -85,7 +85,7 @@
 		
 		<j:if test="${job.queued != true}">
 			<j:if test="${it.showTimeStamp == true}">
-				<div style="width 80%; overflow: hidden;"  >
+				<div style="width 80%; "  >
 					Last Successful: ${job.completionTimestampString} 
 					<j:if test="${!job.completionTimestampString.equals('')}">
 						ago

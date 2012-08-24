@@ -11,6 +11,18 @@
 		Behaviour.addLoadEvent(function(){
 			document.getElementById("side-panel").style.display="none";
 		});
+
+		/*
+		var text = "";
+		Event.observe(window, "resize", function () {
+			var y=0;
+			for (var x in $$('div.fadeHiddenText')) {
+				y++;
+				text = text + x.nodeName + ".\n";
+			}
+			alert (x + "\n" + y);
+		});
+		*/
 	</SCRIPT>
 	
 	<j:choose>

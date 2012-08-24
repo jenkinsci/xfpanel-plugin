@@ -10,95 +10,96 @@
 	<j:set var="claimTopMargin" value="${from.guiFailFont*0.3}px" />
 
 	<!-- JOB div -->
-	<div align="center" style="margin: 4px; background-color:${job.backgroundColor}; -moz-border-radius:10px; width:${width}; height:${height}; float: ${float}" tooltip="${job.name}">
-		<j:set var="failColor" value="#00FF00" />
-		<j:if test="${job.failCount > 0}">
-			<j:set var="failColor" value="#FF0000" />
-		</j:if>
-		
-		<!-- Right side bar  -->
-		<div align="center" style="width: 20%; text-align=center; color: ${failColor}; 
-			font-size: ${failFont}; font-weight:bold; overflow:hidden; white-space: nowrap; float:right; margin-top: -${from.guiFailFont*0.1}px; ">
+	<a href="${job.url}" style="font-style:normal; font-weight:bold;">
+		<div align="center" style="margin: 4px; background-color:${job.backgroundColor}; -moz-border-radius:10px; width:${width}; height:${height}; float: ${float}" tooltip="${job.name}">
+			<j:set var="failColor" value="#00FF00" />
+			<j:if test="${job.failCount > 0}">
+				<j:set var="failColor" value="#FF0000" />
+			</j:if>
 			
-			<j:if test="${job.broken == true}">
-				<j:if test="${it.showClaimInfo == true}">
+			<!-- Right side bar  -->
+			<div align="center" style="width: 20%; text-align=center; color: ${failColor}; 
+				font-size: ${failFont}; font-weight:bold; overflow:hidden; white-space: nowrap; float:right; margin-top: -${from.guiFailFont*0.1}px; ">
 				
-					<j:set var="jobClaimed" value="${job.isClaimed() == true}" />
-					<j:if test="${jobClaimed == false}" >
+				<j:if test="${job.broken == true}">
+					<j:if test="${it.showClaimInfo == true}">
+					
+						<j:set var="jobClaimed" value="${job.isClaimed() == true}" />
+						<j:if test="${jobClaimed == false}" >
+							<j:if test="${it.showWarningIcon == true}" >
+								<st:include page="warning.jelly" />
+							</j:if>
+						</j:if>
+						
+						<j:if test="${jobClaimed == true}" >
+							<st:include page="claimed.jelly" />
+						</j:if>
+					</j:if>
+					<j:if test="${it.showClaimInfo == false}">
 						<j:if test="${it.showWarningIcon == true}" >
 							<st:include page="warning.jelly" />
 						</j:if>
 					</j:if>
-					
-					<j:if test="${jobClaimed == true}" >
-						<st:include page="claimed.jelly" />
-					</j:if>
 				</j:if>
-				<j:if test="${it.showClaimInfo == false}">
-					<j:if test="${it.showWarningIcon == true}" >
-						<st:include page="warning.jelly" />
-					</j:if>
-				</j:if>
-			</j:if>
-			
-			<!-- successful or unstable build -->
-			<j:if test="${job.broken == false}">
-				<j:choose>
-					<!--j:when test="${it.showClaimInfo}"-->
-					<j:when test="${it.IsClaimPluginInstalled == true}">
-						<j:if test="${it.ReplaceNumberOfTestCases == true}">
-							<!-- job.isClaimed returns true if whole build is claimed(function doesn't check test cases) -->
-							<j:set var="jobClaimed" value="${job.isClaimed() == true}" />
-							<j:if test="${jobClaimed == true}" >
-								<st:include page="claimed.jelly" />
-							</j:if>
-							
-							<j:if test="${jobClaimed == false}" >
-								${job.getNumberOfTests()}
-								<j:if test="${job.isBuildSuccessful() == false}" >
-									<div style="color: ${failColor}; font-size: ${claimFont}; margin-top: -${claimTopMargin};">
-										#of unclaimed
-									</div>
+				
+				<!-- successful or unstable build -->
+				<j:if test="${job.broken == false}">
+					<j:choose>
+						<!--j:when test="${it.showClaimInfo}"-->
+						<j:when test="${it.IsClaimPluginInstalled == true}">
+							<j:if test="${it.ReplaceNumberOfTestCases == true}">
+								<!-- job.isClaimed returns true if whole build is claimed(function doesn't check test cases) -->
+								<j:set var="jobClaimed" value="${job.isClaimed() == true}" />
+								<j:if test="${jobClaimed == true}" >
+									<st:include page="claimed.jelly" />
+								</j:if>
+								
+								<j:if test="${jobClaimed == false}" >
+									${job.getNumberOfTests()}
+									<j:if test="${job.isBuildSuccessful() == false}" >
+										<div style="color: ${failColor}; font-size: ${claimFont}; margin-top: -${claimTopMargin};">
+											#of unclaimed
+										</div>
+									</j:if>
 								</j:if>
 							</j:if>
-						</j:if>
-						<j:if test="${it.ReplaceNumberOfTestCases == false}">
+							<j:if test="${it.ReplaceNumberOfTestCases == false}">
+								${job.getNumberOfTests()}
+							</j:if>
+						</j:when>
+					
+						<j:otherwise>
 							${job.getNumberOfTests()}
-						</j:if>
-					</j:when>
+						</j:otherwise>
+					</j:choose>
+				</j:if>
 				
-					<j:otherwise>
-						${job.getNumberOfTests()}
-					</j:otherwise>
-				</j:choose>
-			</j:if>
-			
-			<br />
-		</div>
-		
-		<!-- Left side bar -->
-		<div style="width: 80%; white-space: nowrap; overflow:hidden;" >
-			
-			<!-- Topic bar -->
-			<div>
-				<a style ="color: ${job.color}; font-size: ${jobFont}; font-weight:bold;" href="${job.url}">
-					${job.name}
-				</a>
+				<br />
 			</div>
 			
-			<!-- Plain text bar -->
-			<div valign="top" >
-				<j:if test="${job.building == false}">
-					<a style="color: ${job.color}; font-size: ${infoFont}; font-weight:bold; white-space: nowrap;">
-						<st:include page="notBuilding.jelly" />
-					</a>
-				</j:if>
-				<j:if test="${job.building == true}">
-					<a style="color: ${job.color}; font-size: ${buildFont}; font-weight:bold;">
-						<st:include page="building.jelly" />
-					</a>
-				</j:if>
+			<!-- Left side bar -->
+			<div style="width: 80%; white-space: nowrap; overflow:hidden;  color: ${job.color};" >
+				
+				<!-- Topic bar -->
+				<div style ="font-size: ${jobFont}; position:relative;" class="fadeHiddenText">
+					<img src="${rootURL}/plugin/xfpanel/${job.colorFade}" style="position:absolute; right:0px; top:0px; width:${jobFont}; height:100%;"></img>			
+					<span><u>${job.name}</u></span>
+				</div>
+				
+				<!-- Plain text bar -->
+				<div valign="top" >
+					<j:if test="${job.building == false}">
+						<span style="font-size: ${infoFont};">
+							<st:include page="notBuilding.jelly" />
+						</span>
+					</j:if>
+					<j:if test="${job.building == true}">
+						<span style="font-size: ${buildFont};">
+							<st:include page="building.jelly" />
+						</span>
+					</j:if>
+				</div>
 			</div>
 		</div>
-	</div>
+	</a>
 </j:jelly>

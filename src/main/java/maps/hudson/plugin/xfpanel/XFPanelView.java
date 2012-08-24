@@ -428,6 +428,8 @@ public class XFPanelView extends ListView {
     	private String backgroundColor;
     	
     	private String color;
+		
+		private String colorFade = "";
     	
     	private Boolean broken;
     	
@@ -522,6 +524,13 @@ public class XFPanelView extends ListView {
 			return this.color;
 		}
 		
+		/**
+		 * @return fadeout image name for this job
+		 */
+		public String getColorFade() {
+			return this.colorFade;
+		}
+
 		/**
 		 * @return true se o último build está quebrado
 		 */
@@ -893,6 +902,7 @@ public class XFPanelView extends ListView {
 			case BLUE:
 				this.backgroundColor = getColors().getOkBG(); 
 				this.color = colors.getOkFG();
+				this.colorFade = "build-fade-ok.png";
 				this.broken = false;
 				break;
 			case YELLOW_ANIME:
@@ -900,6 +910,7 @@ public class XFPanelView extends ListView {
 			case YELLOW:
 				this.backgroundColor = getColors().getFailedBG(); 
 				this.color = colors.getFailedFG();
+				this.colorFade = "build-fade-fail.png";
 				this.broken = false;
 				break;
 			case RED_ANIME:
@@ -907,6 +918,7 @@ public class XFPanelView extends ListView {
 			case RED:
 				this.backgroundColor = getColors().getBrokenBG(); 
 				this.color = colors.getBrokenFG();
+				this.colorFade = "build-fade-broken.png";
 				this.broken = true;
 				break;
 			case GREY_ANIME:
@@ -915,6 +927,7 @@ public class XFPanelView extends ListView {
 			default:
 				this.backgroundColor = getColors().getOtherBG(); 
 				this.color = colors.getOtherFG();
+				this.colorFade = "build-fade-other.png";
 				this.broken = true;
 			}
 		}
@@ -1078,6 +1091,17 @@ public class XFPanelView extends ListView {
 			return otherFG;
 		}
 		
+    	/**
+    	 * C'tor
+    	 * @param okBG ok builds background color
+    	 * @param okFG ok builds foreground color
+    	 * @param failedBG failed build background color 
+    	 * @param failedFG failed build foreground color
+    	 * @param brokenBG broken build background color
+    	 * @param brokenFG broken build foreground color 
+    	 * @param otherBG other build background color
+    	 * @param otherFG other build foreground color
+    	 */
 		public static final XFColors DEFAULT = 
 			new XFColors("#7E7EFF", "#FFFFFF", "#FFC130", "#FFFFFF", "#FF0000", "#FFFFFF", "#CCCCCC", "#FFFFFF");
     }
