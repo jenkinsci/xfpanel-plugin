@@ -1091,17 +1091,6 @@ public class XFPanelView extends ListView {
 			return otherFG;
 		}
 		
-    	/**
-    	 * C'tor
-    	 * @param okBG ok builds background color
-    	 * @param okFG ok builds foreground color
-    	 * @param failedBG failed build background color 
-    	 * @param failedFG failed build foreground color
-    	 * @param brokenBG broken build background color
-    	 * @param brokenFG broken build foreground color 
-    	 * @param otherBG other build background color
-    	 * @param otherFG other build foreground color
-    	 */
 		public static final XFColors DEFAULT = 
 			new XFColors("#7E7EFF", "#FFFFFF", "#FFC130", "#FFFFFF", "#FF0000", "#FFFFFF", "#CCCCCC", "#FFFFFF");
     }
