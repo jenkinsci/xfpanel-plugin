@@ -81,22 +81,24 @@
 			<div style="width: 80%; white-space: nowrap; overflow:hidden;  color: ${job.color};" >
 				
 				<!-- Topic bar -->
-				<div style ="font-size: ${jobFont}; position:relative;" class="fadeHiddenText">
-					<img src="${rootURL}/plugin/xfpanel/${job.colorFade}" style="position:absolute; right:0px; top:0px; width:${jobFont}; height:100%;"></img>			
+				<div class="fadeHiddenText" style ="font-size: ${jobFont};">
+					<img class="fadeHiddenTextImg" src="${rootURL}/plugin/xfpanel/${job.colorFade}" style="width:${jobFont};"></img>			
 					<span><u>${job.name}</u></span>
 				</div>
 				
 				<!-- Plain text bar -->
 				<div valign="top" >
 					<j:if test="${job.building == false}">
-						<span style="font-size: ${infoFont};">
+						<div  class="fadeHiddenText" style="font-size: ${infoFont};">
+							<img class="fadeHiddenTextImg" src="${rootURL}/plugin/xfpanel/${job.colorFade}" style="width:${infoFont};"></img>			
 							<st:include page="notBuilding.jelly" />
-						</span>
+						</div>
 					</j:if>
 					<j:if test="${job.building == true}">
-						<span style="font-size: ${buildFont};">
+						<div class="fadeHiddenText" style="font-size: ${buildFont};">
+							<img class="fadeHiddenTextImg" src="${rootURL}/plugin/xfpanel/${job.colorFade}" style="width:${buildFont};"></img>			
 							<st:include page="building.jelly" />
-						</span>
+						</div>
 					</j:if>
 				</div>
 			</div>
