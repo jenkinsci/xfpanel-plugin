@@ -88,6 +88,8 @@ public class XFPanelView extends ListView {
     
     private Boolean replaceNumberOfTestCases = true;
     
+    private Boolean showClaimInfoInUnstable = true;
+    
 	private transient List<XFPanelEntry> entries;
 
 	private transient Map<hudson.model.Queue.Item, Integer> placeInQueue = new HashMap<hudson.model.Queue.Item, Integer>();
@@ -137,6 +139,10 @@ public class XFPanelView extends ListView {
 				else {
 					entryHeight += guiClaimFont;
 				}
+				
+				if ( showClaimInfoInUnstable ){
+					entryHeight += guiClaimFont;
+				}
 			}
 			else if ( BlameState != Blame.NOTATALL ){
 				entryHeight += guiInfoFont;
@@ -148,7 +154,7 @@ public class XFPanelView extends ListView {
 			}
 			
 			entryHeight = Math.max( entryHeight, guiFailFont );
-			entryHeight = Math.max( entryHeight, guiJobFont );
+			entryHeight = Math.max( entryHeight, guiJobFont  );
 			
 			if ( showWarningIcon || showClaimInfo ){
 				entryHeight = Math.max( entryHeight, guiImgHeight );
@@ -209,6 +215,9 @@ public class XFPanelView extends ListView {
     
     public Boolean getShowClaimInfo() {
         return this.showClaimInfo;
+    }
+    public Boolean getShowClaimInfoInUnstable(){
+    	return this.showClaimInfoInUnstable;
     }
     public Boolean getShowWarningIcon(){
     	return this.showWarningIcon;
@@ -372,6 +381,7 @@ public class XFPanelView extends ListView {
         if ( getIsClaimPluginInstalled() ){
         	this.guiClaimFont = asInteger(req, "guiClaimFont");
         	this.showClaimInfo = Boolean.parseBoolean(req.getParameter("showClaimInfo"));
+        	this.showClaimInfoInUnstable = Boolean.parseBoolean(req.getParameter("showClaimInfoInUnstable"));
         	this.replaceResponsibles = Boolean.parseBoolean(req.getParameter("replaceResponsibles"));
         	this.replaceNumberOfTestCases = Boolean.parseBoolean(req.getParameter("replaceNumberOfTestCases"));
         }
@@ -768,14 +778,64 @@ public class XFPanelView extends ListView {
 	        	if (claimAction.isClaimed()) {
 	        		String name = claimAction.getClaimedByName();    
 	        		// String reason = claimAction.getReason();
-	                return name;
+	        		if ( name != null ){
+	        			return name;
+	        		}
 	            }
 	        }
 	        
 	        return "";
 	    }
 	    
+	    public hudson.tasks.junit.TestResult getClaimedTestCases(){
+	        if (Hudson.getInstance().getPlugin("claim") != null) {
+	            Run lastBuild = job.getLastBuild();
+	            if (lastBuild == null) {
+	                return null;
+	            }
+	            List<Action> claimTestActionList = lastBuild.getActions();
+	            List<TestResultAction> results = lastBuild.getActions(TestResultAction.class);
 
+	            if ( results == null || claimTestActionList == null || results.size() == 0) {
+	                return null;
+	            }
+	            return results.get(0).getResult();
+	        }
+	        return null;
+	    }
+	    
+	    public String getClaimInfoByTestCases(){
+	    	hudson.tasks.junit.TestResult testResult = getClaimedTestCases();
+	    	if ( testResult == null ){
+	    		return "";
+	    	}
+	    	
+	    	String claimers = "";
+            for (CaseResult result : testResult.getFailedTests()) {
+                ClaimTestAction claimTestAction = result.getTestAction(ClaimTestAction.class);
+                if (claimTestAction != null) {
+                    if (claimTestAction.isClaimed() == true) {
+                    	String claimer = claimTestAction.getClaimedBy();
+                    	if ( claimer != null && claimer != "" ){
+                    		if ( claimers != "" ){
+                    			claimers += ", ";   
+                    		}
+                    		claimers += claimer;                    	
+                    	}
+                    }
+                }
+            }
+            if (claimers == null || claimers == "" ){
+            	String buildClaimer = "";
+            	buildClaimer = getClaimInfo();
+            	if ( buildClaimer == null || buildClaimer == "" ){
+            		return "";
+            	}
+            	return "Build claimed by: " + buildClaimer;
+            }
+            return "Claimed by: " + claimers;
+	    }
+	    
 	    public int getNumClaimedTests() {
 	        if (Hudson.getInstance().getPlugin("claim") != null) {
 	            Run lastBuild = job.getLastBuild();

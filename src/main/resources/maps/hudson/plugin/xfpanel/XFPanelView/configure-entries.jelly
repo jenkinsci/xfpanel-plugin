@@ -96,6 +96,9 @@
 				<f:entry title="${%Show claim info}" field="showClaimInfo" >
 					<f:checkbox id="xfpanel.showClaimInfo" name="showClaimInfo" checked="${it.showClaimInfo}" value="true"/>
 				</f:entry>	
+				<f:entry title="${%Show claim info in unstable builds}" field="showClaimInfoInUnstable" >
+					<f:checkbox id="xfpanel.showClaimInfoInUnstable" name="showClaimInfoInUnstable" checked="${it.showClaimInfoInUnstable}" value="true"/>
+				</f:entry>	
 				<f:entry title="${%Replace responsibles by claimer}" field="replaceResponsibles">
 					<f:checkbox id="xfpanel.replaceResponsibles" name="replaceResponsibles" checked="${it.replaceResponsibles}" value="true"/>
 				</f:entry>	
@@ -112,6 +115,7 @@
 				<a style="color:orange; font-weight:bold;">INFO: No claim plugin installed</a>
 				<a style="color:gray; font-weight:normal;"> <br/><br/>
 					Show claim info<br/>
+					Show claim info in unstable builds<br/>
 					Replace responsibles by claimer<br/>
 					Replace nr. of failed test cases by nr. of unclaimed test cases<br/>
 					Claim font size in pixels<br/>
