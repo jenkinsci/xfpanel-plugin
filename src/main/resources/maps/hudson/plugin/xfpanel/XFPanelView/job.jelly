@@ -55,7 +55,7 @@
 							
 							<j:if test="${jobClaimed == false}" >
 								${job.getNumberOfTests()}
-								<j:if test="${job.isBuildSuccessfulOrRunning() == false}" >
+								<j:if test="${job.isBuildSuccessful() == false}" >
 									<div style="color: ${failColor}; font-size: ${claimFont}; margin-top: -${claimTopMargin};">
 										#of unclaimed
 									</div>

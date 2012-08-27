@@ -918,7 +918,7 @@ public class XFPanelView extends ListView {
 			return "UNKNOWN";
     	}
 		
-		public boolean isBuildSuccessfulOrRunning(){
+		public boolean isBuildSuccessful(){
 			AbstractBuild build = (AbstractBuild) this.job.getLastBuild();
 			if ( build != null) {
 				String buildStatus = getBuildStatus( build );
