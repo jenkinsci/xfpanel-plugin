@@ -93,7 +93,7 @@
 		<j:choose>
 		
 			<j:when test="${it.IsClaimPluginInstalled == true}">
-				<f:entry title="${%Show claim info}" field="showClaimInfo" >
+				<f:entry title="${%Show claim info in failed builds}" field="showClaimInfo" >
 					<f:checkbox id="xfpanel.showClaimInfo" name="showClaimInfo" checked="${it.showClaimInfo}" value="true"/>
 				</f:entry>	
 				<f:entry title="${%Show claim info in unstable builds}" field="showClaimInfoInUnstable" >
@@ -114,7 +114,7 @@
 			<j:otherwise>
 				<a style="color:orange; font-weight:bold;">INFO: No claim plugin installed</a>
 				<a style="color:gray; font-weight:normal;"> <br/><br/>
-					Show claim info<br/>
+					Show claim info in failed builds<br/>
 					Show claim info in unstable builds<br/>
 					Replace responsibles by claimer<br/>
 					Replace nr. of failed test cases by nr. of unclaimed test cases<br/>
