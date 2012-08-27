@@ -903,31 +903,28 @@ public class XFPanelView extends ListView {
 			return "";
 		}
 		
-		public String getBuildStatus(){
-			Run<?, ?> run = this.job.getLastBuild();
-			if ( run == null ){
+		public String getBuildStatus( AbstractBuild build ){
+			if ( build == null ){
 				return "UNBUILT";
 			}
-
-			if (run instanceof AbstractBuild<?, ?>) {
-				AbstractBuild<?, ?> build = (AbstractBuild<?, ?>) run;
-				if ( build == null ){
-					return "UNBUILT";
-				}
-				if ( build.isBuilding() ){
-					return "BUILDING";
-				}
-				Result result = build.getResult();
-				if ( result != null ){
-					return result.toString();
-				}
+			if ( build.isBuilding() ){
+				build = (AbstractBuild) build.getPreviousBuild();
+				return getBuildStatus( build );
+			}
+			Result result = build.getResult();
+			if ( result != null ){
+				return result.toString();
 			}
 			return "UNKNOWN";
     	}
 		
 		public boolean isBuildSuccessfulOrRunning(){
-			String buildStatus = getBuildStatus();
-			return buildStatus.equals("SUCCESS") || buildStatus.equals("BUILDING");
+			AbstractBuild build = (AbstractBuild) this.job.getLastBuild();
+			if ( build != null) {
+				String buildStatus = getBuildStatus( build );
+				return buildStatus.equals("SUCCESS");
+			}
+			return false;
 		}
 		
 		/**
