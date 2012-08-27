@@ -248,7 +248,9 @@ public class XFPanelView extends ListView {
     	}
     	return false;
     }
-	
+	public Boolean getAutoResizeEntryHeight(){
+		return this.autoResizeEntryHeight;
+	}
     static class selectComparator implements Comparator< XFPanelEntry >
     {
     	private int getPriority( AbstractBuild build )
