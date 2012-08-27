@@ -837,21 +837,10 @@ public class XFPanelView extends ListView {
 	    }
 	    
 	    public int getNumClaimedTests() {
-	        if (Hudson.getInstance().getPlugin("claim") != null) {
-	            Run lastBuild = job.getLastBuild();
-	            if (lastBuild == null) {
-	                return 0;
-	            }
-	            List<Action> claimTestActionList = lastBuild.getActions();
-	            List<TestResultAction> results = lastBuild.getActions(TestResultAction.class);
-
-	            if ( results == null || claimTestActionList == null || results.size() == 0) {
-	                return 0;
-	            }
-
+	    	hudson.tasks.junit.TestResult testResult = getClaimedTestCases();
+	    	
+	        if ( testResult != null) {
 	            int numClaimedTests = 0;
-	            hudson.tasks.junit.TestResult testResult = results.get(0).getResult();
-
 	            for (CaseResult result : testResult.getFailedTests()) {
 	                ClaimTestAction claimTestAction = result.getTestAction(ClaimTestAction.class);
 	                if (claimTestAction != null) {
