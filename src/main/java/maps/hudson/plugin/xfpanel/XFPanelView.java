@@ -795,6 +795,13 @@ public class XFPanelView extends ListView {
 	            if (lastBuild == null) {
 	                return null;
 	            }
+	            // if building check previous status
+	            if ( lastBuild.isBuilding() ){
+	            	lastBuild = (AbstractBuild) lastBuild.getPreviousBuild();
+	            	if ( lastBuild == null ){
+	            		return null;
+	            	}
+	            }
 	            List<Action> claimTestActionList = lastBuild.getActions();
 	            List<TestResultAction> results = lastBuild.getActions(TestResultAction.class);
 
@@ -927,6 +934,14 @@ public class XFPanelView extends ListView {
 			return false;
 		}
 		
+		public boolean isBuildUnstable(){
+			AbstractBuild build = (AbstractBuild) this.job.getLastBuild();
+			if ( build != null) {
+				String buildStatus = getBuildStatus( build );
+				return buildStatus.equals("UNSTABLE");
+			}
+			return false;
+		}
 		/**
 		 * Determines some information of the current job like which colors use, wether it's building or not or broken.
 		 */
