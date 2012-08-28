@@ -59,7 +59,6 @@ public class XFPanelView extends ListView {
 	private Boolean fullHD = false;
 	
 	private Integer guiHeight = 205;
-	private Integer guiImgHeight = 180;
 	private Integer guiJobFont = 80;
 	private Integer guiFailFont = 150;
 	private Integer guiInfoFont = 30;
@@ -149,11 +148,7 @@ public class XFPanelView extends ListView {
 			
 			entryHeight = Math.max( entryHeight, guiFailFont );
 			entryHeight = Math.max( entryHeight, guiJobFont );
-			
-			if ( showWarningIcon || showClaimInfo ){
-				entryHeight = Math.max( entryHeight, guiImgHeight );
-			}
-			
+					
 			if ( showZeroTestCounts && showTimeStamp ){
 				entryHeight = Math.max( entryHeight, guiJobFont + guiInfoFont*3 );
 			}
@@ -164,8 +159,6 @@ public class XFPanelView extends ListView {
 
 		return guiHeight; 
 	}
-
-	public Integer getGuiImgHeight() { return guiImgHeight; }
 
 	public Integer getGuiJobFont() { return guiJobFont; }
 
@@ -355,7 +348,6 @@ public class XFPanelView extends ListView {
 		this.fullHD = Boolean.parseBoolean(req.getParameter("fullHD"));
 		
 		this.guiHeight = asInteger(req, "guiHeight");
-		this.guiImgHeight = asInteger(req, "guiImgHeight");
 		this.guiJobFont = asInteger(req, "guiJobFont");
 		this.guiFailFont = asInteger(req, "guiFailFont");
 		this.guiInfoFont = asInteger(req, "guiInfoFont");
@@ -976,11 +968,7 @@ public class XFPanelView extends ListView {
 		public FormValidation doCheckGuiHeight(@QueryParameter String value) {
 			return isPositiveInteger(value);
 		}
-		
-		public FormValidation doCheckGuiImgHeight(@QueryParameter String value) {
-			return isPositiveInteger(value);
-		}		
-		
+			
 		public FormValidation doCheckGuiJobFont(@QueryParameter String value) {
 			return isPositiveInteger(value);
 		}

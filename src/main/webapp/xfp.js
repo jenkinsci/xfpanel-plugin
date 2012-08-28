@@ -1,5 +1,38 @@
+/**
+ * Applys best fit (fill box keeping aspect ratio) images
+ *
+ * Checks all image tags of imgBestFit class for height/width
+ * and sets CSS for the smaller to 100% and clears the other
+ * keeping aspect-ratio of image
+ *
+ * @return None
+ */
+function checkImgBestFit () {
 
+	var imgList = $$('.imgBestFit');
+	for (var x=0; x<imgList.length; x++)
+	{
+		if (imgList[x].parentElement.offsetWidth < imgList[x].parentElement.offsetHeight)
+		{
+			imgList[x].style.width  = "100%";
+			imgList[x].style.height = "";
+		} else {
+			imgList[x].style.width  = "";
+			imgList[x].style.height = "100%";	
+		}
+	}
+}
 
+/**
+ * Applys fade to all fadeHiddenText classed tags
+ *
+ * checkTextFadeouts iterates through all tags of fadeHiddenText class.
+ * Each is checked if scroll width > visible (overflowed) and if so any
+ * fadeHiddenTextImg class <img> tags under it are made visible.  
+ * Otherwise these img's are hidden (display:none).
+ *
+ * @return None
+ */
 function checkTextFadeouts () {
 
 	var fadersList = $$('.fadeHiddenText');
@@ -10,7 +43,6 @@ function checkTextFadeouts () {
 		var imgList = fadersList[x].select('img.fadeHiddenTextImg');
 		for (var y=0; y<imgList.length; y++)
 		{
-			//alert(imgList[y].src);
 			if (applyFade)
 			{
 				imgList[y].style.display = "";
@@ -21,7 +53,14 @@ function checkTextFadeouts () {
 	}
 }
 
-
+/**
+ * Applys fade to all fadeHiddenText classed tags and sets default CSS
+ *
+ * Default CSS properties are applied to fadeHiddenText and fadeHiddenTextImg
+ * class elements since the plugin doesn't have its own .css style to apply.
+ *
+ * @return None
+ */
 function checkTextFadeoutsInit () {
 
 	var fadersList = $$('.fadeHiddenText');
@@ -44,10 +83,16 @@ function checkTextFadeoutsInit () {
 
 
 Behaviour.addLoadEvent(function(){
+	//Remove side panel from display (since XFP displays as a "full" screen)
 	document.getElementById("side-panel").style.display="none";
 	
+	//Initialize text faders
 	checkTextFadeoutsInit();
 	Event.observe(window, "resize", checkTextFadeouts);
+		
+	//Resize images to fit given blocks
+	checkImgBestFit();
+	Event.observe(window, "resize", checkImgBestFit);
 });
 
 
