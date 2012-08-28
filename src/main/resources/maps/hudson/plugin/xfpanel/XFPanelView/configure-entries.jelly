@@ -134,9 +134,6 @@
 	<f:entry title="${%Entry height in pixels}" field="guiHeight">
 		<f:textbox id="xfpanel.guiHeight" name="guiHeight" />
 	</f:entry>
-	<f:entry title="${%Image height in pixels}" field="guiImgHeight">
-		<f:textbox id="xfpanel.guiImgHeight" name="guiImgHeight"  />
-	</f:entry>
 	<f:entry title="${%Job font size in pixels}" field="guiJobFont">
 		<f:textbox id="xfpanel.guiJobFont" name="guiJobFont"  />
 	</f:entry>
