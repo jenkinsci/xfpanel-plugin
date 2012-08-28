@@ -59,7 +59,6 @@ public class XFPanelView extends ListView {
 	private Boolean fullHD = false;
 	
 	private Integer guiHeight = 205;
-	private Integer guiImgHeight = 180;
 	private Integer guiJobFont = 80;
 	private Integer guiFailFont = 150;
 	private Integer guiInfoFont = 30;
@@ -154,12 +153,8 @@ public class XFPanelView extends ListView {
 			}
 			
 			entryHeight = Math.max( entryHeight, guiFailFont );
-			entryHeight = Math.max( entryHeight, guiJobFont  );
-			
-			if ( showWarningIcon || showClaimInfo ){
-				entryHeight = Math.max( entryHeight, guiImgHeight );
-			}
-			
+			entryHeight = Math.max( entryHeight, guiJobFont );
+					
 			if ( showZeroTestCounts && showTimeStamp ){
 				entryHeight = Math.max( entryHeight, guiJobFont + guiInfoFont*3 );
 			}
@@ -170,8 +165,6 @@ public class XFPanelView extends ListView {
 
 		return guiHeight; 
 	}
-
-	public Integer getGuiImgHeight() { return guiImgHeight; }
 
 	public Integer getGuiJobFont() { return guiJobFont; }
 
@@ -366,7 +359,6 @@ public class XFPanelView extends ListView {
 		this.fullHD = Boolean.parseBoolean(req.getParameter("fullHD"));
 		
 		this.guiHeight = asInteger(req, "guiHeight");
-		this.guiImgHeight = asInteger(req, "guiImgHeight");
 		this.guiJobFont = asInteger(req, "guiJobFont");
 		this.guiFailFont = asInteger(req, "guiFailFont");
 		this.guiInfoFont = asInteger(req, "guiInfoFont");
@@ -440,6 +432,8 @@ public class XFPanelView extends ListView {
     	private String backgroundColor;
     	
     	private String color;
+		
+		private String colorFade = "";
     	
     	private Boolean broken;
     	
@@ -534,6 +528,13 @@ public class XFPanelView extends ListView {
 			return this.color;
 		}
 		
+		/**
+		 * @return fadeout image name for this job
+		 */
+		public String getColorFade() {
+			return this.colorFade;
+		}
+
 		/**
 		 * @return true se o último build está quebrado
 		 */
@@ -952,6 +953,7 @@ public class XFPanelView extends ListView {
 			case BLUE:
 				this.backgroundColor = getColors().getOkBG(); 
 				this.color = colors.getOkFG();
+				this.colorFade = "build-fade-ok.png";
 				this.broken = false;
 				break;
 			case YELLOW_ANIME:
@@ -959,6 +961,7 @@ public class XFPanelView extends ListView {
 			case YELLOW:
 				this.backgroundColor = getColors().getFailedBG(); 
 				this.color = colors.getFailedFG();
+				this.colorFade = "build-fade-fail.png";
 				this.broken = false;
 				break;
 			case RED_ANIME:
@@ -966,6 +969,7 @@ public class XFPanelView extends ListView {
 			case RED:
 				this.backgroundColor = getColors().getBrokenBG(); 
 				this.color = colors.getBrokenFG();
+				this.colorFade = "build-fade-broken.png";
 				this.broken = true;
 				break;
 			case GREY_ANIME:
@@ -974,6 +978,7 @@ public class XFPanelView extends ListView {
 			default:
 				this.backgroundColor = getColors().getOtherBG(); 
 				this.color = colors.getOtherFG();
+				this.colorFade = "build-fade-other.png";
 				this.broken = true;
 			}
 		}
@@ -1022,11 +1027,7 @@ public class XFPanelView extends ListView {
 		public FormValidation doCheckGuiHeight(@QueryParameter String value) {
 			return isPositiveInteger(value);
 		}
-		
-		public FormValidation doCheckGuiImgHeight(@QueryParameter String value) {
-			return isPositiveInteger(value);
-		}		
-		
+			
 		public FormValidation doCheckGuiJobFont(@QueryParameter String value) {
 			return isPositiveInteger(value);
 		}
