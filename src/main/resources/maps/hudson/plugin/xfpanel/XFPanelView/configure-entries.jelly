@@ -93,8 +93,11 @@
 		<j:choose>
 		
 			<j:when test="${it.IsClaimPluginInstalled == true}">
-				<f:entry title="${%Show claim info}" field="showClaimInfo" >
+				<f:entry title="${%Show claim info in failed builds}" field="showClaimInfo" >
 					<f:checkbox id="xfpanel.showClaimInfo" name="showClaimInfo" checked="${it.showClaimInfo}" value="true"/>
+				</f:entry>	
+				<f:entry title="${%Show claim info in unstable builds}" field="showClaimInfoInUnstable" >
+					<f:checkbox id="xfpanel.showClaimInfoInUnstable" name="showClaimInfoInUnstable" checked="${it.showClaimInfoInUnstable}" value="true"/>
 				</f:entry>	
 				<f:entry title="${%Replace responsibles by claimer}" field="replaceResponsibles">
 					<f:checkbox id="xfpanel.replaceResponsibles" name="replaceResponsibles" checked="${it.replaceResponsibles}" value="true"/>
@@ -111,7 +114,8 @@
 			<j:otherwise>
 				<a style="color:orange; font-weight:bold;">INFO: No claim plugin installed</a>
 				<a style="color:gray; font-weight:normal;"> <br/><br/>
-					Show claim info<br/>
+					Show claim info in failed builds<br/>
+					Show claim info in unstable builds<br/>
 					Replace responsibles by claimer<br/>
 					Replace nr. of failed test cases by nr. of unclaimed test cases<br/>
 					Claim font size in pixels<br/>
@@ -125,7 +129,7 @@
 	
 	<td colspan="3" style="font-weight:bold;" >Font sizes <hr /> </td>
 	<f:entry title="${%Automatic resize entry height}" field="autoResizeEntryHeight" >
-		<f:checkbox id="xfpanel.autoResizeEntryHeight" name="autoResizeEntryHeight" checked="${it.autoResizeEntryHeight}" value="true"/>
+		<f:checkbox id="xfpanel.autoResizeEntryHeight" name="autoResizeEntryHeight" checked="${it.AutoResizeEntryHeight}" value="true"/>
 	</f:entry>	
 	<f:entry title="${%Entry height in pixels}" field="guiHeight">
 		<f:textbox id="xfpanel.guiHeight" name="guiHeight" />

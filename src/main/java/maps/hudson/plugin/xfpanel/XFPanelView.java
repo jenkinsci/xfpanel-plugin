@@ -87,6 +87,8 @@ public class XFPanelView extends ListView {
     
     private Boolean replaceNumberOfTestCases = true;
     
+    private Boolean showClaimInfoInUnstable = true;
+    
 	private transient List<XFPanelEntry> entries;
 
 	private transient Map<hudson.model.Queue.Item, Integer> placeInQueue = new HashMap<hudson.model.Queue.Item, Integer>();
@@ -134,6 +136,10 @@ public class XFPanelView extends ListView {
 					}
 				}
 				else {
+					entryHeight += guiClaimFont;
+				}
+				
+				if ( showClaimInfoInUnstable ){
 					entryHeight += guiClaimFont;
 				}
 			}
@@ -203,6 +209,9 @@ public class XFPanelView extends ListView {
     public Boolean getShowClaimInfo() {
         return this.showClaimInfo;
     }
+    public Boolean getShowClaimInfoInUnstable(){
+    	return this.showClaimInfoInUnstable;
+    }
     public Boolean getShowWarningIcon(){
     	return this.showWarningIcon;
     }
@@ -232,7 +241,9 @@ public class XFPanelView extends ListView {
     	}
     	return false;
     }
-	
+	public Boolean getAutoResizeEntryHeight(){
+		return this.autoResizeEntryHeight;
+	}
     static class selectComparator implements Comparator< XFPanelEntry >
     {
     	private int getPriority( AbstractBuild build )
@@ -364,6 +375,7 @@ public class XFPanelView extends ListView {
         if ( getIsClaimPluginInstalled() ){
         	this.guiClaimFont = asInteger(req, "guiClaimFont");
         	this.showClaimInfo = Boolean.parseBoolean(req.getParameter("showClaimInfo"));
+        	this.showClaimInfoInUnstable = Boolean.parseBoolean(req.getParameter("showClaimInfoInUnstable"));
         	this.replaceResponsibles = Boolean.parseBoolean(req.getParameter("replaceResponsibles"));
         	this.replaceNumberOfTestCases = Boolean.parseBoolean(req.getParameter("replaceNumberOfTestCases"));
         }
@@ -769,30 +781,76 @@ public class XFPanelView extends ListView {
 	        	if (claimAction.isClaimed()) {
 	        		String name = claimAction.getClaimedByName();    
 	        		// String reason = claimAction.getReason();
-	                return name;
+	        		if ( name != null ){
+	        			return name;
+	        		}
 	            }
 	        }
 	        
 	        return "";
 	    }
 	    
-
-	    public int getNumClaimedTests() {
+	    public hudson.tasks.junit.TestResult getClaimedTestCases(){
 	        if (Hudson.getInstance().getPlugin("claim") != null) {
 	            Run lastBuild = job.getLastBuild();
 	            if (lastBuild == null) {
-	                return 0;
+	                return null;
+	            }
+	            // if building check previous status
+	            if ( lastBuild.isBuilding() ){
+	            	lastBuild = (AbstractBuild) lastBuild.getPreviousBuild();
+	            	if ( lastBuild == null ){
+	            		return null;
+	            	}
 	            }
 	            List<Action> claimTestActionList = lastBuild.getActions();
 	            List<TestResultAction> results = lastBuild.getActions(TestResultAction.class);
 
 	            if ( results == null || claimTestActionList == null || results.size() == 0) {
-	                return 0;
+	                return null;
 	            }
-
+	            return results.get(0).getResult();
+	        }
+	        return null;
+	    }
+	    
+	    public String getClaimInfoByTestCases(){
+	    	hudson.tasks.junit.TestResult testResult = getClaimedTestCases();
+	    	if ( testResult == null ){
+	    		return "";
+	    	}
+	    	
+	    	String claimers = "";
+            for (CaseResult result : testResult.getFailedTests()) {
+                ClaimTestAction claimTestAction = result.getTestAction(ClaimTestAction.class);
+                if (claimTestAction != null) {
+                    if (claimTestAction.isClaimed() == true) {
+                    	String claimer = claimTestAction.getClaimedBy();
+                    	if ( claimer != null && claimer != "" ){
+                    		if ( claimers != "" ){
+                    			claimers += ", ";   
+                    		}
+                    		claimers += claimer;                    	
+                    	}
+                    }
+                }
+            }
+            if (claimers == null || claimers == "" ){
+            	String buildClaimer = "";
+            	buildClaimer = getClaimInfo();
+            	if ( buildClaimer == null || buildClaimer == "" ){
+            		return "";
+            	}
+            	return "Build claimed by: " + buildClaimer;
+            }
+            return "Claimed by: " + claimers;
+	    }
+	    
+	    public int getNumClaimedTests() {
+	    	hudson.tasks.junit.TestResult testResult = getClaimedTestCases();
+	    	
+	        if ( testResult != null) {
 	            int numClaimedTests = 0;
-	            hudson.tasks.junit.TestResult testResult = results.get(0).getResult();
-
 	            for (CaseResult result : testResult.getFailedTests()) {
 	                ClaimTestAction claimTestAction = result.getTestAction(ClaimTestAction.class);
 	                if (claimTestAction != null) {
@@ -853,37 +911,38 @@ public class XFPanelView extends ListView {
 			return "";
 		}
 		
-		public String getBuildStatus()
-		{
-			Run<?, ?> run = this.job.getLastBuild();
-			if ( run == null ){
+		public String getBuildStatus( AbstractBuild build ){
+			if ( build == null ){
 				return "UNBUILT";
 			}
-
-			if (run instanceof AbstractBuild<?, ?>) {
-				AbstractBuild<?, ?> build = (AbstractBuild<?, ?>) run;
-				if ( build == null ){
-					return "UNBUILT";
-				}
-				
-				Result result = build.getResult();
-	    		if ( result != null ){ 
-		    		Result allResults[] = { Result.SUCCESS, Result.ABORTED, Result.NOT_BUILT, Result.UNSTABLE, Result.FAILURE };
-		    		String resultStr[]  = { "SUCCESS","ABORTED","NOT_BUILT","UNSTABLE","FAILURE"};
-					for (int i=0; i < allResults.length; i++ ){
-						if (result == allResults[i] ){
-							return resultStr[i];
-						}
-					}
-	    		}
+			if ( build.isBuilding() ){
+				build = (AbstractBuild) build.getPreviousBuild();
+				return getBuildStatus( build );
+			}
+			Result result = build.getResult();
+			if ( result != null ){
+				return result.toString();
 			}
 			return "UNKNOWN";
     	}
 		
 		public boolean isBuildSuccessful(){
-			return getBuildStatus().equals("SUCCESS");
+			AbstractBuild build = (AbstractBuild) this.job.getLastBuild();
+			if ( build != null) {
+				String buildStatus = getBuildStatus( build );
+				return buildStatus.equals("SUCCESS");
+			}
+			return false;
 		}
 		
+		public boolean isBuildUnstable(){
+			AbstractBuild build = (AbstractBuild) this.job.getLastBuild();
+			if ( build != null) {
+				String buildStatus = getBuildStatus( build );
+				return buildStatus.equals("UNSTABLE");
+			}
+			return false;
+		}
 		/**
 		 * Determines some information of the current job like which colors use, wether it's building or not or broken.
 		 */

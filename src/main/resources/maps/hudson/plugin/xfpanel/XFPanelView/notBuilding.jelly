@@ -62,7 +62,7 @@
 		</j:if>
     </j:if>
     
-    <!-- successful build, but there may be failed test cases  -->
+    <!-- successful or unstable build  -->
     <j:if test="${job.broken == false}">
     	<div style="width 80%;"  >
 	        <j:if test="${it.showZeroTestCounts == true}">
@@ -92,6 +92,12 @@
 					</j:if>
 				</div>
 			</j:if>
+		</j:if>
+		
+		<j:if test="${it.ShowClaimInfoInUnstable == true}">
+			<div style="color: ${job.color}; font-size: ${claimFont}; overflow: hidden;"  >
+				${job.getClaimInfoByTestCases()}
+			</div>
 		</j:if>
 	</j:if>
 </j:jelly>

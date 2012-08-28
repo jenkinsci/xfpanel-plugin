@@ -37,6 +37,14 @@
 			</tr>
 		</j:forEach>
 	</table>
+
+	<j:if test="${job.isBuildUnstable() == true }">
+		<j:if test="${it.ShowClaimInfoInUnstable == true}">
+			<div style="color: ${job.color}; font-size: ${claimFont}; overflow: hidden;"  >
+				${job.getClaimInfoByTestCases()}
+			</div>
+		</j:if>
+	</j:if>
 </j:jelly>
  
  
