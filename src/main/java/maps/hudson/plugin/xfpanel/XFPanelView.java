@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.HashSet;
 import java.util.Calendar;
 import java.util.Comparator;
@@ -771,6 +772,7 @@ public class XFPanelView extends ListView {
 	     * If the claims plugin is installed, this will get details of the claimed
 	     * build failures.
 	     *
+	     *
 	     * @return details of any claims for the broken build, or null if nobody has
 	     *         claimed this build.
 	     */
@@ -821,16 +823,20 @@ public class XFPanelView extends ListView {
 	    	}
 	    	
 	    	String claimers = "";
+	    	Set<String> claimerNames = new HashSet<String>();
             for (CaseResult result : testResult.getFailedTests()) {
                 ClaimTestAction claimTestAction = result.getTestAction(ClaimTestAction.class);
                 if (claimTestAction != null) {
                     if (claimTestAction.isClaimed() == true) {
                     	String claimer = claimTestAction.getClaimedBy();
                     	if ( claimer != null && claimer != "" ){
-                    		if ( claimers != "" ){
-                    			claimers += ", ";   
-                    		}
-                    		claimers += claimer;                    	
+                    		if ( !claimerNames.contains(claimer) ){
+                    			claimerNames.add(claimer);
+	                    		if ( claimers != "" ){
+	                    			claimers += ", ";   
+	                    		}
+	                    		claimers += claimer;
+	                    	}
                     	}
                     }
                 }
