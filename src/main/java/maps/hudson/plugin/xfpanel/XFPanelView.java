@@ -760,12 +760,23 @@ public class XFPanelView extends ListView {
 	     * @return whether build is claimed or not
 	     */
 	    public boolean isClaimed() {
-	        ClaimBuildAction cba = getClaimAction();
-	        if (cba != null) {
-	            return cba.isClaimed();
-	        }
+	    	boolean result = false;
+	    	if ( getIsClaimPluginInstalled() ){
+		        ClaimBuildAction cba = getClaimAction();
 
-	        return false;
+		        if (cba != null) {
+		        	result = cba.isClaimed();
+		        }
+		        
+		        if (result == false ){
+		        	final int claimedTests = getNumClaimedTests();
+		        	final int totalTests = getFailCount();
+		        	if ( totalTests > 0 && claimedTests == totalTests ){
+		        		result = true;
+		        	}
+		        }
+	    	}
+	        return result;
 	    }
 	    
 	    /**
