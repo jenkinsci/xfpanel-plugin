@@ -93,6 +93,10 @@ Behaviour.addLoadEvent(function(){
 	//Resize images to fit given blocks
 	checkImgBestFit();
 	Event.observe(window, "resize", checkImgBestFit);
+
+    // automatically update page every 10 seconds via AJAX
+    var refreshTime = $$(".conf-refresh-time")[0].innerHTML;
+    new Ajax.PeriodicalUpdater(document.body, window.location.href, {
+        method: 'get', frequency: refreshTime, decay: 2
+    });
 });
-
-

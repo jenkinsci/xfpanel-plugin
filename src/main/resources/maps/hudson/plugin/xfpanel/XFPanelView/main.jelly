@@ -5,7 +5,7 @@
 	xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form"
 	xmlns:i="jelly:fmt">
 	
-	<meta http-equiv="refresh" content="${from.refresh}" />
+    <div style="display: none;" class="conf-refresh-time">${from.refresh}</div>
 
 	<SCRIPT type="text/javascript" src="${rootURL}/plugin/xfpanel/xfp.js" />
 	
