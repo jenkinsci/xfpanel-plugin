@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: org.kohsuke.stapler:json-lib:2.1-rev7">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/kohsuke/stapler/json-lib/2.1-rev7/json-lib-2.1-rev7.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/org/kohsuke/stapler/json-lib/2.1-rev7/json-lib-2.1-rev7-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/kohsuke/stapler/json-lib/2.1-rev7/json-lib-2.1-rev7-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

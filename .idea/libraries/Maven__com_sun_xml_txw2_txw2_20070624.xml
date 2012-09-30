@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: com.sun.xml.txw2:txw2:20070624">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/sun/xml/txw2/txw2/20070624/txw2-20070624.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/com/sun/xml/txw2/txw2/20070624/txw2-20070624-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/sun/xml/txw2/txw2/20070624/txw2-20070624-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
