@@ -4,4 +4,6 @@ target
 .settings
 .project
 
-.idea/workspace.xml
+.idea/*
+*.iml
+*.ipr
