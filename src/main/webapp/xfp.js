@@ -96,7 +96,13 @@ Behaviour.addLoadEvent(function(){
 
     // automatically update page every 10 seconds via AJAX
     var refreshTime = $$(".conf-refresh-time")[0].innerHTML;
-    new Ajax.PeriodicalUpdater("xfdisplay-dashboard", window.location.href + "/headlessdisplay", {
+    var url = window.location.href;
+    var refreshUrl = url + (url.charAt(url.length - 1) == "/" ? "" : "/") + "headlessdisplay";
+    if (url.lastIndexOf("?") >= 0) {
+        refreshUrl = url.substring(0, url.lastIndexOf("?"));
+        refreshUrl = refreshUrl + (refreshUrl.charAt(refreshUrl.length - 1) == "/" ? "" : "/") + "headlessdisplay";
+    }
+    new Ajax.PeriodicalUpdater("xfdisplay-dashboard", refreshUrl, {
         method: 'get', frequency: refreshTime, decay: 2
     });
 });
