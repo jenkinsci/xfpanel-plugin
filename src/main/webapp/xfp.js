@@ -96,7 +96,7 @@ Behaviour.addLoadEvent(function(){
 
     // automatically update page every 10 seconds via AJAX
     var refreshTime = $$(".conf-refresh-time")[0].innerHTML;
-    new Ajax.PeriodicalUpdater(document.body, window.location.href, {
+    new Ajax.PeriodicalUpdater("xfdisplay-dashboard", window.location.href + "/headlessdisplay", {
         method: 'get', frequency: refreshTime, decay: 2
     });
 });
