@@ -99,6 +99,11 @@
 							<st:include page="building.jelly" />
 						</div>
 					</j:if>
+					<j:if test="${it.showBrokenBuildCount == true}">
+						<j:if test="${job.broken == true}">
+						    <div><BLOCKQUOTE><i>${job.numberOfFailedBuilds} failed build(s) since last successful build</i></BLOCKQUOTE></div>
+						</j:if>
+					</j:if>
 				</div>
 			</div>
 		</div>

@@ -59,6 +59,9 @@
 	<f:entry title="${%Revert order}" field="sortDescending">
 		<f:checkbox id="xfpanel.sortDescending" name="sortDescending" checked="${it.sortDescending}" value="true"/>
 	</f:entry>	
+	<f:entry title="${%Show number of failed builds since last successful build}" field="showBrokenBuildCount">
+		<f:checkbox id="xfpanel.showBrokenBuildCount" name="showBrokenBuildCount" checked="${it.showBrokenBuildCount}" value="true"/>
+	</f:entry>
 	<f:entry title="${%Hide successful builds}" field="hideSuccessfulBuilds">
 		<f:checkbox id="xfpanel.hideSuccessfulBuilds" name="hideSuccessfulBuilds" checked="${it.hideSuccessfulBuilds}" value="true"/>
 	</f:entry>	

@@ -67,6 +67,8 @@ public class XFPanelView extends ListView {
 	private Integer guiClaimFont = 30;
 	
     private Boolean showDescription = false;
+   
+    private Boolean showBrokenBuildCount = false;
 
     private Boolean showZeroTestCounts = true;
 
@@ -188,6 +190,13 @@ public class XFPanelView extends ListView {
         }
         return this.showDescription;
     }
+    
+	public Boolean getShowBrokenBuildCount() {
+		if (this.showBrokenBuildCount == null) {
+			this.showBrokenBuildCount = false;
+		}
+		return this.showBrokenBuildCount;
+	}
 	
     public Boolean getSortDescending() {
         if (this.sortDescending == null) {
@@ -372,6 +381,7 @@ public class XFPanelView extends ListView {
         this.maxAmmountOfResponsibles = asInteger(req,"maxAmmountOfResponsibles");
         this.autoResizeEntryHeight = Boolean.parseBoolean(req.getParameter("autoResizeEntryHeight"));
         this.hideSuccessfulBuilds = Boolean.parseBoolean(req.getParameter("hideSuccessfulBuilds"));
+        this.showBrokenBuildCount = Boolean.parseBoolean(req.getParameter("showBrokenBuildCount"));
         
         if ( getIsClaimPluginInstalled() ){
         	this.guiClaimFont = asInteger(req, "guiClaimFont");
@@ -624,6 +634,23 @@ public class XFPanelView extends ListView {
 
 		public String getLastCompletedBuildTimestampString() {
 			return job.getLastCompletedBuild().getTimestampString();
+		}
+		
+		/**
+		 * @return number of failed builds since last successful build
+		 * @author Niko Mahle
+		 */ 
+		public int getNumberOfFailedBuilds() {
+			int lastSuccessfulNumber;
+			lastSuccessfulNumber = this.job.getLastSuccessfulBuild()
+					.getNumber();
+			System.out.println("lastSuccessfulNumber: "+lastSuccessfulNumber);
+			int lastNumber = this.job.getLastCompletedBuild().getNumber();
+			System.out.println("lastNumber: "+lastNumber);
+			int numberOfFailedBuilds = lastNumber - lastSuccessfulNumber;
+			System.out.println("numberOfFailedBuilds: "+numberOfFailedBuilds);
+			return numberOfFailedBuilds;
+
 		}
 
 		/**
