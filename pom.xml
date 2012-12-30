@@ -40,6 +40,11 @@
       <name>James Hood</name>
       <email>hoodja@gmail.com</email>
     </developer>
+     <developer>
+      <id>nikom</id>
+      <name>Niko Mahle</name>
+      <email>niko.mahle@googlemail.com</email>
+    </developer>
   </developers>
 
   <repositories>
