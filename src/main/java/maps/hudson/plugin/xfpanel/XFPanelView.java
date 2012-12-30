@@ -92,6 +92,8 @@ public class XFPanelView extends ListView {
     
     private Boolean showClaimInfoInUnstable = true;
     
+	private Boolean showGreenColor = false;
+    
 	private transient List<XFPanelEntry> entries;
 
 	private transient Map<hudson.model.Queue.Item, Integer> placeInQueue = new HashMap<hudson.model.Queue.Item, Integer>();
@@ -119,10 +121,19 @@ public class XFPanelView extends ListView {
 	 * @return the colors to use
 	 */
 	public XFColors getColors() {
-		if (this.colors == null) {
-			this.colors = XFColors.DEFAULT;
+		
+		if (getShowGreenColor() == true) {
+			if (this.colors == null) {
+				this.colors = XFColors.GREEN;
+			}
+			return this.colors;
 		}
-		return this.colors;
+		else {
+			if (this.colors == null) {
+				this.colors = XFColors.DEFAULT;
+			}
+			return this.colors;
+		}
 	}
 	
 	public Integer getGuiHeight() { 
@@ -193,9 +204,16 @@ public class XFPanelView extends ListView {
     
 	public Boolean getShowBrokenBuildCount() {
 		if (this.showBrokenBuildCount == null) {
-			this.showBrokenBuildCount = false;
+			this.showBrokenBuildCount = Boolean.FALSE;;
 		}
 		return this.showBrokenBuildCount;
+	}
+	
+	public Boolean getShowGreenColor(){
+		if (this.showGreenColor == null) {
+			this.showGreenColor = Boolean.FALSE;
+		}
+		return this.showGreenColor;
 	}
 	
     public Boolean getSortDescending() {
@@ -382,6 +400,7 @@ public class XFPanelView extends ListView {
         this.autoResizeEntryHeight = Boolean.parseBoolean(req.getParameter("autoResizeEntryHeight"));
         this.hideSuccessfulBuilds = Boolean.parseBoolean(req.getParameter("hideSuccessfulBuilds"));
         this.showBrokenBuildCount = Boolean.parseBoolean(req.getParameter("showBrokenBuildCount"));
+        this.showGreenColor = Boolean.parseBoolean(req.getParameter("showGreenColor"));
         
         if ( getIsClaimPluginInstalled() ){
         	this.guiClaimFont = asInteger(req, "guiClaimFont");
@@ -1181,7 +1200,18 @@ public class XFPanelView extends ListView {
 		
 		public static final XFColors DEFAULT = 
 			new XFColors("#7E7EFF", "#FFFFFF", "#FFC130", "#FFFFFF", "#FF0000", "#FFFFFF", "#CCCCCC", "#FFFFFF");
+		
+		/*
+		 * okBG , okFG , failedBG , failedFG , brokenBG , brokenFG , otherBG ,
+		 * otherFG FFFFFF = white FF0000 = red 7E7EFF = blue FFC130 = yellow
+		 * 215E21 = huntergreen #267526 = another green
+		 */
+		public static final XFColors GREEN = new XFColors("#267526", "#FFFFFF",
+				"#FFC130", "#FFFFFF", "#FF0000", "#FFFFFF", "#CCCCCC",
+				"#FFFFFF");
+		
     }
+    
 
 }
  
