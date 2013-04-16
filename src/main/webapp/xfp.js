@@ -103,6 +103,6 @@ Behaviour.addLoadEvent(function(){
         refreshUrl = refreshUrl + (refreshUrl.charAt(refreshUrl.length - 1) == "/" ? "" : "/") + "headlessdisplay";
     }
     new Ajax.PeriodicalUpdater("xfdisplay-dashboard", refreshUrl, {
-        method: 'get', frequency: refreshTime, decay: 2
+        method: 'get', frequency: refreshTime
     });
 });
