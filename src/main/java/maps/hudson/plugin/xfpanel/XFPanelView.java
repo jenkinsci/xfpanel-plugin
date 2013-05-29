@@ -1004,7 +1004,7 @@ public class XFPanelView extends ListView {
 			return false;
 		}
 		/**
-		 * Determines some information of the current job like which colors use, wether it's building or not or broken.
+		 * Determines some information of the current job like which colors use, whether it's building or not or broken.
 		 */
 		private void findStatus() {
 			switch (this.job.getIconColor()) {
@@ -1034,6 +1034,7 @@ public class XFPanelView extends ListView {
 				break;
 			case GREY_ANIME:
 			case DISABLED_ANIME:
+			case ABORTED_ANIME:
 				this.building = true;
 			default:
 				this.backgroundColor = getColors().getOtherBG(); 
