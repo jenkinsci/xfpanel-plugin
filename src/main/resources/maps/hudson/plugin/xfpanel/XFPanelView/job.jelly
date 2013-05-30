@@ -81,7 +81,6 @@
 				
 				<!-- Topic bar -->
 				<div class="fadeHiddenText" style ="font-size: ${jobFont};">
-					<img class="fadeHiddenTextImg" src="${rootURL}/plugin/xfpanel/${job.colorFade}" style="width:${jobFont};"></img>			
 					<span><u>${job.name}</u></span>
 				</div>
 				
@@ -89,13 +88,11 @@
 				<div valign="top" >
 					<j:if test="${job.building == false}">
 						<div  class="fadeHiddenText" style="font-size: ${infoFont};">
-							<img class="fadeHiddenTextImg" src="${rootURL}/plugin/xfpanel/${job.colorFade}" style="width:${infoFont};"></img>			
 							<st:include page="notBuilding.jelly" />
 						</div>
 					</j:if>
 					<j:if test="${job.building == true}">
 						<div class="fadeHiddenText" style="font-size: ${buildFont};">
-							<img class="fadeHiddenTextImg" src="${rootURL}/plugin/xfpanel/${job.colorFade}" style="width:${buildFont};"></img>			
 							<st:include page="building.jelly" />
 						</div>
 					</j:if>
