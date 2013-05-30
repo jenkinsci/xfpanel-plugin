@@ -104,7 +104,7 @@ public class XFPanelView extends ListView {
 	private Integer maxAmmountOfResponsibles = 1;
 	
 	private String responsiblesTopic = "Responsible(s): ";
-	
+	private String lastBuildTimePreFix = "last successful: ";
 	
 	/**
 	 * C'tor<meta  />
@@ -373,6 +373,9 @@ public class XFPanelView extends ListView {
 		return this.numColumns;
 	}
 	
+	public String getLastBuildTimePreFix(){
+		return (this.lastBuildTimePreFix != null) ? this.lastBuildTimePreFix : "";
+	}
 	
 	/**
 	 * Gets from the request the configuration parameters
@@ -422,6 +425,7 @@ public class XFPanelView extends ListView {
         	this.enableAutomaticSort = false;
         }
         
+        this.lastBuildTimePreFix = req.getParameter("lastBuildTimePreFix");
         this.responsiblesTopic = req.getParameter("responsiblesTopic");
         	
         String blameType = req.getParameter("responsibles");

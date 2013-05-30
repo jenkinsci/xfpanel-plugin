@@ -43,6 +43,9 @@
 	<f:entry title="${%Refresh time in seconds}" field="refresh">
 		<f:textbox id="xfpanel.refresh" name="refresh"/>
 	</f:entry>
+	<f:entry title="${%Text before time of the last build}" field="lastBuildTimePreFix">
+		<f:textbox id="lastBuildTimePreFix" name="lastBuildTimePreFix"/>
+	</f:entry>
 	
 	<td colspan="3" style="font-weight:bold;" >Sort options <hr /> </td>
 	<f:entry title="${%Sort order}" field="sort" >

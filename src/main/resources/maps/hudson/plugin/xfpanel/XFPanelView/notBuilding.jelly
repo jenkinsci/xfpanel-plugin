@@ -56,7 +56,7 @@
 			
 			<!-- unbuilt build -->
 			<j:if test="${unBuilt == true}">
-				Last Successful: -
+				${it.lastBuildTimePreFix} -
 			</j:if>
 			</div>
 		</j:if>
@@ -86,7 +86,7 @@
 		<j:if test="${job.queued != true}">
 			<j:if test="${it.showTimeStamp == true}">
 				<div style="width 80%; "  >
-					Last Successful: ${job.completionTimestampString} 
+					${it.lastBuildTimePreFix} ${job.completionTimestampString} 
 					<j:if test="${!job.completionTimestampString.equals('')}">
 						ago
 					</j:if>
