@@ -47,8 +47,14 @@
 	<td colspan="3" style="font-weight:bold;" >Sort options <hr /> </td>
 	<f:entry title="${%Sort order}" field="sort" >
 		<j:choose>
-			<j:set var="automatic" value="checked" />
+		    <j:when test="${it.AutomaticSortState == true}">
+		        <j:set var="automatic" value="checked" />
+		    </j:when>
+		    <j:otherwise>
+		        <j:set var="default" value="checked" />
+		    </j:otherwise>
 		</j:choose>
+
 		<input id="sort-default" type="radio" name="sort" value="sort.default" checked="${default}" /> 
 		<label for="sort-default"> alphabetical </label> <br/>
 		
@@ -73,9 +79,20 @@
 	<td colspan="3" style="font-weight:bold;" >Build responsibles <hr /> </td>
 	<f:entry title="${%Show Responsibles}" field="responsibles">
 		<j:choose>
-			<j:set var="notAtAll" value="checked" />
+		    <j:when test="${it.BlameState==1}">
+		        <j:set var="onlyLastFailedBuild" value="checked" />
+		    </j:when>
+		    <j:when test="${it.BlameState==2}">
+		        <j:set var="onlyFirstFailedBuild" value="checked" />
+		    </j:when>
+		    <j:when test="${it.BlameState==3}">
+		        <j:set var="everyInvolved" value="checked" />
+		    </j:when>
+		    <j:otherwise>
+		        <j:set var="notAtAll" value="checked" />
+		    </j:otherwise>
 		</j:choose>
-	
+
 		<input id="responsibles-notAtAll" type="radio" name="responsibles" value="blame.notAtAll" checked="${notAtAll}" /> 
 		<label for="responsibles-notAtAll"> not at all </label>  <br/>
 	

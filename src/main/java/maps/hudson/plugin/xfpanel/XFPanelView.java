@@ -246,7 +246,12 @@ public class XFPanelView extends ListView {
     public Boolean getReplaceResponsibles(){
     	return this.replaceResponsibles;
     }
-    
+    public Integer getBlameState(){
+        return BlameState.ordinal();
+    }
+    public Boolean getAutomaticSortState(){
+        return enableAutomaticSort; // is automatic sort enabled or not
+    }
     public String getResponsiblesTopic(){
     	if (this.responsiblesTopic == null){
     		return "";
