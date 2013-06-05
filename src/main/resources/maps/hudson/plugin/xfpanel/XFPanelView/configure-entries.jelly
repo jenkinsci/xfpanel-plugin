@@ -5,16 +5,71 @@
 	xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form"
 	xmlns:i="jelly:fmt">
 	
-	
+	<SCRIPT type="text/javascript" src="${rootURL}/plugin/xfpanel/sorting.js" />
 	<td colspan="3" style="font-weight:bold;" >Job options <hr /> </td>
-	<f:entry title="${%Jobs}">
-		<j:forEach var="job" items="${app.items}">
-			<f:checkbox id="xfpanel-jobs-${job.name}" name="${job.name}" checked="${it.contains(job)}" />
-			<label for="xfpanel-jobs-${job.name}"> ${job.name} </label>
-			<br />
-		</j:forEach>
-	</f:entry>
+
+
+    <!-- Borrowed from -->
+    <style type="text/css">
+		/* Undo some styles from the master stylesheet */
+		.checklist li { background: none; padding-left: 0; }
+		
+		/* CSS for checklists */
+		.checklist {
+			border: 1px solid #ccc;
+			list-style: none;
+			height: 20em;
+			overflow: auto;
+			width: 20em;
+		}
+		.checklist, .checklist li { margin: 0; padding: 0; list-style: none;}
+		.checklist label { padding: 0px 0.0em 0 0; text-indent: -25px; display: inline;}
+		* html .checklist label { height: 1%; }
+	</style>
 	
+	<f:entry title="Jobs">
+	<table>
+		<tr>
+			<td colspan="2">
+				Available jobs
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<ul class="checklist" id="allJobs">
+					<!-- Get a priority sorted list of jobs -->
+					<j:invoke method="getPrioritySortedJobs" var="prioJobs" on="${it}">
+					    <j:arg type="java.util.Collection" value="${app.items}" />
+					</j:invoke>
+					
+					<j:forEach var="job" varStatus="status" items="${prioJobs}">
+						<li id="${job.name}">
+						
+						<!-- Hack to fix the checkbox checked bug -->
+						<j:if test="${it.contains(job)}">
+							<input name="${job.name}" type="checkbox" 
+								checked="true"
+								 onClick="UpdateJobOptions('${job.name}');"/>
+						</j:if>
+						<j:if test="${!it.contains(job)}">
+							<input name="${job.name}" type="checkbox" 
+								onClick="UpdateJobOptions('${job.name}');"/>
+						</j:if>
+						
+						<label onClick="UpdateJobOptions('${job.name}');">${job.name}</label>
+						<input type="hidden" id="${job.name}_priority" name="${job.name}_priority" value="${status.index}" />
+						</li>
+					</j:forEach>
+				</ul>
+			</td>
+			<td>
+				<button type="button" onClick="ChangePriority('up');">Up</button>
+				<button type="button" onClick="ChangePriority('down');">Down</button>
+			</td>
+		</tr>
+	</table>
+	</f:entry>
+
 	<f:optionalBlock name="useincluderegex"
 		title="${%Use a regular expression instead}" checked="${it.includeRegex != null}"
 		help="/help/view-config/includeregex.html">
@@ -53,6 +108,9 @@
 		    <j:when test="${it.AutomaticSortState == true}">
 		        <j:set var="automatic" value="checked" />
 		    </j:when>
+		    <j:when test="${it.ManualSortState == true}">
+		        <j:set var="manual" value="checked" />
+		    </j:when>
 		    <j:otherwise>
 		        <j:set var="default" value="checked" />
 		    </j:otherwise>
@@ -60,6 +118,9 @@
 
 		<input id="sort-default" type="radio" name="sort" value="sort.default" checked="${default}" /> 
 		<label for="sort-default"> alphabetical </label> <br/>
+		
+		<input id="sort-manual" type="radio" name="sort" value="sort.manual" checked="${manual}" /> 
+		<label for="sort-manual"> same order as in the job-selection list</label><br/>
 		
 		<input id="sort-automatic" type="radio" name="sort" value="sort.automatic" checked="${automatic}" /> 
 		<label for="sort-automatic"> failed first, secondary order by build time stamp </label>
