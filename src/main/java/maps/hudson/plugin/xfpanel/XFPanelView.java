@@ -2,6 +2,7 @@ package maps.hudson.plugin.xfpanel;
 
 import hudson.Extension;
 import hudson.Functions;
+import hudson.Util;
 import hudson.model.Result;
 import hudson.model.ViewDescriptor;
 import hudson.model.AbstractBuild;
@@ -42,7 +43,6 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
-
 /**
  * Represents an eXtreme Feedback Panel View.
  * 
@@ -78,6 +78,8 @@ public class XFPanelView extends ListView {
     
     private Boolean enableAutomaticSort = true;
     
+    private Boolean manualSort = false;
+    
     private Boolean showClaimInfo = true;
     
     private Boolean showWarningIcon = false;
@@ -97,7 +99,8 @@ public class XFPanelView extends ListView {
 	private transient List<XFPanelEntry> entries;
 
 	private transient Map<hudson.model.Queue.Item, Integer> placeInQueue = new HashMap<hudson.model.Queue.Item, Integer>();
-
+	private Map<String, Integer> priorityPerJob = new HashMap<String, Integer>();
+	
 	protected enum Blame { NOTATALL, ONLYLASTFAILEDBUILD, ONLYFIRSTFAILEDBUILD, EVERYINVOLVED }
 	protected Blame BlameState = Blame.EVERYINVOLVED;
 
@@ -252,6 +255,9 @@ public class XFPanelView extends ListView {
     public Boolean getAutomaticSortState(){
         return enableAutomaticSort; // is automatic sort enabled or not
     }
+    public Boolean getManualSortState(){
+        return manualSort; // is manual sort enabled or not
+    }
     public String getResponsiblesTopic(){
     	if (this.responsiblesTopic == null){
     		return "";
@@ -327,8 +333,7 @@ public class XFPanelView extends ListView {
 			}
 			return result;
 		}
-    }
-	
+	}
 	/**
 	 * @param jobs the selected jobs
 	 * @return the jobs list wrapped into {@link XFPanelEntry} instances
@@ -339,16 +344,23 @@ public class XFPanelView extends ListView {
         for(hudson.model.Queue.Item i : Hudson.getInstance().getQueue().getItems()) {
             placeInQueue.put(i, j++);
         }
-
     	if (jobs != null) {
 			List<XFPanelEntry> ents = new ArrayList<XFPanelEntry>();
-			for (Job<?, ?> job : jobs) {
-				ents.add(new XFPanelEntry(job));
+			if ( manualSort == true ){
+				Collection<Job<?,?>> sortedJobs = getPrioritySortedJobs(jobs);
+				for (Job<?, ?> job : sortedJobs) {
+					ents.add(new XFPanelEntry(job));
+				}
 			}
-			
+			else{
+				for (Job<?, ?> job : jobs) {
+					ents.add(new XFPanelEntry(job));
+				}
+			}
 			if ( enableAutomaticSort == true ){
 				Collections.sort(ents, new selectComparator() );
 			}
+			
             if (this.getSortDescending()) {
                 Collections.reverse(ents);
             }
@@ -359,6 +371,41 @@ public class XFPanelView extends ListView {
         return Collections.emptyList();
     }
     
+    public Collection<Job<?, ?>> getPrioritySortedJobs(Collection<Job<?, ?>> jobs) {
+        if (jobs != null) {
+            List<Job<?, ?>> sortedJobs = new ArrayList<Job<?, ?>>();
+            Map<Integer, Job<?, ?>> jobMap = new HashMap<Integer, Job<?, ?>>();
+
+            int priority = 0, added = 0;
+            if (priorityPerJob != null) {
+
+                // Set elements
+                for (Job<?, ?> job: jobs) {
+                    if (priorityPerJob.containsKey(job.getName())) {
+                        priority = priorityPerJob.get(job.getName());
+                        jobMap.put(priority, job);
+                        added++;
+                    } else {
+                        jobMap.put(added, job);
+                        priority++;
+                        added++;
+                    }
+                }
+                sortedJobs = new ArrayList<Job<?,?>>(jobMap.values());
+
+            }
+            else {
+                for (Job<?, ?> job: jobs) {
+                    sortedJobs.add(priority, job);
+                    priority++;
+                    added++;
+                }
+            }
+            return sortedJobs;
+        }
+        return Collections.emptyList();
+    }
+
     /**
 	 * @return the refresh time in seconds
 	 */
@@ -418,11 +465,36 @@ public class XFPanelView extends ListView {
         	this.replaceNumberOfTestCases = Boolean.parseBoolean(req.getParameter("replaceNumberOfTestCases"));
         }
         
+        if (this.priorityPerJob == null){
+            this.priorityPerJob = new HashMap<String, Integer>();
+        }
+        // Addition: Get priority of every job
+        int priority = 0;
+        this.priorityPerJob.clear();
+        for (hudson.model.Item i : Hudson.getInstance().getItems()) {
+            String itemName = i.getName();
+            String paramName = itemName + "_priority";
+            
+            try {
+                String priorityStr = req.getParameter(paramName);
+                priority = Integer.parseInt(priorityStr);
+            }
+            catch (NumberFormatException e) {priority++;}
+            catch (Exception e) {priority++;}
+
+            this.priorityPerJob.put(itemName, priority);
+            
+        }
+        
         String SortType = req.getParameter("sort");
-        if ( SortType != null && SortType.equals("sort.automatic") ){
-        	this.enableAutomaticSort = true;}
-        else{
+        if ( SortType != null ){
         	this.enableAutomaticSort = false;
+        	this.manualSort = false;
+	        if (SortType.equals("sort.automatic") ){
+	        	this.enableAutomaticSort = true;
+	        }else if (SortType.equals("sort.manual")){
+	        	this.manualSort = true;
+	        }
         }
         
         this.lastBuildTimePreFix = req.getParameter("lastBuildTimePreFix");
