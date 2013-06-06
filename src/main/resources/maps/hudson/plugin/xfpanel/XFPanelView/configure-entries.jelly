@@ -27,7 +27,7 @@
 		* html .checklist label { height: 1%; }
 	</style>
 	
-	<f:entry title="Jobs">
+	<f:entry title="Jobs" field="jobSelection">
 	<table>
 		<tr>
 			<td colspan="2">
@@ -55,7 +55,7 @@
 							<input name="${job.name}" type="checkbox" 
 								onClick="UpdateJobOptions('${job.name}');"/>
 						</j:if>
-						
+
 						<label onClick="UpdateJobOptions('${job.name}');">${job.name}</label>
 						<input type="hidden" id="${job.name}_priority" name="${job.name}_priority" value="${status.index}" />
 						</li>
