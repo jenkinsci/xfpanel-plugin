@@ -6,6 +6,7 @@
 	xmlns:i="jelly:fmt">
 	
 	<SCRIPT type="text/javascript" src="${rootURL}/plugin/xfpanel/sorting.js" />
+	<script type="text/javascript" src="${rootURL}/plugin/xfpanel/jscolor/jscolor.js"></script>
 	<td colspan="3" style="font-weight:bold;" >Job options <hr /> </td>
 
 
@@ -234,4 +235,23 @@
 	<f:entry title="${%Build font size in pixels}" field="guiBuildFont">
 		<f:textbox id="xfpanel.guiBuildFont" name="guiBuildFont" />
 	</f:entry>
+	
+	
+	<td colspan="3" style="font-weight:bold;" >Build colors <hr /> </td>
+	<f:entry title="${%Successful build color}" field="successfulBuildColor" >
+		<input class="color" name="successfulBuildColor" value="${it.successfulBuildColor}"/>
+	</f:entry>
+		<f:entry title="${%Unstable build color}" field="unstableBuildColor" >
+		<input class="color" name="unstableBuildColor" value="${it.unstableBuildColor}"/>
+	</f:entry>
+		<f:entry title="${%Broken build color}" field="brokenBuildColor" >
+		<input class="color" name="brokenBuildColor" value="${it.brokenBuildColor}"/>
+	</f:entry>
+	<f:entry title="${%Other builds colors}" field="otherBuildColor" >
+		<input class="color" name="otherBuildColor" value="${it.otherBuildColor}"/>
+	</f:entry>
+	<f:entry title="${%Font color}" field="buildFontColor" >
+		<input class="color" name="buildFontColor" value="${it.buildFontColor}"/>
+	</f:entry>
+	
 </j:jelly>

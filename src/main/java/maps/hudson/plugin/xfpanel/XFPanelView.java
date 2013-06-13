@@ -109,6 +109,12 @@ public class XFPanelView extends ListView {
 	private String responsiblesTopic = "Responsible(s): ";
 	private String lastBuildTimePreFix = "last successful: ";
 	
+	private String successfulBuildColor = "#7E7EFF";
+	private String unstableBuildColor = "#FFC130";
+	private String brokenBuildColor = "#FF0000";
+	private String otherBuildColor = "#CCCCCC";
+	private String buildFontColor = "#FFFFFF";
+	
 	/**
 	 * C'tor<meta  />
 	 * @param name the name of the view
@@ -124,7 +130,7 @@ public class XFPanelView extends ListView {
 	 * @return the colors to use
 	 */
 	public XFColors getColors() {
-		
+
 		if (getShowGreenColor() == true) {
 			if (this.colors == null) {
 				this.colors = XFColors.GREEN;
@@ -132,8 +138,13 @@ public class XFPanelView extends ListView {
 			return this.colors;
 		}
 		else {
+			XFColors obj = new XFColors(successfulBuildColor, buildFontColor, unstableBuildColor, buildFontColor, brokenBuildColor, buildFontColor, otherBuildColor, buildFontColor);
 			if (this.colors == null) {
-				this.colors = XFColors.DEFAULT;
+				this.colors = obj;
+				//this.colors = XFColors.DEFAULT;
+			}
+			else if (this.colors.equals(obj) == false){
+				this.colors = obj;
 			}
 			return this.colors;
 		}
@@ -266,6 +277,21 @@ public class XFPanelView extends ListView {
     }
     public Boolean getHideSuccessfulBuilds(){
     	return this.hideSuccessfulBuilds;
+    }
+    public String getSuccessfulBuildColor(){
+    	return (successfulBuildColor.length() == 7) ? successfulBuildColor.substring(1) : "7E7EFF";
+    }
+    public String getUnstableBuildColor(){
+    	return (unstableBuildColor.length() == 7) ? unstableBuildColor.substring(1) : "FFC130";
+    }
+    public String getBrokenBuildColor(){
+    	return (brokenBuildColor.length() == 7) ? brokenBuildColor.substring(1) : "FF0000";
+    }
+    public String getOtherBuildColor(){
+    	return (otherBuildColor.length() == 7) ? otherBuildColor.substring(1) : "CCCCCC";
+    }
+    public String getBuildFontColor(){
+    	return (buildFontColor.length() == 7) ? buildFontColor.substring(1) : "FFFFFF";
     }
     /**
      * Return true, if claim-plugin is installed
@@ -464,6 +490,17 @@ public class XFPanelView extends ListView {
         	this.replaceResponsibles = Boolean.parseBoolean(req.getParameter("replaceResponsibles"));
         	this.replaceNumberOfTestCases = Boolean.parseBoolean(req.getParameter("replaceNumberOfTestCases"));
         }
+        
+        this.successfulBuildColor = "#" + req.getParameter("successfulBuildColor");
+        this.unstableBuildColor = "#" + req.getParameter("unstableBuildColor");
+        this.brokenBuildColor = "#" + req.getParameter("brokenBuildColor");
+        this.otherBuildColor = "#" + req.getParameter("otherBuildColor");
+        this.buildFontColor = "#" + req.getParameter("buildFontColor");
+        System.out.println("successfulBuildColor: "+this.successfulBuildColor );
+        System.out.println("unstableBuildColor: "+this.unstableBuildColor );
+        System.out.println("brokenBuildColor: "+this.brokenBuildColor );
+        System.out.println("otherBuildColor: "+this.otherBuildColor );
+        System.out.println("buildFontColor: "+this.buildFontColor );
         
         if (this.priorityPerJob == null){
             this.priorityPerJob = new HashMap<String, Integer>();
@@ -1281,15 +1318,13 @@ public class XFPanelView extends ListView {
 		public static final XFColors DEFAULT = 
 			new XFColors("#7E7EFF", "#FFFFFF", "#FFC130", "#FFFFFF", "#FF0000", "#FFFFFF", "#CCCCCC", "#FFFFFF");
 		
-		/*
-		 * okBG , okFG , failedBG , failedFG , brokenBG , brokenFG , otherBG ,
+		 /* okBG , okFG , failedBG , failedFG , brokenBG , brokenFG , otherBG ,
 		 * otherFG FFFFFF = white FF0000 = red 7E7EFF = blue FFC130 = yellow
 		 * 215E21 = huntergreen #267526 = another green
 		 */
 		public static final XFColors GREEN = new XFColors("#267526", "#FFFFFF",
 				"#FFC130", "#FFFFFF", "#FF0000", "#FFFFFF", "#CCCCCC",
 				"#FFFFFF");
-		
     }
     
 
