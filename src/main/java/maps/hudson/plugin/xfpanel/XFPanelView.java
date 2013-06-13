@@ -94,8 +94,6 @@ public class XFPanelView extends ListView {
     
     private Boolean showClaimInfoInUnstable = true;
     
-	private Boolean showGreenColor = false;
-    
 	private transient List<XFPanelEntry> entries;
 
 	private transient Map<hudson.model.Queue.Item, Integer> placeInQueue = new HashMap<hudson.model.Queue.Item, Integer>();
@@ -130,24 +128,11 @@ public class XFPanelView extends ListView {
 	 * @return the colors to use
 	 */
 	public XFColors getColors() {
-
-		if (getShowGreenColor() == true) {
-			if (this.colors == null) {
-				this.colors = XFColors.GREEN;
-			}
-			return this.colors;
+		XFColors obj = new XFColors(successfulBuildColor, buildFontColor, unstableBuildColor, buildFontColor, brokenBuildColor, buildFontColor, otherBuildColor, buildFontColor);
+		if (this.colors == null || this.colors.equals(obj) == false) {
+			this.colors = obj;
 		}
-		else {
-			XFColors obj = new XFColors(successfulBuildColor, buildFontColor, unstableBuildColor, buildFontColor, brokenBuildColor, buildFontColor, otherBuildColor, buildFontColor);
-			if (this.colors == null) {
-				this.colors = obj;
-				//this.colors = XFColors.DEFAULT;
-			}
-			else if (this.colors.equals(obj) == false){
-				this.colors = obj;
-			}
-			return this.colors;
-		}
+		return this.colors;
 	}
 	
 	public Integer getGuiHeight() { 
@@ -223,12 +208,6 @@ public class XFPanelView extends ListView {
 		return this.showBrokenBuildCount;
 	}
 	
-	public Boolean getShowGreenColor(){
-		if (this.showGreenColor == null) {
-			this.showGreenColor = Boolean.FALSE;
-		}
-		return this.showGreenColor;
-	}
 	
     public Boolean getSortDescending() {
         if (this.sortDescending == null) {
@@ -481,7 +460,6 @@ public class XFPanelView extends ListView {
         this.autoResizeEntryHeight = Boolean.parseBoolean(req.getParameter("autoResizeEntryHeight"));
         this.hideSuccessfulBuilds = Boolean.parseBoolean(req.getParameter("hideSuccessfulBuilds"));
         this.showBrokenBuildCount = Boolean.parseBoolean(req.getParameter("showBrokenBuildCount"));
-        this.showGreenColor = Boolean.parseBoolean(req.getParameter("showGreenColor"));
         
         if ( getIsClaimPluginInstalled() ){
         	this.guiClaimFont = asInteger(req, "guiClaimFont");
@@ -496,11 +474,6 @@ public class XFPanelView extends ListView {
         this.brokenBuildColor = "#" + req.getParameter("brokenBuildColor");
         this.otherBuildColor = "#" + req.getParameter("otherBuildColor");
         this.buildFontColor = "#" + req.getParameter("buildFontColor");
-        System.out.println("successfulBuildColor: "+this.successfulBuildColor );
-        System.out.println("unstableBuildColor: "+this.unstableBuildColor );
-        System.out.println("brokenBuildColor: "+this.brokenBuildColor );
-        System.out.println("otherBuildColor: "+this.otherBuildColor );
-        System.out.println("buildFontColor: "+this.buildFontColor );
         
         if (this.priorityPerJob == null){
             this.priorityPerJob = new HashMap<String, Integer>();
@@ -1322,9 +1295,6 @@ public class XFPanelView extends ListView {
 		 * otherFG FFFFFF = white FF0000 = red 7E7EFF = blue FFC130 = yellow
 		 * 215E21 = huntergreen #267526 = another green
 		 */
-		public static final XFColors GREEN = new XFColors("#267526", "#FFFFFF",
-				"#FFC130", "#FFFFFF", "#FF0000", "#FFFFFF", "#CCCCCC",
-				"#FFFFFF");
     }
     
 

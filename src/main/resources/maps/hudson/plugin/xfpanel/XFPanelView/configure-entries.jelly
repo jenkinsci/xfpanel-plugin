@@ -136,10 +136,6 @@
 	<f:entry title="${%Hide successful builds}" field="hideSuccessfulBuilds">
 		<f:checkbox id="xfpanel.hideSuccessfulBuilds" name="hideSuccessfulBuilds" checked="${it.hideSuccessfulBuilds}" value="true"/>
 	</f:entry>	
-	<f:entry title="${%Use green color for successful build}" field="showGreenColor">
-		<f:checkbox id="xfpanel.showGreenColor" name="showGreenColor" checked="${it.showGreenColor}" value="true" />
-	</f:entry>
-	
 	
 	<td colspan="3" style="font-weight:bold;" >Build responsibles <hr /> </td>
 	<f:entry title="${%Show Responsibles}" field="responsibles">
