@@ -483,17 +483,25 @@ public class XFPanelView extends ListView {
         this.priorityPerJob.clear();
         for (hudson.model.Item i : Hudson.getInstance().getItems()) {
             String itemName = i.getName();
-            String paramName = itemName + "_priority";
-            
-            try {
-                String priorityStr = req.getParameter(paramName);
-                priority = Integer.parseInt(priorityStr);
+            if (itemName != null){
+	            String paramName = itemName + "_priority";
+	            
+	            try {
+	                String priorityStr = req.getParameter(paramName);
+	                if (priorityStr != null){
+	                	priority = Integer.parseInt(priorityStr);
+	                }
+	                else{
+	                	priority = 0;
+	                }
+	            }
+	            catch (NumberFormatException e) {priority++;}
+	            catch (Exception e) {priority++;}
+	
+	            this.priorityPerJob.put(itemName, priority);
+            }else{
+            	throw new FormException("Couldn't read jobs from the config file. Generate a new config-file: jenkins_job_url/configure", "");
             }
-            catch (NumberFormatException e) {priority++;}
-            catch (Exception e) {priority++;}
-
-            this.priorityPerJob.put(itemName, priority);
-            
         }
         
         String SortType = req.getParameter("sort");
