@@ -64,7 +64,7 @@ public class XFPanelView extends ListView {
 	private Integer guiFailFont = 150;
 	private Integer guiInfoFont = 30;
 	private Integer guiBuildFont = 30;
-	private Integer guiClaimFont = 30;
+	private Integer guiClaimFont = 20;
 	
     private Boolean showDescription = false;
    

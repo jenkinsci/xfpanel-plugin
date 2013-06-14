@@ -6,7 +6,7 @@
 	<j:set var="infoFont" value="${from.guiInfoFont}px" />
 	<j:set var="buildFont" value="${from.guiBuildFont}px" />
 	<j:set var="claimFont" value="${from.guiClaimFont}px" />
-	<j:set var="claimTopMargin" value="${from.guiFailFont*0.3}px" />
+	<j:set var="claimTopMargin" value="${from.guiFailFont*0.2}px" />
 
 	<!-- JOB div -->
 	<a href="${job.url}" style="font-style:normal; font-weight:bold;">
