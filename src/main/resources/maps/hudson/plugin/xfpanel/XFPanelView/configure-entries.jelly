@@ -8,8 +8,9 @@
 	<SCRIPT type="text/javascript" src="${rootURL}/plugin/xfpanel/sorting.js" />
 	<script type="text/javascript" src="${rootURL}/plugin/xfpanel/jscolor/jscolor.js"></script>
 	<td colspan="3" style="font-weight:bold;" >Job options <hr /> </td>
+	
 
-
+	
     <!-- Borrowed from -->
     <style type="text/css">
 		/* Undo some styles from the master stylesheet */
@@ -57,7 +58,9 @@
 								onClick="UpdateJobOptions('${job.name}');"/>
 						</j:if>
 
-						<label onClick="UpdateJobOptions('${job.name}');">${job.name}</label>
+						<label onClick="UpdateJobOptions('${job.name}');">
+							<span id="selectedJob-${job.name}">${job.name}</span>
+						</label>
 						<input type="hidden" id="${job.name}_priority" name="${job.name}_priority" value="${status.index}" />
 						</li>
 					</j:forEach>
@@ -70,7 +73,7 @@
 		</tr>
 	</table>
 	</f:entry>
-
+	
 	<f:optionalBlock name="useincluderegex"
 		title="${%Use a regular expression instead}" checked="${it.includeRegex != null}"
 		help="/help/view-config/includeregex.html">

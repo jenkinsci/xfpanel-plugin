@@ -1,3 +1,4 @@
+
 function swapNodes(item1,item2)
 {
     var itemtmp = item1.cloneNode(1);
@@ -31,29 +32,38 @@ function ChangePriority(direction) {
 }
 
 function UpdateJobOptions(currentElement) {
-    
     selectedElement = currentElement;
+
     var elem = document.getElementById('allJobs');
     var x = elem.childNodes;
-
+	
     var i=0;
     while(true) {
         if (x.length > i) {
             var optName = x[i].id + "_options";
             var optElem = document.getElementById(optName);
-            optElem.style.visibility = 'hidden';
-            
+			if (optElem != null){ 
+            	optElem.style.visibility = 'hidden';
+            }
+			if (x[i].id != null){
+				document.getElementById("selectedJob-"+x[i].id).innerHTML = x[i].id; 
+			}
             i++;
         }
         else {
             break;
         }
-    }          
-    var optName = currentElement + "_options";
-    
+    }    
+
+	if (selectedElement != null){
+		document.getElementById("selectedJob-"+selectedElement).innerHTML = "<b>"+selectedElement+"</b>"; 
+	}
+
+    var optName = currentElement + "_options";    
     var optElem = document.getElementById(optName);
-    optElem.style.visibility = 'visible';
-    
+	if (optElem!=null){
+    	optElem.style.visibility = 'visible';
+	}
 }
 
 
