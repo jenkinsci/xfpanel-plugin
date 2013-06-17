@@ -12,7 +12,7 @@
   <artifactId>xfpanel</artifactId>
   <packaging>hpi</packaging>
   <name>eXtreme Feedback Panel</name>
-  <version>1.2.2-SNAPSHOT</version>
+  <version>1.2.2</version>
   <description>Provides an eXtreme Feedback Panel for Hudson. Thanks to Mark Howard and his work on the Radiator View Plugin from which this was based.</description>
   <url>https://wiki.jenkins-ci.org/display/JENKINS/eXtreme+Feedback+Panel+Plugin</url>
 
