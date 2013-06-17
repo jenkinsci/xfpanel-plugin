@@ -9,6 +9,13 @@
 		<j:when test="${empty(items)}">
 			<st:include page="noJob.jelly" />
 		</j:when>
+		<j:when test="${it.priorityPerJob == false}">
+			<b>Priority jobs error:</b><br/>
+			Configuration file is corrupted or no longer valid! <br/>
+			Notice that jobs structure have changed between versions 1.2.0 and 1.2.1<br/>
+			<br/>
+			Fix view by generating a new config-file: current_view's_url/configure<br/>
+		</j:when>
 		<j:otherwise>
 			<div class="dashboard"
 				style="left: 0px; top: 34px; position: absolute; height: 100%; z-index: 9999; width: 100%; background-color: white; text-align: center;">
@@ -16,7 +23,6 @@
 				<j:invoke var="jobs" on="${from}" method="sort">
 					<j:arg type="java.util.Collection" value="${items}" />
 				</j:invoke>
-
 				<j:choose>
 					<j:when test="${from.numColumns == 1}">
 						<j:set var="width" value="99%" />

@@ -21,7 +21,6 @@ import hudson.tasks.junit.CaseResult;
 import hudson.tasks.junit.TestResultAction;
 import hudson.model.Action;
 
-
 import java.io.IOException;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -257,20 +256,29 @@ public class XFPanelView extends ListView {
     public Boolean getHideSuccessfulBuilds(){
     	return this.hideSuccessfulBuilds;
     }
+    private String validateColor( String current, String defaultColor){
+    	if ( current != null && current.length() == 7 && current.startsWith("#")){
+    		return current.substring(1);
+    	}
+    	return defaultColor;
+    }
     public String getSuccessfulBuildColor(){
-    	return (successfulBuildColor.length() == 7) ? successfulBuildColor.substring(1) : "7E7EFF";
+    	return validateColor( successfulBuildColor, "7E7EFF");
     }
     public String getUnstableBuildColor(){
-    	return (unstableBuildColor.length() == 7) ? unstableBuildColor.substring(1) : "FFC130";
+    	return validateColor( unstableBuildColor, "FFC130");
     }
     public String getBrokenBuildColor(){
-    	return (brokenBuildColor.length() == 7) ? brokenBuildColor.substring(1) : "FF0000";
+    	return validateColor( brokenBuildColor, "FF0000");
     }
     public String getOtherBuildColor(){
-    	return (otherBuildColor.length() == 7) ? otherBuildColor.substring(1) : "CCCCCC";
+    	return validateColor( otherBuildColor, "CCCCCC");
     }
     public String getBuildFontColor(){
-    	return (buildFontColor.length() == 7) ? buildFontColor.substring(1) : "FFFFFF";
+    	return validateColor( buildFontColor, "FFFFFF");
+    }
+    public Boolean getPriorityPerJob(){
+    	return priorityPerJob != null;
     }
     /**
      * Return true, if claim-plugin is installed
@@ -372,7 +380,7 @@ public class XFPanelView extends ListView {
 
 			this.entries = ents;
     		return this.entries;
-    	} 
+    	}
         return Collections.emptyList();
     }
     
@@ -1055,7 +1063,7 @@ public class XFPanelView extends ListView {
 					return "#00FF00";
 				}
 			}
-			return "#FFFFFF";
+			return "#" + getBuildFontColor();
 		}
 		
 		/**
