@@ -1,16 +1,15 @@
 <!-- 
 	Thanks to Mark Howard and his work on the Radiator View Plugin from which this was based.
  -->
+
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define"
 	xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form"
 	xmlns:i="jelly:fmt">
 
-    <div style="display: none;" class="conf-refresh-time">${from.refresh}</div>
-
+	<div style="display: none;" class="conf-refresh-time">${from.refresh}</div>
 	<SCRIPT type="text/javascript" src="${rootURL}/plugin/xfpanel/xfp.js" />
 
-    <div id="xfdisplay-dashboard">
-        <st:include page="maindisplay.jelly" />
-    </div>
-
+	<div id="xfdisplay-dashboard">
+		<st:include page="maindisplay.jelly" />
+	</div>
 </j:jelly>

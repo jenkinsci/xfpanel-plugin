@@ -11,8 +11,8 @@
 	
 
 	
-    <!-- Borrowed from -->
-    <style type="text/css">
+	<!-- Borrowed from -->
+	<style type="text/css">
 		/* Undo some styles from the master stylesheet */
 		.checklist li { background: none; padding-left: 0; }
 		
@@ -28,7 +28,7 @@
 		.checklist label { padding: 0px 0.0em 0 0; text-indent: -25px; display: inline;}
 		* html .checklist label { height: 1%; }
 	</style>
-	
+
 	<f:entry title="Jobs" field="jobSelection">
 	<table>
 		<tr>
@@ -43,10 +43,10 @@
 					<j:invoke method="getPrioritySortedJobs" var="prioJobs" on="${it}">
 					    <j:arg type="java.util.Collection" value="${app.items}" />
 					</j:invoke>
-					
+
 					<j:forEach var="job" varStatus="status" items="${prioJobs}">
 						<li id="${job.name}">
-						
+
 						<!-- Hack to fix the checkbox checked bug -->
 						<j:if test="${it.contains(job)}">
 							<input name="${job.name}" type="checkbox" 
@@ -73,7 +73,7 @@
 		</tr>
 	</table>
 	</f:entry>
-	
+
 	<f:optionalBlock name="useincluderegex"
 		title="${%Use a regular expression instead}" checked="${it.includeRegex != null}"
 		help="/help/view-config/includeregex.html">
@@ -94,7 +94,7 @@
 	<f:entry title="${%Show warning icon}" field="showWarningIcon">
 		<f:checkbox id="xfpanel.showWarningIcon" name="showWarningIcon" checked="${it.showWarningIcon}" value="true"/>
 	</f:entry>
-	
+
 	<td colspan="3" style="font-weight:bold;" >General options <hr /> </td>
 	<f:entry title="${%Number of columns}" field="numColumns">
 		<f:textbox id="xfpanel.numColumns" name="numColumns"/>
@@ -105,70 +105,70 @@
 	<f:entry title="${%Text before time of the last build}" field="lastBuildTimePreFix">
 		<f:textbox id="lastBuildTimePreFix" name="lastBuildTimePreFix"/>
 	</f:entry>
-	
+
 	<td colspan="3" style="font-weight:bold;" >Sort options <hr /> </td>
 	<f:entry title="${%Sort order}" field="sort" >
 		<j:choose>
-		    <j:when test="${it.AutomaticSortState == true}">
-		        <j:set var="automatic" value="checked" />
-		    </j:when>
-		    <j:when test="${it.ManualSortState == true}">
-		        <j:set var="manual" value="checked" />
-		    </j:when>
-		    <j:otherwise>
-		        <j:set var="default" value="checked" />
-		    </j:otherwise>
+			<j:when test="${it.AutomaticSortState == true}">
+				<j:set var="automatic" value="checked" />
+			</j:when>
+			<j:when test="${it.ManualSortState == true}">
+				<j:set var="manual" value="checked" />
+			</j:when>
+			<j:otherwise>
+				<j:set var="default" value="checked" />
+			</j:otherwise>
 		</j:choose>
 
-		<input id="sort-default" type="radio" name="sort" value="sort.default" checked="${default}" /> 
+		<input id="sort-default" type="radio" name="sort" value="sort.default" checked="${default}" />
 		<label for="sort-default"> alphabetical </label> <br/>
-		
-		<input id="sort-manual" type="radio" name="sort" value="sort.manual" checked="${manual}" /> 
+
+		<input id="sort-manual" type="radio" name="sort" value="sort.manual" checked="${manual}" />
 		<label for="sort-manual"> same order as in the job-selection list</label><br/>
-		
-		<input id="sort-automatic" type="radio" name="sort" value="sort.automatic" checked="${automatic}" /> 
+
+		<input id="sort-automatic" type="radio" name="sort" value="sort.automatic" checked="${automatic}" />
 		<label for="sort-automatic"> failed first, secondary order by build time stamp </label>
 	</f:entry>
 
 	<f:entry title="${%Revert order}" field="sortDescending">
 		<f:checkbox id="xfpanel.sortDescending" name="sortDescending" checked="${it.sortDescending}" value="true"/>
-	</f:entry>	
+	</f:entry>
 	<f:entry title="${%Show number of failed builds since last successful build}" field="showBrokenBuildCount">
 		<f:checkbox id="xfpanel.showBrokenBuildCount" name="showBrokenBuildCount" checked="${it.showBrokenBuildCount}" value="true"/>
 	</f:entry>
 	<f:entry title="${%Hide successful builds}" field="hideSuccessfulBuilds">
 		<f:checkbox id="xfpanel.hideSuccessfulBuilds" name="hideSuccessfulBuilds" checked="${it.hideSuccessfulBuilds}" value="true"/>
-	</f:entry>	
+	</f:entry>
 	
 	<td colspan="3" style="font-weight:bold;" >Build responsibles <hr /> </td>
 	<f:entry title="${%Show Responsibles}" field="responsibles">
 		<j:choose>
-		    <j:when test="${it.BlameState==1}">
-		        <j:set var="onlyLastFailedBuild" value="checked" />
-		    </j:when>
-		    <j:when test="${it.BlameState==2}">
-		        <j:set var="onlyFirstFailedBuild" value="checked" />
-		    </j:when>
-		    <j:when test="${it.BlameState==3}">
-		        <j:set var="everyInvolved" value="checked" />
-		    </j:when>
-		    <j:otherwise>
-		        <j:set var="notAtAll" value="checked" />
-		    </j:otherwise>
+			<j:when test="${it.BlameState==1}">
+				<j:set var="onlyLastFailedBuild" value="checked" />
+			</j:when>
+			<j:when test="${it.BlameState==2}">
+				<j:set var="onlyFirstFailedBuild" value="checked" />
+			</j:when>
+			<j:when test="${it.BlameState==3}">
+				<j:set var="everyInvolved" value="checked" />
+			</j:when>
+			<j:otherwise>
+				<j:set var="notAtAll" value="checked" />
+			</j:otherwise>
 		</j:choose>
 
 		<input id="responsibles-notAtAll" type="radio" name="responsibles" value="blame.notAtAll" checked="${notAtAll}" /> 
 		<label for="responsibles-notAtAll"> not at all </label>  <br/>
-	
+
 		<input id="responsibles-onlyLastFailedBuild" type="radio" name="responsibles" value="blame.onlyLastFailedBuild" checked="${onlyLastFailedBuild}"/>
 		<label for="responsibles-onlyLastFailedBuild"> from the most recent failed build </label>  <br/>
-		
+
 		<input id="responsibles-onlyFirstFailedBuild" type="radio" name="responsibles" value="blame.onlyFirstFailedBuild" checked="${onlyFirstFailedBuild}"/>
 		<label for="responsibles-onlyFirstFailedBuild"> from the first failed build </label> <br/>
-	
+
 		<input id="responsibles-everyInvolved" type="radio" name="responsibles" value="blame.everyInvolved" checked="${everyInvolved}"/>
 		<label for="responsibles-everyInvolved"> every committer since the last successful build</label>  <br/>
-		
+
 		<f:entry title="${%Max nr. of responsibles to show}" field="maxAmmountOfResponsibles" >
 			<f:textbox id="maxAmmountOfResponsibles" name="maxAmmountOfResponsibles" />
 		</f:entry>
@@ -176,10 +176,10 @@
 			<f:textbox id="responsiblesTopic" name="responsiblesTopic" />
 		</f:entry>
 	</f:entry>
-	
+
 	<td colspan="3" style="font-weight:bold;" >Claim plugin support <hr /> 
 		<j:choose>
-		
+
 			<j:when test="${it.IsClaimPluginInstalled == true}">
 				<f:entry title="${%Show claimers in failed builds}" field="showClaimInfo" >
 					<f:checkbox id="xfpanel.showClaimInfo" name="showClaimInfo" checked="${it.showClaimInfo}" value="true"/>
@@ -198,7 +198,7 @@
 					<f:textbox id="xfpanel.guiClaimFont" name="guiClaimFont" />
 				</f:entry>
 			</j:when>
-			
+
 			<j:otherwise>
 				<a style="color:orange; font-weight:bold;">INFO: No claim plugin installed</a>
 				<a style="color:gray; font-weight:normal;"> <br/><br/>
@@ -211,14 +211,14 @@
 			</j:otherwise>
 		</j:choose>
 	</td>
-	
+
 	<!-- between every <hr/> tag must be at least one <entry> tag -->
 	<f:entry></f:entry>
-	
+
 	<td colspan="3" style="font-weight:bold;" >Font sizes <hr /> </td>
 	<f:entry title="${%Automatic resize entry height}" field="autoResizeEntryHeight" >
 		<f:checkbox id="xfpanel.autoResizeEntryHeight" name="autoResizeEntryHeight" checked="${it.AutoResizeEntryHeight}" value="true"/>
-	</f:entry>	
+	</f:entry>
 	<f:entry title="${%Entry height in pixels}" field="guiHeight">
 		<f:textbox id="xfpanel.guiHeight" name="guiHeight" />
 	</f:entry>
@@ -234,8 +234,8 @@
 	<f:entry title="${%Build font size in pixels}" field="guiBuildFont">
 		<f:textbox id="xfpanel.guiBuildFont" name="guiBuildFont" />
 	</f:entry>
-	
-	
+
+
 	<td colspan="3" style="font-weight:bold;" >Build colors <hr /> </td>
 	<f:entry title="${%Successful build color}" field="successfulBuildColor" >
 		<input class="color" name="successfulBuildColor" value="${it.successfulBuildColor}"/>
@@ -252,5 +252,5 @@
 	<f:entry title="${%Font color}" field="buildFontColor" >
 		<input class="color" name="buildFontColor" value="${it.buildFontColor}"/>
 	</f:entry>
-	
+
 </j:jelly>

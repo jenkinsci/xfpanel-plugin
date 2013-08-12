@@ -3,11 +3,11 @@
 	xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form"
 	xmlns:i="jelly:fmt">
 
-    <l:ajax>
-        <j:set var="items" value="${it.items}" />
-        <div style="display: none">root url: ${rootURL}</div>
+	<l:ajax>
+		<j:set var="items" value="${it.items}" />
+		<div style="display: none">root url: ${rootURL}</div>
 
-        <st:include page="maindisplay.jelly" />
-    </l:ajax>
+		<st:include page="maindisplay.jelly" />
+	</l:ajax>
 
 </j:jelly>
