@@ -7,8 +7,8 @@
 	
 	<SCRIPT type="text/javascript" src="${rootURL}/plugin/xfpanel/sorting.js" />
 	<script type="text/javascript" src="${rootURL}/plugin/xfpanel/jscolor/jscolor.js"></script>
-	<td colspan="3" style="font-weight:bold;" >Job options <hr /> </td>
-	
+
+  <f:section title="${%Job options}">
 
 	
 	<!-- Borrowed from -->
@@ -105,8 +105,9 @@
 	<f:entry title="${%Text before time of the last build}" field="lastBuildTimePreFix">
 		<f:textbox id="lastBuildTimePreFix" name="lastBuildTimePreFix"/>
 	</f:entry>
+  </f:section>
 
-	<td colspan="3" style="font-weight:bold;" >Sort options <hr /> </td>
+  <f:section title="${%Sort options}">
 	<f:entry title="${%Sort order}" field="sort" >
 		<j:choose>
 			<j:when test="${it.AutomaticSortState == true}">
@@ -139,8 +140,9 @@
 	<f:entry title="${%Hide successful builds}" field="hideSuccessfulBuilds">
 		<f:checkbox id="xfpanel.hideSuccessfulBuilds" name="hideSuccessfulBuilds" checked="${it.hideSuccessfulBuilds}" value="true"/>
 	</f:entry>
+  </f:section>
 	
-	<td colspan="3" style="font-weight:bold;" >Build responsibles <hr /> </td>
+  <f:section title="${%Build responsibles}">
 	<f:entry title="${%Show Responsibles}" field="responsibles">
 		<j:choose>
 			<j:when test="${it.BlameState==1}">
@@ -176,8 +178,9 @@
 			<f:textbox id="responsiblesTopic" name="responsiblesTopic" />
 		</f:entry>
 	</f:entry>
+  </f:section>
 
-	<td colspan="3" style="font-weight:bold;" >Claim plugin support <hr /> 
+  <f:section title="${%Claim plugin support}">
 		<j:choose>
 
 			<j:when test="${it.IsClaimPluginInstalled == true}">
@@ -210,12 +213,9 @@
 				</a>
 			</j:otherwise>
 		</j:choose>
-	</td>
+  </f:section>
 
-	<!-- between every <hr/> tag must be at least one <entry> tag -->
-	<f:entry></f:entry>
-
-	<td colspan="3" style="font-weight:bold;" >Font sizes <hr /> </td>
+  <f:section title="${%Font sizes}">
 	<f:entry title="${%Automatic resize entry height}" field="autoResizeEntryHeight" >
 		<f:checkbox id="xfpanel.autoResizeEntryHeight" name="autoResizeEntryHeight" checked="${it.AutoResizeEntryHeight}" value="true"/>
 	</f:entry>
@@ -234,9 +234,10 @@
 	<f:entry title="${%Build font size in pixels}" field="guiBuildFont">
 		<f:textbox id="xfpanel.guiBuildFont" name="guiBuildFont" />
 	</f:entry>
+  </f:section>
 
 
-	<td colspan="3" style="font-weight:bold;" >Build colors <hr /> </td>
+  <f:section title="${%Build colors}">
 	<f:entry title="${%Successful build color}" field="successfulBuildColor" >
 		<input class="color" name="successfulBuildColor" value="${it.successfulBuildColor}"/>
 	</f:entry>
@@ -252,5 +253,6 @@
 	<f:entry title="${%Font color}" field="buildFontColor" >
 		<input class="color" name="buildFontColor" value="${it.buildFontColor}"/>
 	</f:entry>
+  </f:section>
 
 </j:jelly>
