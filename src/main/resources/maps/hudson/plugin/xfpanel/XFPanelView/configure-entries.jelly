@@ -94,6 +94,17 @@
 	<f:entry title="${%Show warning icon}" field="showWarningIcon">
 		<f:checkbox id="xfpanel.showWarningIcon" name="showWarningIcon" checked="${it.showWarningIcon}" value="true"/>
 	</f:entry>
+
+	<j:if test="${it.hasJobFilterExtensions()}">
+		<j:invokeStatic var="allJobFilters" className="hudson.views.ViewJobFilter" method="all"/>
+		<f:block>
+			<f:hetero-list name="jobFilters" hasHeader="true"
+				descriptors="${allJobFilters}"
+				items="${it.jobFilters}"
+				addCaption="${%Add Job Filter}" />
+		</f:block>
+	</j:if>
+
   </f:section>
 
   <f:section title="${%General options}">
