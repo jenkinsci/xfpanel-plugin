@@ -94,8 +94,9 @@
 	<f:entry title="${%Show warning icon}" field="showWarningIcon">
 		<f:checkbox id="xfpanel.showWarningIcon" name="showWarningIcon" checked="${it.showWarningIcon}" value="true"/>
 	</f:entry>
+  </f:section>
 
-	<td colspan="3" style="font-weight:bold;" >General options <hr /> </td>
+  <f:section title="${%General options}">
 	<f:entry title="${%Number of columns}" field="numColumns">
 		<f:textbox id="xfpanel.numColumns" name="numColumns"/>
 	</f:entry>
