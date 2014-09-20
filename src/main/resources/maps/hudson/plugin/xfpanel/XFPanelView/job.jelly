@@ -9,7 +9,7 @@
 	<j:set var="claimTopMargin" value="${from.guiFailFont*0.2}px" />
 
 	<!-- JOB div -->
-	<a href="${job.url}" style="font-style:normal; font-weight:bold;">
+	<a href="${rootURL}/${job.url}" style="font-style:normal; font-weight:bold;">
 		<div align="center" style="margin: 4px; background-color:${job.backgroundColor}; -moz-border-radius:10px; width:${width}; height:${height}; float: ${float}" tooltip="${job.name}">
 			<j:set var="failColor" value="#00FF00" />
 			<j:if test="${job.failCount > 0}">
