@@ -15,6 +15,11 @@ import hudson.tasks.junit.CaseResult;
 import hudson.tasks.junit.TestResultAction;
 import hudson.tasks.test.AbstractTestResultAction;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -22,6 +27,11 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang.StringUtils;
 
 import maps.hudson.plugin.xfpanel.XFPanelView;
 
@@ -65,7 +75,7 @@ public final class XFPanelEntry extends XFPanelView {
      * @return the job's name
      */
     public String getName() {
-        String label = job.getDisplayName().toUpperCase();
+        String label = job.getDisplayName(); //upercase removed pooja
         if (getShowDescription() == true && !job.getDescription().isEmpty()) {
             label += ": " + job.getDescription();
         }
@@ -172,8 +182,147 @@ public final class XFPanelEntry extends XFPanelView {
      */
     public String getUrl() {
         return this.job.getUrl() + "lastBuild";
+        
+    }
+    
+    /**
+     * @return the URL for the last build
+     * @throws IOException 
+     *//*  didnt work get build parameters
+    public String getBuildparam() {
+		return "1. lastBuild/parameters=" + this.job.getUrl() + "lastBuild"
+				+ "parameters" + "2. getACL()=" + this.job.getACL()
+				+ "3. getProperty('env')="+this.job.getProperty("env")
+		        + "4. getProperties.get('env')="+this.job.getProperties().get("env")
+		        + "5. getPermalinks().get('env')"+this.job.getPermalinks().get("env")
+		        + "6. getAbsoluteUrl="+this.job.getAbsoluteUrl()
+		        + "7. getBuildStatusUrl="+this.job.getBuildStatusUrl()
+		        + "8. getDescription="+this.job.getDescription()
+		        + "9. getAllProperties.get(1)="+this.job.getAllProperties().get(1)
+		        + "10. getLastBuild.no="+this.job.getLastBuild().getNumber();
+    }
+    
+    public int getLastStableBuildNo() {
+		return this.job.getLastStableBuild().getNumber();
+    }
+    
+    public String getEnvfrompermalinks() {
+		return this.job.getPermalinks().get("env").toString();
+		      
+    }*/
+    
+   
+   public String getEnv() throws IOException {
+		String pageUrl = this.job.getAbsoluteUrl()+"/lastBuild"+"/parameters/";   //getUrl() wont work because Pagesource doesnt work on partial url
+		if(StringUtils.isEmpty(pageUrl))
+			return "in getAbEnv, null/empty pageUrl";
+		String pageSource = getPageSource(pageUrl);
+		if(StringUtils.isEmpty(pageSource))
+			return "in getAbEnv, null/empty pageSource";
+		String regExEnv = "<td class=\"setting-name\">env<\\/td>[\\s\\S]*?value=\"([\\s\\S]*?)\"";
+		String env = getStringAfterPattern(pageSource, regExEnv, 1);
+		
+		return env;
+
+	}
+   
+  
+   
+   /*** Pooja -- start **/
+   
+   public String getCurrentTag(){
+	   String pageUrl = this.job.getAbsoluteUrl()+"/lastBuild"+"/parameters/";   //getUrl() wont work because Pagesource doesnt work on partial url
+	   if(StringUtils.isEmpty(pageUrl))
+		   return "in curent tag, null/empty pageUrl";
+	   String pageSource;
+	   String tag;
+	   try {
+		   pageSource = getPageSource(pageUrl);
+
+		   if(StringUtils.isEmpty(pageSource))
+			   return "in curent tag, null/empty pageSource";
+		   String regExEnv = "<td class=\"setting-name\">tagtotest<\\/td>[\\s\\S]*?value=\"([\\s\\S]*?)\"";
+		   tag = getStringAfterPattern(pageSource, regExEnv, 1);
+
+		   return tag;
+	   } catch (Exception e) {
+		   // TODO Auto-generated catch block
+		   tag= e.getMessage();
+	   }
+	return tag;
+ }
+
+	public String getLastSucceedNo(){
+		return String.valueOf(this.job.getLastStableBuild().getNumber());
+		
+	}
+	
+	public String getLastSucceedTag() throws IOException {
+		int lastSuccessfulNo = this.job.getLastStableBuild().getNumber();
+		if(lastSuccessfulNo<=0)
+			return "no successful build";
+		
+			String pageUrl = this.job.getAbsoluteUrl()+ "/"
+					+ this.job.getLastStableBuild().getNumber()
+					+ "/parameters/";
+			String pageSource = getPageSource(pageUrl);
+			String regExTag = "<td class=\"setting-name\">tagtotest<\\/td>[\\s\\S]*?value=\"([\\s\\S]*?)\"";
+			String tag = getStringAfterPattern(pageSource, regExTag, 1);
+			
+			String regExEnv = "<td class=\"setting-name\">env<\\/td>[\\s\\S]*?value=\"([\\s\\S]*?)\"";
+			String env = getStringAfterPattern(pageSource, regExEnv, 1);
+            tag =StringUtils.isEmpty(tag)?"":"last working tag : "+tag+" on env : "+env;
+			return tag;
+	}
+    
+    public  String getStringAfterPattern(String sentence, String pattern,
+			int groupIndex) {
+		String str = "";
+		Pattern p = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE);
+		Matcher m = p.matcher(sentence);
+		while (m.find()) {
+			str = m.group(groupIndex);
+			//System.out.println("found-" + str); // for try
+		}
+		return str.trim();
+	}
+    
+    private static String getPageSource(String urlStr) throws IOException {
+		String username = "gojenkins";
+        String password = "password123";
+
+        URL url = new URL(urlStr);
+
+        URLConnection conn = url.openConnection();
+        
+        String userpass = username + ":" + password;
+        String basicAuth = "Basic " + new String(new Base64().encode(userpass.getBytes()));
+        conn.setRequestProperty ("Authorization", basicAuth);
+        
+		
+		BufferedReader in = new BufferedReader(new InputStreamReader(
+				conn.getInputStream(), "UTF-8"));
+		String inputLine;
+		StringBuilder a = new StringBuilder();
+		while ((inputLine = in.readLine()) != null)
+			a.append(inputLine);
+		in.close();
+
+		return a.toString();
+	}
+    /**
+     * @return the URL for the workspace
+     */
+    public String getWsurl() {
+        return this.job.getUrl() + "ws";
+        
     }
 
+   /*** Pooja -- end **/
+    
+    
+    
+   
     /**
      * @return a list will all the currently building runs for this job.
      */
