@@ -290,7 +290,6 @@ public final class XFPanelEntry extends XFPanelView {
     private static String getPageSource(String urlStr) throws IOException {
 		String username = "";
         String password = "";
-
         URL url = new URL(urlStr);
 
         URLConnection conn = url.openConnection();
