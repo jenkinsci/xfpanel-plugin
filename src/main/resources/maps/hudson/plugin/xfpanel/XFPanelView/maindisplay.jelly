@@ -17,8 +17,64 @@
 			Fix view by generating a new config-file: current_view's_url/configure<br/>
 		</j:when>
 		<j:otherwise>
-			<div class="dashboard"
-				style="left: 0px; top: 34px; position: absolute; height: 100%; z-index: 9999; width: 100%; background-color: white; text-align: center;">
+		
+		<style>
+		.btn {
+  			  -webkit-border-radius: 28;
+			  -moz-border-radius: 28;
+			  border-radius: 28px;
+			  font-family: Arial;
+			  color: #ffffff;
+			  font-size: 20px;
+			  padding: 5px 40px;
+			  text-decoration: none !important;
+			  font-size:12px; 
+		}
+
+     .btn:hover {
+			  background: #3cb0fd;
+			  text-decoration: none;
+      }
+  
+	  
+.jobParent{
+	left: 0px;
+	top: 34px;
+	position: absolute;
+	z-index: 9999;
+	width: 100%;
+	text-align: center;
+	overflow: auto;
+}
+
+.job{
+	
+}
+
+.tagsParent{
+	padding: 2px;
+	text-align: left;
+	background: #6CA6A6;
+	margin-top: 13px;
+}
+
+.tag{
+	padding: 5px;
+}
+
+.tagLabel{
+	color: #000;
+	font-size: 12px;
+}
+
+.tagValue{
+	font-size: 14px;
+	font-weight: bold;
+	color: #FCF6F6;
+}
+</style>
+<style type="text/css" href="custom-style.css"></style>
+			<div class="dashboard jobParent">
 
 				<j:invoke var="jobs" on="${from}" method="sort">
 					<j:arg type="java.util.Collection" value="${items}" />
