@@ -48,6 +48,11 @@
             <name>Niko Mahle</name>
             <email>niko.mahle@googlemail.com</email>
         </developer>
+        <developer>
+            <id>tblue468</id>
+            <name>Tilman Blumenbach</name>
+            <email>tilman+jenkins@ax86.net</email>
+        </developer>
     </developers>
 
     <repositories>
