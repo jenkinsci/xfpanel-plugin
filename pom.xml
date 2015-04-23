@@ -6,7 +6,7 @@
         <groupId>org.jenkins-ci.plugins</groupId>
         <artifactId>plugin</artifactId>
         <!-- which version of Hudson is this plugin built against? -->
-        <version>1.475</version>
+        <version>1.610</version>
     </parent>
 
     <artifactId>xfpanel</artifactId>
@@ -65,6 +65,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		    <powermock.version>1.6.2</powermock.version>
     </properties>
 
     <pluginRepositories>
@@ -118,9 +119,32 @@
             <version>1.7</version>
         </dependency>
         <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>junit</artifactId>
+            <version>1.5</version>
+        </dependency>
+        <dependency>
             <groupId>net.java.dev.jna</groupId>
             <artifactId>jna</artifactId>
             <version>3.2.2</version>
         </dependency>
+				<dependency>
+				  <groupId>org.easymock</groupId>
+				  <artifactId>easymock</artifactId>
+				  <version>3.3.1</version>
+				  <scope>test</scope>
+				</dependency>
+			   <dependency>
+			      <groupId>org.powermock</groupId>
+			      <artifactId>powermock-module-junit4</artifactId>
+			      <version>${powermock.version}</version>
+			      <scope>test</scope>
+			   </dependency>
+			   <dependency>
+			      <groupId>org.powermock</groupId>
+			      <artifactId>powermock-api-easymock</artifactId>
+			      <version>${powermock.version}</version>
+			      <scope>test</scope>
+			   </dependency>
     </dependencies>
 </project>
