@@ -6,11 +6,13 @@
 
 ```
 A one click solution for ALL [ QA engineer, DevOps, CTO ] based on [jenkins/xfpanel](https://github.com/jenkinsci/xfpanel-plugin)
-A comprehensive dashboard for feedback of all tests triggered for a build with lot more benifits, originally meant for serving testsing need @ [goibibo.com](http://www.goibibo.com/)
+A comprehensive dashboard for feedback of all tests triggered for a build with lot more benifits, 
+originally built for serving test feedback needs @ [goibibo.com](http://www.goibibo.com/)
 ```
 
-![Alt text](/docs/dashBoard.png "QuickView")
-Includes
+![Alt text](/docs/QuickView-dashBoard.png "QuickView")
+
+It Includes :
 - Nice layout of test jobs feedback [ Any one can undersatnd and infer the release status in a glance ]
 - Realese info which broke the test [ DevOps Engineer love it]
 - quick links to visit detail report of each build  [ Full fledged customized report which shows details about all tests, thier data & reason for failure]
