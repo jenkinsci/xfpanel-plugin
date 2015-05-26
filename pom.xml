@@ -6,7 +6,7 @@
         <groupId>org.jenkins-ci.plugins</groupId>
         <artifactId>plugin</artifactId>
         <!-- which version of Hudson is this plugin built against? -->
-        <version>1.532</version>
+        <version>1.475</version>
     </parent>
 
     <artifactId>xfpanel</artifactId>
@@ -117,11 +117,6 @@
             <groupId>org.jvnet.hudson.plugins</groupId>
             <artifactId>claim</artifactId>
             <version>1.7</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>junit</artifactId>
-            <version>1.5</version>
         </dependency>
         <dependency>
             <groupId>net.java.dev.jna</groupId>
