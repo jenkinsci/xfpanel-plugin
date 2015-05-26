@@ -5,8 +5,8 @@
     <parent>
         <groupId>org.jenkins-ci.plugins</groupId>
         <artifactId>plugin</artifactId>
-        <!-- which version of Hudson is this plugin built against? synchronized with Claim plugin-->
-        <version>1.577</version>
+        <!-- which version of Hudson is this plugin built against? -->
+        <version>1.509</version>
     </parent>
 
     <artifactId>xfpanel</artifactId>

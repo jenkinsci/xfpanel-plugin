@@ -37,7 +37,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest( {TestResult.class, XFPanelEntry.class, XFPanelColors.class })
+@PrepareForTest( {TestResult.class, XFPanelEntry.class, XFPanelColors.class, CaseResult.class })
 public class XFPanelEntryTest {
 
 	@Test
