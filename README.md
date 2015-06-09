@@ -23,11 +23,11 @@ It Includes :
 To add this plugin to your internal jenkins, you will have to add 2 keys in build parameters of your test jobs
 - env
 - tagtotest
-![Alt text](/docs/jobdef.png “JobDefi”)
+![Alt text](/docs/jobdef.png)	
 
 ### Credits
 - Thanks to [Vikalp](https://github.com/vikalp) for the idea
-- Thanks to [Raj](github.com/rajdgreat007/) for all ui/js help & patience.
+- Thanks to [Raj Kumar](github.com/rajdgreat007/) for all ui/js help & patience.
 - Thanks to [Tilman and all contributors for starting it up :-)](https://github.com/jenkinsci/xfpanel-plugin)
 
 
