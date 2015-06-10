@@ -23,17 +23,17 @@ It Includes :
 
 ### Requirements
 To add this plugin to your internal jenkins
-- upload/deploy xfpanel.hpi in your jenkins
+- upload/deploy xfpanel.hpi in your jenkins <either take directly, or build your own from source>
 - + add 2 keys in build parameters of your test jobs
-- env
-- tagtotest
+    * env
+    * tagtotest
 
 ![Alt text](/docs/jobdef.png)	
 
 ### Credits
-- Thanks to [Vikalp](https://github.com/vikalp) for the idea
-- Thanks to [Raj Kumar](github.com/rajdgreat007/) for all ui/js help & patience.
-- Thanks to [Tilman and all contributors for starting it up :-)](https://github.com/jenkinsci/xfpanel-plugin)
+- Thanks to [Vikalp](https://github.com/vikalp) for the ideas & motivation.
+- Thanks to [Raj Kumar](github.com/rajdgreat007/) for consistent ui/js support & patience.
+- Thanks to [Tilman and all contributors](https://github.com/jenkinsci/xfpanel-plugin) for starting it up :-)
 
 
 
