@@ -529,7 +529,7 @@ public class XFPanelView extends ListView {
         public FormValidation doCheckNumColumns(@QueryParameter String value) {
             try {
                 int i = Integer.parseInt(value);
-                if (i < 1 || i > 2) {
+                if (i < 1 || i > 6) {
                     return FormValidation.error(MSG);
                 }
             } catch (NumberFormatException e) {

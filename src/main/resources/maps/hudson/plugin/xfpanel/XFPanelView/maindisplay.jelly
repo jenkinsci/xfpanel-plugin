@@ -43,7 +43,9 @@
 						</j:forEach>
 					</j:when>
 					<j:otherwise>
-						<j:set var="width" value="49%" />
+						<j:set var="widthn" value="${100 / from.numColumns - 1}" />
+						<j:set var="width" value="${widthn}%" />
+						<j:set var="float" value="left" />
 						<j:forEach var="job" items="${jobs}">
 							<j:set var="dontShowJob" value="false" />
 							<j:if test="${job.isBuildSuccessful() == true}" >
@@ -51,14 +53,6 @@
 							</j:if>
 
 							<j:if test="${dontShowJob == false}">
-								<j:choose>
-									<j:when test="${float == 'left'}">
-										<j:set var="float" value="right" />
-									</j:when>
-									<j:otherwise>
-										<j:set var="float" value="left" />
-									</j:otherwise>
-								</j:choose>
 								<st:include page="job.jelly" />
 							</j:if>
 						</j:forEach>
