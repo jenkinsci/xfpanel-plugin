@@ -5,6 +5,9 @@
 	xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form"
 	xmlns:i="jelly:fmt">
 
+	<style type="text/css">         
+	  #side-panel, #page-head { display: none; visibility: hidden; height: 0px;      }  
+	</style>
 	<j:choose>
 		<j:when test="${empty(items)}">
 			<st:include page="noJob.jelly" />
