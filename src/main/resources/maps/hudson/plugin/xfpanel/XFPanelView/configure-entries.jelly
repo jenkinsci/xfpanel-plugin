@@ -22,7 +22,7 @@
 			list-style: none;
 			height: 20em;
 			overflow: auto;
-			width: 20em;
+			width: 40em;
 		}
 		.checklist, .checklist li { margin: 0; padding: 0; list-style: none;}
 		.checklist label { padding: 0px 0.0em 0 0; text-indent: -25px; display: inline;}
@@ -43,17 +43,19 @@
 					<j:invoke method="getPrioritySortedJobs" var="prioJobs" on="${it}">
 					    <j:arg type="java.util.Collection" value="${app.items}" />
 					</j:invoke>
+					<j:invoke method="getItems" var="allItems" on="${it}">
+					</j:invoke>
 
 					<j:forEach var="job" varStatus="status" items="${prioJobs}">
 						<li id="${job.name}">
 
 						<!-- Hack to fix the checkbox checked bug -->
-						<j:if test="${it.contains(job)}">
+						<j:if test="${allItems.contains(job)}">
 							<input name="${job.name}" type="checkbox" 
 								checked="true"
 								 onClick="UpdateJobOptions('${job.name}');"/>
 						</j:if>
-						<j:if test="${!it.contains(job)}">
+						<j:if test="${!allItems.contains(job)}">
 							<input name="${job.name}" type="checkbox" 
 								onClick="UpdateJobOptions('${job.name}');"/>
 						</j:if>

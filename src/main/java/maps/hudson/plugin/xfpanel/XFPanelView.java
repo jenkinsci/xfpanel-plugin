@@ -2,6 +2,7 @@ package maps.hudson.plugin.xfpanel;
 
 import hudson.Extension;
 import hudson.model.Result;
+import hudson.model.TopLevelItem;
 import hudson.model.ViewDescriptor;
 import hudson.model.AbstractBuild;
 import hudson.model.Descriptor.FormException;
@@ -314,16 +315,9 @@ public class XFPanelView extends ListView {
         }
         if (jobs != null) {
             List<XFPanelEntry> ents = new ArrayList<XFPanelEntry>();
-            if ( manualSort == true ){
-                Collection<Job<?,?>> sortedJobs = getPrioritySortedJobs(jobs);
-                for (Job<?, ?> job : sortedJobs) {
-                    ents.add(new XFPanelEntry(this, job));
-                }
-            }
-            else{
-                for (Job<?, ?> job : jobs) {
-                    ents.add(new XFPanelEntry(this, job));
-                }
+            Collection<Job<?,?>> sortedJobs = getPrioritySortedJobs(jobs, false);
+            for (Job<?, ?> job : sortedJobs) {
+                ents.add(new XFPanelEntry(this, job));
             }
             if ( enableAutomaticSort == true ){
                 Collections.sort(ents, new selectComparator() );
@@ -338,41 +332,68 @@ public class XFPanelView extends ListView {
         }
         return Collections.emptyList();
     }
-
     public Collection<Job<?, ?>> getPrioritySortedJobs(Collection<Job<?, ?>> jobs) {
-        if (jobs != null) {
-            List<Job<?, ?>> sortedJobs = new ArrayList<Job<?, ?>>();
-            Map<Integer, Job<?, ?>> jobMap = new HashMap<Integer, Job<?, ?>>();
-
-            int priority = 0, added = 0;
-            if (priorityPerJob != null) {
-
-                // Set elements
-                for (Job<?, ?> job: jobs) {
-                    if (priorityPerJob.containsKey(job.getName())) {
-                        priority = priorityPerJob.get(job.getName());
-                        jobMap.put(priority, job);
-                        added++;
-                    } else {
-                        jobMap.put(added, job);
-                        priority++;
-                        added++;
-                    }
-                }
-                sortedJobs = new ArrayList<Job<?,?>>(jobMap.values());
-            }
-            else {
-                for (Job<?, ?> job: jobs) {
-                    sortedJobs.add(priority, job);
-                    priority++;
-                    added++;
-                }
-            }
-            return sortedJobs;
-        }
-        return Collections.emptyList();
+    	return getPrioritySortedJobs(jobs, true);
     }
+    
+    public Collection<Job<?, ?>> getPrioritySortedJobs(Collection<Job<?, ?>> jobs, final boolean isConfiguration) {
+      if (jobs != null) {
+          List<Job<?, ?>> sortedJobs = new ArrayList<Job<?, ?>>(jobs);
+          final List<TopLevelItem> allItems = getItems(); //this is expensive function, and used in 'contains', so collect it once to speed up
+          final Integer lastPriority = Integer.MAX_VALUE;
+          if (manualSort || !enableAutomaticSort) {
+	          Collections.sort(sortedJobs, new Comparator<Job<?, ?>>() {
+	
+							//@Override
+							public int compare(Job<?, ?> o1, Job<?, ?> o2) {
+								String n1 = o1.getName();
+								String n2 = o2.getName();
+								if (manualSort && priorityPerJob != null) {
+									Integer p1 = (isConfiguration && !containsJob(o1)) ? lastPriority : priorityPerJob.get(n1);
+									Integer p2 = (isConfiguration && !containsJob(o2)) ? lastPriority : priorityPerJob.get(n2);
+									if (p1 == null) {
+										p1 = lastPriority;
+									}
+									if (p2 == null) {
+										p2 = lastPriority;
+									}
+									int c = p1.compareTo(p2);
+									if (c == 0) {
+										return compareNames(o1, o2);
+									} else {
+										return c;
+									}
+								} else {
+									//alphabetical - selected on top
+									return compareNames(o1, o2);
+								}
+							}
 
+							private int compareNames(Job<?, ?> o1, Job<?, ?> o2) {
+								if (isConfiguration) {
+									Boolean cont1 = containsJob(o1);
+									Boolean cont2 = containsJob(o2);
+									int c = cont2.compareTo(cont1);
+									if (c != 0) {
+										return c;
+									}
+								}
+								return o1.getName().compareToIgnoreCase(o2.getName());
+							}
+
+							private boolean containsJob(Job<?, ?> j) {
+								if (j instanceof TopLevelItem) {
+									return allItems.contains((TopLevelItem) j);
+								}
+								return false;
+							}
+						});
+          }
+          return sortedJobs;
+      }
+      return Collections.emptyList();
+    }
+    
     /**
      * @return the refresh time in seconds
      */
