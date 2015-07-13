@@ -53,6 +53,11 @@
             <name>Tilman Blumenbach</name>
             <email>tilman+jenkins@ax86.net</email>
         </developer>
+        <developer>
+            <id>tomaszbechdev</id>
+            <name>Tomasz Bech</name>
+            <email>tomaszbechdev@gmail.com</email>
+        </developer>
     </developers>
 
     <repositories>
