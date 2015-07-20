@@ -332,8 +332,10 @@ public final class XFPanelEntry {
             }
         } else if (getView().BlameState == Blame.EVERYINVOLVED) {
             AbstractBuild<?, ?> build = this.getLastBuild();
-            HashSet<User> BlameList = new HashSet<User>( build.getCulprits() );
-            return convertCulpritsToString( BlameList );
+            if (build != null) {
+	            HashSet<User> BlameList = new HashSet<User>( build.getCulprits() );
+	            return convertCulpritsToString( BlameList );
+            }
         }
         return " -";
     }
