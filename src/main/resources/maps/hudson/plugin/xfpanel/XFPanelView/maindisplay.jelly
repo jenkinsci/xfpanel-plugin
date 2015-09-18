@@ -6,7 +6,7 @@
 	xmlns:i="jelly:fmt">
 
 	<style type="text/css">         
-	  #side-panel, #page-head { display: none; visibility: hidden; height: 0px;      }  
+	  #side-panel, #page-head, #main-panel-content h1 { display: none; visibility: hidden; height: 0px;      }  
 	</style>
 	<j:choose>
 		<j:when test="${empty(items)}">

@@ -23,6 +23,8 @@ import java.lang.Math;
 
 import javax.servlet.ServletException;
 
+import jenkins.model.Jenkins;
+
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
@@ -332,6 +334,13 @@ public class XFPanelView extends ListView {
         }
         return Collections.emptyList();
     }
+
+    public Collection<Job<?, ?>> getPrioritySortedJobs() {
+			List<Job<?, ?>> allItems = null;
+			allItems = Jenkins.getInstance().getAllItems((Class<Job<?,?>>) (Class) Job.class);
+    	return getPrioritySortedJobs(allItems);
+    }
+    
     public Collection<Job<?, ?>> getPrioritySortedJobs(Collection<Job<?, ?>> jobs) {
     	return getPrioritySortedJobs(jobs, true);
     }

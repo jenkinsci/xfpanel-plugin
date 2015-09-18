@@ -41,7 +41,6 @@
 				<ul class="checklist" id="allJobs">
 					<!-- Get a priority sorted list of jobs -->
 					<j:invoke method="getPrioritySortedJobs" var="prioJobs" on="${it}">
-					    <j:arg type="java.util.Collection" value="${app.items}" />
 					</j:invoke>
 					<j:invoke method="getItems" var="allItems" on="${it}">
 					</j:invoke>
