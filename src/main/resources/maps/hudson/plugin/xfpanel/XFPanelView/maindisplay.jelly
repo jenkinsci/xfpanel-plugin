@@ -21,9 +21,9 @@
 		</j:when>
 		<j:otherwise>
 			<div class="dashboard"
-				style="left: 0px; top: 34px; position: absolute; height: 100%; z-index: 9999; width: 100%; background-color: white; text-align: center;">
+				style="left: 0px; top: 0px; position: absolute; height: 100%; z-index: 9999; width: 100%; background-color: white; text-align: center;">
 
-                <h1>${from.server}</h1>
+                <h1 style="font-size: ${from.guiJobFont}px; margin: 0px">${from.panelTopic}</h1>
 
 				<j:invoke var="jobs" on="${from}" method="sort">
 					<j:arg type="java.util.Collection" value="${items}" />
