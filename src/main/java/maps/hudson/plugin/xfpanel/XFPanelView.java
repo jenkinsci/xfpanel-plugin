@@ -58,6 +58,9 @@ public class XFPanelView extends ListView {
 	private String brokenBuildColor = "#FF0000";
 	private String otherBuildColor = "#CCCCCC";
 	private String buildFontColor = "#FFFFFF";
+	private String panelTopic = "";
+	private String stringToRemoveFromJobName = "";
+
 	/**
 	 * C'tor<meta  />
 	 *
@@ -68,6 +71,22 @@ public class XFPanelView extends ListView {
 	public XFPanelView(String name, Integer numColumns) {
 		super(name);
 		this.numColumns = numColumns != null ? numColumns : 2;
+	}
+
+	public String getPanelTopic() {
+		if (panelTopic == null) {
+			return "";
+		} else {
+			return panelTopic;
+		}
+	}
+
+	public String getStringToRemoveFromJobName() {
+		if (stringToRemoveFromJobName == null) {
+			return "";
+		} else {
+			return stringToRemoveFromJobName;
+		}
 	}
 
 	/**
@@ -600,7 +619,7 @@ public class XFPanelView extends ListView {
 			return otherFG;
 		}
 	 /* okBG , okFG , failedBG , failedFG , brokenBG , brokenFG , otherBG ,
-     * otherFG FFFFFF = white FF0000 = red 7E7EFF = blue FFC130 = yellow
+	 * otherFG FFFFFF = white FF0000 = red 7E7EFF = blue FFC130 = yellow
      * 215E21 = huntergreen #267526 = another green
      */
 	}
@@ -648,6 +667,9 @@ public class XFPanelView extends ListView {
 		this.brokenBuildColor = "#" + req.getParameter("brokenBuildColor");
 		this.otherBuildColor = "#" + req.getParameter("otherBuildColor");
 		this.buildFontColor = "#" + req.getParameter("buildFontColor");
+
+		this.panelTopic = req.getParameter("panelTopic");
+		this.stringToRemoveFromJobName = req.getParameter("stringToRemoveFromJobName");
 
 		if (this.priorityPerJob == null) {
 			this.priorityPerJob = new HashMap<String, Integer>();

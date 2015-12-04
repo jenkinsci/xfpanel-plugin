@@ -57,7 +57,13 @@ public final class XFPanelEntry {
 	 * @return the job's name
 	 */
 	public String getName() {
-		String label = job.getDisplayName().toUpperCase();
+		String label;
+		if (getView().getStringToRemoveFromJobName() == null) {
+			label = job.getDisplayName().toUpperCase();
+		} else {
+			label = job.getDisplayName().replace(getView().getStringToRemoveFromJobName(), "").toUpperCase();
+		}
+
 		if (getView().getShowDescription() == true && !job.getDescription().isEmpty()) {
 			label += ": " + job.getDescription();
 		}
