@@ -22,6 +22,10 @@ import java.util.*;
  */
 public class XFPanelView extends ListView {
 
+	protected XFPanelColors colors;
+	protected transient Map<hudson.model.Queue.Item, Integer> placeInQueue = new HashMap<hudson.model.Queue.Item, Integer>();
+	protected Map<String, Integer> priorityPerJob = new HashMap<String, Integer>();
+	protected Blame BlameState = Blame.EVERYINVOLVED;
 	private Integer numColumns = 2;
 	private Integer refresh = 3;
 	private Boolean fullHD = false;
@@ -31,7 +35,6 @@ public class XFPanelView extends ListView {
 	private Integer guiInfoFont = 30;
 	private Integer guiBuildFont = 30;
 	private Integer guiClaimFont = 20;
-
 	private Boolean showDescription = false;
 	private Boolean showBrokenBuildCount = false;
 	private Boolean showZeroTestCounts = true;
@@ -47,26 +50,14 @@ public class XFPanelView extends ListView {
 	private Boolean replaceNumberOfTestCases = true;
 	private Boolean showClaimInfoInUnstable = true;
 	private transient List<XFPanelEntry> entries;
-
-	protected XFPanelColors colors;
-
-	protected transient Map<hudson.model.Queue.Item, Integer> placeInQueue = new HashMap<hudson.model.Queue.Item, Integer>();
-	protected Map<String, Integer> priorityPerJob = new HashMap<String, Integer>();
-
-	protected enum Blame {NOTATALL, ONLYLASTFAILEDBUILD, ONLYFIRSTFAILEDBUILD, EVERYINVOLVED}
-
-	protected Blame BlameState = Blame.EVERYINVOLVED;
-
 	private Integer maxAmmountOfResponsibles = 1;
 	private String responsiblesTopic = "Responsible(s): ";
 	private String lastBuildTimePreFix = "last successful: ";
-
 	private String successfulBuildColor = "#7E7EFF";
 	private String unstableBuildColor = "#FFC130";
 	private String brokenBuildColor = "#FF0000";
 	private String otherBuildColor = "#CCCCCC";
 	private String buildFontColor = "#FFFFFF";
-
 	/**
 	 * C'tor<meta  />
 	 *
@@ -227,13 +218,6 @@ public class XFPanelView extends ListView {
 		return this.hideSuccessfulBuilds;
 	}
 
-	private String validateColor(String current, String defaultColor) {
-		if (current != null && current.length() == 7 && current.startsWith("#")) {
-			return current.substring(1);
-		}
-		return defaultColor;
-	}
-
 	public String getSuccessfulBuildColor() {
 		return validateColor(successfulBuildColor, "7E7EFF");
 	}
@@ -274,55 +258,6 @@ public class XFPanelView extends ListView {
 
 	public Boolean getAutoResizeEntryHeight() {
 		return this.autoResizeEntryHeight;
-	}
-
-	static class selectComparator implements Comparator<XFPanelEntry> {
-		private int getPriority(AbstractBuild<?, ?> build) {
-			// never built build
-			if (build == null) {
-				return 1;
-			}
-
-			if (build.isBuilding()) {
-				build = build.getPreviousBuild();
-				return getPriority(build);
-			}
-
-			Result result = build.getResult();
-			if (result != null) {
-				// priority order: the least important -> the most important
-				Result allResults[] = {Result.SUCCESS, Result.ABORTED, Result.NOT_BUILT, Result.UNSTABLE, Result.FAILURE};
-				int resultValues[] = {0, 1, 1, 2, 3};
-				for (int i = 0; i < allResults.length; i++) {
-					if (result == allResults[i]) {
-						return resultValues[i];
-					}
-				}
-			}
-			return 1;
-		}
-
-		public int compare(XFPanelEntry a, XFPanelEntry b) {
-			AbstractBuild<?, ?> buildA = a.getLastBuild();
-			AbstractBuild<?, ?> buildB = b.getLastBuild();
-			int result = getPriority(buildB) - getPriority(buildA);
-
-			// if build results are same and builds exists-> sort by build timestamp
-			if (result == 0) {
-
-				// if build is null, show it on bottom of its class
-				if (buildA == null || buildB == null) {
-					return (buildA == null) ? 1 : 0;
-				}
-
-				// if building atm -> show build on top of its class
-				if (buildA.isBuilding() || buildB.isBuilding()) {
-					return (buildA.isBuilding()) ? 0 : 1;
-				}
-				return b.getCompletionTimestamp().compareTo(a.getCompletionTimestamp());
-			}
-			return result;
-		}
 	}
 
 	/**
@@ -423,22 +358,251 @@ public class XFPanelView extends ListView {
 		return Collections.emptyList();
 	}
 
-	/**
-	 * @return the refresh time in seconds
-	 */
 	public Integer getRefresh() {
 		return this.refresh;
 	}
 
-	/**
-	 * @return the numColumns
-	 */
 	public Integer getNumColumns() {
 		return this.numColumns;
 	}
 
 	public String getLastBuildTimePreFix() {
 		return (this.lastBuildTimePreFix != null) ? this.lastBuildTimePreFix : "";
+	}
+
+	private String validateColor(String current, String defaultColor) {
+		if (current != null && current.length() == 7 && current.startsWith("#")) {
+			return current.substring(1);
+		}
+		return defaultColor;
+	}
+
+	private Integer asInteger(StaplerRequest request, String parameterName) throws FormException {
+		try {
+			return Integer.parseInt(request.getParameter(parameterName));
+		} catch (NumberFormatException e) {
+			throw new FormException(parameterName + " must be a positive integer", parameterName);
+		}
+	}
+
+	protected enum Blame {NOTATALL, ONLYLASTFAILEDBUILD, ONLYFIRSTFAILEDBUILD, EVERYINVOLVED}
+
+	static class selectComparator implements Comparator<XFPanelEntry> {
+		public int compare(XFPanelEntry a, XFPanelEntry b) {
+			AbstractBuild<?, ?> buildA = a.getLastBuild();
+			AbstractBuild<?, ?> buildB = b.getLastBuild();
+			int result = getPriority(buildB) - getPriority(buildA);
+
+			// if build results are same and builds exists-> sort by build timestamp
+			if (result == 0) {
+
+				// if build is null, show it on bottom of its class
+				if (buildA == null || buildB == null) {
+					return (buildA == null) ? 1 : 0;
+				}
+
+				// if building atm -> show build on top of its class
+				if (buildA.isBuilding() || buildB.isBuilding()) {
+					return (buildA.isBuilding()) ? 0 : 1;
+				}
+				return b.getCompletionTimestamp().compareTo(a.getCompletionTimestamp());
+			}
+			return result;
+		}
+
+		private int getPriority(AbstractBuild<?, ?> build) {
+			// never built build
+			if (build == null) {
+				return 1;
+			}
+
+			if (build.isBuilding()) {
+				build = build.getPreviousBuild();
+				return getPriority(build);
+			}
+
+			Result result = build.getResult();
+			if (result != null) {
+				// priority order: the least important -> the most important
+				Result allResults[] = {Result.SUCCESS, Result.ABORTED, Result.NOT_BUILT, Result.UNSTABLE, Result.FAILURE};
+				int resultValues[] = {0, 1, 1, 2, 3};
+				for (int i = 0; i < allResults.length; i++) {
+					if (result == allResults[i]) {
+						return resultValues[i];
+					}
+				}
+			}
+			return 1;
+		}
+	}
+
+	/**
+	 * Notify Hudson we're implementing a new View
+	 *
+	 * @author jrenaut
+	 */
+	@Extension
+	public static final class XFPanelViewDescriptor extends ViewDescriptor {
+		public static final String REFRESH_MSG = "Refresh time must be a positive integer.";
+		public static final String MSG = "Number of columns currently supported is 1 or 2.";
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public String getDisplayName() {
+			return "eXtreme Feedback Panel";
+		}
+
+		/**
+		 * Performs validation on request parameters
+		 *
+		 * @param value
+		 * @return a form validation
+		 */
+		public FormValidation doCheckNumColumns(@QueryParameter String value) {
+			try {
+				int i = Integer.parseInt(value);
+				if (i < 1 || i > 6) {
+					return FormValidation.error(MSG);
+				}
+			} catch (NumberFormatException e) {
+				return FormValidation.error(MSG);
+			}
+			return FormValidation.ok();
+		}
+
+		public FormValidation doCheckRefresh(@QueryParameter String value) {
+			return isPositiveInteger(value);
+		}
+
+		public FormValidation doCheckGuiHeight(@QueryParameter String value) {
+			return isPositiveInteger(value);
+		}
+
+		public FormValidation doCheckGuiJobFont(@QueryParameter String value) {
+			return isPositiveInteger(value);
+		}
+
+		public FormValidation doCheckGuiFailFont(@QueryParameter String value) {
+			return isPositiveInteger(value);
+		}
+
+		public FormValidation doCheckGuiInfoFont(@QueryParameter String value) {
+			return isPositiveInteger(value);
+		}
+
+		public FormValidation doCheckGuiBuildFont(@QueryParameter String value) {
+			return isPositiveInteger(value);
+		}
+
+		private FormValidation isPositiveInteger(String value) {
+			return FormValidation.validatePositiveInteger(value);
+		}
+	}
+
+	/**
+	 * Represents colors to be used on the view
+	 *
+	 * @author jrenaut
+	 */
+	public static final class XFPanelColors {
+
+		public static final XFPanelColors DEFAULT =
+				new XFPanelColors("#7E7EFF", "#FFFFFF", "#FFC130", "#FFFFFF", "#FF0000", "#FFFFFF", "#CCCCCC", "#FFFFFF");
+		private String okBG;
+		private String okFG;
+		private String failedBG;
+		private String failedFG;
+		private String brokenBG;
+		private String brokenFG;
+		private String otherBG;
+		private String otherFG;
+
+		/**
+		 * C'tor
+		 *
+		 * @param okBG     ok builds background color
+		 * @param okFG     ok builds foreground color
+		 * @param failedBG failed build background color
+		 * @param failedFG failed build foreground color
+		 * @param brokenBG broken build background color
+		 * @param brokenFG broken build foreground color
+		 * @param otherBG  other build background color
+		 * @param otherFG  other build foreground color
+		 */
+		public XFPanelColors(String okBG, String okFG, String failedBG,
+							 String failedFG, String brokenBG, String brokenFG,
+							 String otherBG, String otherFG) {
+			this.okBG = okBG;
+			this.okFG = okFG;
+			this.failedBG = failedBG;
+			this.failedFG = failedFG;
+			this.brokenBG = brokenBG;
+			this.brokenFG = brokenFG;
+			this.otherBG = otherBG;
+			this.otherFG = otherFG;
+		}
+
+		/**
+		 * @return the okBG
+		 */
+		public String getOkBG() {
+			return okBG;
+		}
+
+		/**
+		 * @return the okFG
+		 */
+		public String getOkFG() {
+			return okFG;
+		}
+
+		/**
+		 * @return the failedBG
+		 */
+		public String getFailedBG() {
+			return failedBG;
+		}
+
+		/**
+		 * @return the failedFG
+		 */
+		public String getFailedFG() {
+			return failedFG;
+		}
+
+		/**
+		 * @return the brokenBG
+		 */
+		public String getBrokenBG() {
+			return brokenBG;
+		}
+
+		/**
+		 * @return the brokenFG
+		 */
+		public String getBrokenFG() {
+			return brokenFG;
+		}
+
+		/**
+		 * @return the otherBG
+		 */
+		public String getOtherBG() {
+			return otherBG;
+		}
+
+		/**
+		 * @return the otherFG
+		 */
+		public String getOtherFG() {
+			return otherFG;
+		}
+	 /* okBG , okFG , failedBG , failedFG , brokenBG , brokenFG , otherBG ,
+     * otherFG FFFFFF = white FF0000 = red 7E7EFF = blue FFC130 = yellow
+     * 215E21 = huntergreen #267526 = another green
+     */
 	}
 
 	/**
@@ -539,184 +703,5 @@ public class XFPanelView extends ListView {
 		} else if (blameType.equals("blame.everyInvolved")) {
 			this.BlameState = Blame.EVERYINVOLVED;
 		}
-	}
-
-	private Integer asInteger(StaplerRequest request, String parameterName) throws FormException {
-		try {
-			return Integer.parseInt(request.getParameter(parameterName));
-		} catch (NumberFormatException e) {
-			throw new FormException(parameterName + " must be a positive integer", parameterName);
-		}
-	}
-
-	/**
-	 * Notify Hudson we're implementing a new View
-	 *
-	 * @author jrenaut
-	 */
-	@Extension
-	public static final class XFPanelViewDescriptor extends ViewDescriptor {
-		public static final String REFRESH_MSG = "Refresh time must be a positive integer.";
-		public static final String MSG = "Number of columns currently supported is 1 or 2.";
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public String getDisplayName() {
-			return "eXtreme Feedback Panel";
-		}
-
-		/**
-		 * Performs validation on request parameters
-		 *
-		 * @param value
-		 * @return a form validation
-		 */
-		public FormValidation doCheckNumColumns(@QueryParameter String value) {
-			try {
-				int i = Integer.parseInt(value);
-				if (i < 1 || i > 6) {
-					return FormValidation.error(MSG);
-				}
-			} catch (NumberFormatException e) {
-				return FormValidation.error(MSG);
-			}
-			return FormValidation.ok();
-		}
-
-		public FormValidation doCheckRefresh(@QueryParameter String value) {
-			return isPositiveInteger(value);
-		}
-
-		public FormValidation doCheckGuiHeight(@QueryParameter String value) {
-			return isPositiveInteger(value);
-		}
-
-		public FormValidation doCheckGuiJobFont(@QueryParameter String value) {
-			return isPositiveInteger(value);
-		}
-
-		public FormValidation doCheckGuiFailFont(@QueryParameter String value) {
-			return isPositiveInteger(value);
-		}
-
-		public FormValidation doCheckGuiInfoFont(@QueryParameter String value) {
-			return isPositiveInteger(value);
-		}
-
-		public FormValidation doCheckGuiBuildFont(@QueryParameter String value) {
-			return isPositiveInteger(value);
-		}
-
-		private FormValidation isPositiveInteger(String value) {
-			return FormValidation.validatePositiveInteger(value);
-		}
-	}
-
-
-	/**
-	 * Represents colors to be used on the view
-	 *
-	 * @author jrenaut
-	 */
-	public static final class XFPanelColors {
-
-		private String okBG;
-		private String okFG;
-		private String failedBG;
-		private String failedFG;
-		private String brokenBG;
-		private String brokenFG;
-		private String otherBG;
-		private String otherFG;
-
-		/**
-		 * C'tor
-		 *
-		 * @param okBG     ok builds background color
-		 * @param okFG     ok builds foreground color
-		 * @param failedBG failed build background color
-		 * @param failedFG failed build foreground color
-		 * @param brokenBG broken build background color
-		 * @param brokenFG broken build foreground color
-		 * @param otherBG  other build background color
-		 * @param otherFG  other build foreground color
-		 */
-		public XFPanelColors(String okBG, String okFG, String failedBG,
-							 String failedFG, String brokenBG, String brokenFG,
-							 String otherBG, String otherFG) {
-			this.okBG = okBG;
-			this.okFG = okFG;
-			this.failedBG = failedBG;
-			this.failedFG = failedFG;
-			this.brokenBG = brokenBG;
-			this.brokenFG = brokenFG;
-			this.otherBG = otherBG;
-			this.otherFG = otherFG;
-		}
-
-		/**
-		 * @return the okBG
-		 */
-		public String getOkBG() {
-			return okBG;
-		}
-
-		/**
-		 * @return the okFG
-		 */
-		public String getOkFG() {
-			return okFG;
-		}
-
-		/**
-		 * @return the failedBG
-		 */
-		public String getFailedBG() {
-			return failedBG;
-		}
-
-		/**
-		 * @return the failedFG
-		 */
-		public String getFailedFG() {
-			return failedFG;
-		}
-
-		/**
-		 * @return the brokenBG
-		 */
-		public String getBrokenBG() {
-			return brokenBG;
-		}
-
-		/**
-		 * @return the brokenFG
-		 */
-		public String getBrokenFG() {
-			return brokenFG;
-		}
-
-		/**
-		 * @return the otherBG
-		 */
-		public String getOtherBG() {
-			return otherBG;
-		}
-
-		/**
-		 * @return the otherFG
-		 */
-		public String getOtherFG() {
-			return otherFG;
-		}
-
-		public static final XFPanelColors DEFAULT =
-				new XFPanelColors("#7E7EFF", "#FFFFFF", "#FFC130", "#FFFFFF", "#FF0000", "#FFFFFF", "#CCCCCC", "#FFFFFF");
-	 /* okBG , okFG , failedBG , failedFG , brokenBG , brokenFG , otherBG ,
-     * otherFG FFFFFF = white FF0000 = red 7E7EFF = blue FFC130 = yellow
-     * 215E21 = huntergreen #267526 = another green
-     */
 	}
 }

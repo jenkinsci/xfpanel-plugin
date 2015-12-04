@@ -88,80 +88,48 @@ public final class XFPanelEntry {
 		return null;
 	}
 
-	private void setTimes() {
-		Run<?, ?> run = this.job.getLastCompletedBuild();
-		if (run instanceof AbstractBuild<?, ?>) {
-			AbstractBuild<?, ?> lastBuild = (AbstractBuild<?, ?>) run;
-			if (lastBuild != null) {
-				this.completionTimestamp = lastBuild.getTimestamp();
-				this.completionTimestampString = lastBuild.getTimestampString();
-			}
-		}
+	public Calendar getCompletionTimestamp() {
+		return this.completionTimestamp;
 	}
 
 	public void setCompletionTimestamp(Calendar completionTimestamp) {
 		this.completionTimestamp = completionTimestamp;
 	}
 
-	public Calendar getCompletionTimestamp() {
-		return this.completionTimestamp;
+	public String getCompletionTimestampString() {
+		return this.completionTimestampString;
 	}
 
 	public void setCompletionTimestampString(String completionTimestampString) {
 		this.completionTimestampString = completionTimestampString;
 	}
 
-	public String getCompletionTimestampString() {
-		return this.completionTimestampString;
-	}
-
-	/**
-	 * @return background color for this job
-	 */
 	public String getBackgroundColor() {
 		return this.backgroundColor;
 	}
 
-	/**
-	 * @return foreground color for this job
-	 */
 	public String getColor() {
 		return this.color;
 	}
 
-	/**
-	 * @return fadeout image name for this job
-	 */
 	public String getColorFade() {
 		return this.colorFade;
 	}
 
-	/**
-	 * @return true se o último build está quebrado
-	 */
 	public Boolean getBroken() {
 		return this.broken;
 	}
 
-	/**
-	 * @return 1 on success
-	 */
 	public Boolean getShowResponsibles() {
 		if (getView().BlameState == XFPanelView.Blame.NOTATALL)
 			return false;
 		return true;
 	}
 
-	/**
-	 * @return true if this job is currently being built
-	 */
 	public Boolean getBuilding() {
 		return this.building;
 	}
 
-	/**
-	 * @return the URL for the last build
-	 */
 	public String getUrl() {
 		return this.job.getUrl() + "lastBuild";
 	}
@@ -208,9 +176,6 @@ public final class XFPanelEntry {
 		return 0;
 	}
 
-	/**
-	 * @return total successful tests
-	 */
 	public int getSuccessCount() {
 		return this.getTestCount() - this.getFailCount();
 	}
@@ -253,20 +218,6 @@ public final class XFPanelEntry {
 			}
 		}
 		return "";
-	}
-
-	/**
-	 * @param run a run
-	 * @return the last successful run prior to the given run
-	 */
-	private Run<?, ?> getLastSuccessfulFrom(Run<?, ?> run) {
-		Run<?, ?> r = run.getPreviousBuild();
-		while (r != null
-				&& (r.isBuilding() || r.getResult() == null || r.getResult()
-				.isWorseThan(Result.UNSTABLE))) {
-			r = r.getPreviousBuild();
-		}
-		return r;
 	}
 
 	/**
@@ -328,31 +279,6 @@ public final class XFPanelEntry {
 			}
 		}
 		return " -";
-	}
-
-	/**
-	 * If the claims plugin is installed, this will return ClaimBuildAction
-	 *
-	 * @return claim on the build / null
-	 */
-	private ClaimBuildAction getClaimAction() {
-		ClaimBuildAction claimAction = null;
-
-		if (Hudson.getInstance().getPlugin("claim") != null) {
-			Run<?, ?> lastBuild = this.job.getLastBuild();
-			if (lastBuild != null && lastBuild.isBuilding()) {
-				// claims can only be made against builds once they've finished,
-				// so check the previous build if currently building.
-				lastBuild = lastBuild.getPreviousBuild();
-			}
-			if (lastBuild != null && lastBuild instanceof AbstractBuild<?, ?>) {
-				List<ClaimBuildAction> claimActionList = lastBuild.getActions(ClaimBuildAction.class);
-				if (claimActionList.size() == 1) {
-					claimAction = claimActionList.get(0);
-				}
-			}
-		}
-		return claimAction;
 	}
 
 	/**
@@ -549,6 +475,60 @@ public final class XFPanelEntry {
 		return false;
 	}
 
+	public XFPanelView getView() {
+		return view;
+	}
+
+	private void setTimes() {
+		Run<?, ?> run = this.job.getLastCompletedBuild();
+		if (run instanceof AbstractBuild<?, ?>) {
+			AbstractBuild<?, ?> lastBuild = (AbstractBuild<?, ?>) run;
+			if (lastBuild != null) {
+				this.completionTimestamp = lastBuild.getTimestamp();
+				this.completionTimestampString = lastBuild.getTimestampString();
+			}
+		}
+	}
+
+	/**
+	 * @param run a run
+	 * @return the last successful run prior to the given run
+	 */
+	private Run<?, ?> getLastSuccessfulFrom(Run<?, ?> run) {
+		Run<?, ?> r = run.getPreviousBuild();
+		while (r != null
+				&& (r.isBuilding() || r.getResult() == null || r.getResult()
+				.isWorseThan(Result.UNSTABLE))) {
+			r = r.getPreviousBuild();
+		}
+		return r;
+	}
+
+	/**
+	 * If the claims plugin is installed, this will return ClaimBuildAction
+	 *
+	 * @return claim on the build / null
+	 */
+	private ClaimBuildAction getClaimAction() {
+		ClaimBuildAction claimAction = null;
+
+		if (Hudson.getInstance().getPlugin("claim") != null) {
+			Run<?, ?> lastBuild = this.job.getLastBuild();
+			if (lastBuild != null && lastBuild.isBuilding()) {
+				// claims can only be made against builds once they've finished,
+				// so check the previous build if currently building.
+				lastBuild = lastBuild.getPreviousBuild();
+			}
+			if (lastBuild != null && lastBuild instanceof AbstractBuild<?, ?>) {
+				List<ClaimBuildAction> claimActionList = lastBuild.getActions(ClaimBuildAction.class);
+				if (claimActionList.size() == 1) {
+					claimAction = claimActionList.get(0);
+				}
+			}
+		}
+		return claimAction;
+	}
+
 	/**
 	 * Determines some information of the current job like which colors use, whether it's building or not or broken.
 	 */
@@ -588,13 +568,6 @@ public final class XFPanelEntry {
 				this.colorFade = "build-fade-other.png";
 				this.broken = true;
 		}
-	}
-
-	/**
-	 * @return view of this entry
-	 */
-	public XFPanelView getView() {
-		return view;
 	}
 
 }
