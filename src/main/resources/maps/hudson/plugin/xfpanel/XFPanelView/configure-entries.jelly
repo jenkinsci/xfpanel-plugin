@@ -254,8 +254,6 @@
 		<input class="color" name="buildFontColor" value="${it.buildFontColor}"/>
 	</f:entry>
 
-	<f:entry></f:entry>
-
     <td colspan="3" style="font-weight:bold;">Misc <hr/> </td>
     <f:entry title="${%Remove String from Job Name}" field="stringToRemoveFromJobName">
         <f:textbox id="it.stringToRemoveFromJobName" name="stringToRemoveFromJobName"/>
