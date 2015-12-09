@@ -1,21 +1,21 @@
-	<!-- 
+	<!--
 	Thanks to Mark Howard and his work on the Radiator View Plugin from which this was based.
  -->
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define"
 	xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form"
 	xmlns:i="jelly:fmt">
-	
+
 	<SCRIPT type="text/javascript" src="${rootURL}/plugin/xfpanel/sorting.js" />
 	<script type="text/javascript" src="${rootURL}/plugin/xfpanel/jscolor/jscolor.js"></script>
 	<td colspan="3" style="font-weight:bold;" >Job options <hr /> </td>
-	
 
-	
+
+
 	<!-- Borrowed from -->
 	<style type="text/css">
 		/* Undo some styles from the master stylesheet */
 		.checklist li { background: none; padding-left: 0; }
-		
+
 		/* CSS for checklists */
 		.checklist {
 			border: 1px solid #ccc;
@@ -50,12 +50,12 @@
 
 						<!-- Hack to fix the checkbox checked bug -->
 						<j:if test="${allItems.contains(job)}">
-							<input name="${job.name}" type="checkbox" 
+							<input name="${job.name}" type="checkbox"
 								checked="true"
 								 onClick="UpdateJobOptions('${job.name}');"/>
 						</j:if>
 						<j:if test="${!allItems.contains(job)}">
-							<input name="${job.name}" type="checkbox" 
+							<input name="${job.name}" type="checkbox"
 								onClick="UpdateJobOptions('${job.name}');"/>
 						</j:if>
 
@@ -140,7 +140,7 @@
 	<f:entry title="${%Hide successful builds}" field="hideSuccessfulBuilds">
 		<f:checkbox id="xfpanel.hideSuccessfulBuilds" name="hideSuccessfulBuilds" checked="${it.hideSuccessfulBuilds}" value="true"/>
 	</f:entry>
-	
+
 	<td colspan="3" style="font-weight:bold;" >Build responsibles <hr /> </td>
 	<f:entry title="${%Show Responsibles}" field="responsibles">
 		<j:choose>
@@ -158,7 +158,7 @@
 			</j:otherwise>
 		</j:choose>
 
-		<input id="responsibles-notAtAll" type="radio" name="responsibles" value="blame.notAtAll" checked="${notAtAll}" /> 
+		<input id="responsibles-notAtAll" type="radio" name="responsibles" value="blame.notAtAll" checked="${notAtAll}" />
 		<label for="responsibles-notAtAll"> not at all </label>  <br/>
 
 		<input id="responsibles-onlyLastFailedBuild" type="radio" name="responsibles" value="blame.onlyLastFailedBuild" checked="${onlyLastFailedBuild}"/>
@@ -178,23 +178,23 @@
 		</f:entry>
 	</f:entry>
 
-	<td colspan="3" style="font-weight:bold;" >Claim plugin support <hr /> 
+	<td colspan="3" style="font-weight:bold;" >Claim plugin support <hr />
 		<j:choose>
 
 			<j:when test="${it.IsClaimPluginInstalled == true}">
 				<f:entry title="${%Show claimers in failed builds}" field="showClaimInfo" >
 					<f:checkbox id="xfpanel.showClaimInfo" name="showClaimInfo" checked="${it.showClaimInfo}" value="true"/>
-				</f:entry>	
+				</f:entry>
 				<f:entry title="${%Show claimers in unstable builds}" field="showClaimInfoInUnstable" >
 					<f:checkbox id="xfpanel.showClaimInfoInUnstable" name="showClaimInfoInUnstable" checked="${it.showClaimInfoInUnstable}" value="true"/>
-				</f:entry>	
+				</f:entry>
 				<f:entry title="${%Replace responsibles by claimers}" field="replaceResponsibles">
 					<f:checkbox id="xfpanel.replaceResponsibles" name="replaceResponsibles" checked="${it.replaceResponsibles}" value="true"/>
-				</f:entry>	
+				</f:entry>
 				<f:entry title="${%Replace nr. of failed test cases }" field="replaceNumberOfTestCases">
 					<f:checkbox id="xfpanel.replaceNumberOfTestCases" name="replaceNumberOfTestCases" checked="${it.replaceNumberOfTestCases}" value="true"/>
 					<label for="xfpanel.replaceNumberOfTestCases">  by nr. of unclaimed test cases</label> <br />
-				</f:entry>	
+				</f:entry>
 				<f:entry title="${%Claim font size in pixels}" field="guiClaimFont">
 					<f:textbox id="xfpanel.guiClaimFont" name="guiClaimFont" />
 				</f:entry>
@@ -253,5 +253,13 @@
 	<f:entry title="${%Font color}" field="buildFontColor" >
 		<input class="color" name="buildFontColor" value="${it.buildFontColor}"/>
 	</f:entry>
+
+    <td colspan="3" style="font-weight:bold;">Misc <hr/> </td>
+	<f:entry title="${%Panel headline}" field="panelTopic">
+		<f:textbox id="it.panelTopic" name="panelTopic"/>
+	</f:entry>
+	<f:entry title="${%Remove String from Job Name}" field="stringToRemoveFromJobName">
+        <f:textbox id="it.stringToRemoveFromJobName" name="stringToRemoveFromJobName"/>
+    </f:entry>
 
 </j:jelly>
