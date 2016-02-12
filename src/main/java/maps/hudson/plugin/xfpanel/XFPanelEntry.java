@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import jenkins.model.Jenkins;
 import maps.hudson.plugin.xfpanel.XFPanelView.Blame;
@@ -51,11 +52,13 @@ public final class XFPanelEntry {
      */
     public XFPanelEntry(XFPanelView view, Job<?, ?> job) {
         this.view = view;
-    		this.job = job;
-        this.findStatus();
-        this.setTimes();
+        this.job = job;
     }
 
+    public void init() {
+        this.findStatus();
+        this.setTimes();
+	}
     /**
      * @return the job
      */
@@ -67,7 +70,16 @@ public final class XFPanelEntry {
      * @return the job's name
      */
     public String getName() {
-        String label = job.getDisplayName().toUpperCase();
+        Pattern pattern = getView().getJobNameReplaceRegExpPattern();
+        String label = job.getDisplayName();
+        if (pattern  != null) {
+            String repl = getView().getJobNameReplacement();
+            if (repl == null) {
+                repl = "";
+            }
+            label = pattern.matcher(label).replaceAll(getView().getJobNameReplacement());
+        }
+        label = label.toUpperCase();
         if (getView().getShowDescription() == true && !job.getDescription().isEmpty()) {
             label += ": " + job.getDescription();
         }
@@ -608,5 +620,6 @@ public final class XFPanelEntry {
     public XFPanelView getView() {
 			return view;
 		}
+
 
 }

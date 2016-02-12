@@ -95,6 +95,12 @@
 	<f:entry title="${%Show warning icon}" field="showWarningIcon">
 		<f:checkbox id="xfpanel.showWarningIcon" name="showWarningIcon" checked="${it.showWarningIcon}" value="true"/>
 	</f:entry>
+	<f:entry title="${%Job name replace regular expression}" field="jobNameReplaceRegExp">
+		<f:textbox id="jobNameReplaceRegExp" name="jobNameReplaceRegExp"/>
+	</f:entry>
+	<f:entry title="${%Job name replacement}" field="jobNameReplacement">
+		<f:textbox id="jobNameReplacement" name="jobNameReplacement"/>
+	</f:entry>
 
 	<td colspan="3" style="font-weight:bold;" >General options <hr /> </td>
 	<f:entry title="${%Number of columns}" field="numColumns">

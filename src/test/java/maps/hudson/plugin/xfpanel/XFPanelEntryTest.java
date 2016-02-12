@@ -58,18 +58,39 @@ public class XFPanelEntryTest {
 		//verifyAll();
 	}
 
+	@Test
+	public void testJobNameReplaced() throws Exception {
+		String jobName = "prefix_jobname";
+		String jobNameReplaceRegExp = "prefix_(.*)";
+		String jobNameReplacement = "$1_suffix";
+
+		XFPanelView view = PowerMock.createPartialMock(XFPanelView.class, "getJobNameReplaceRegExp", "getJobNameReplacement", "getShowDescription");
+		EasyMock.expect(view.getJobNameReplaceRegExp()).andReturn(jobNameReplaceRegExp).anyTimes();
+		EasyMock.expect(view.getJobNameReplacement()).andReturn(jobNameReplacement).anyTimes();
+		EasyMock.expect(view.getShowDescription()).andReturn(Boolean.FALSE).anyTimes();
+
+		FreeStyleProject project = PowerMock.createNiceMock(FreeStyleProject.class);
+		Job job = project;
+		EasyMock.expect(job.getDisplayName()).andReturn(jobName).anyTimes();
+		
+		XFPanelEntry xfPanelEntry = new XFPanelEntry(view, job);
+		PowerMock.replayAll();
+		assertEquals("JOBNAME_SUFFIX", xfPanelEntry.getName());
+		
+	}
+
 	private XFPanelEntry prepareData(int allFailed, boolean oneClaimed, boolean showClaimed) throws NoSuchFieldException,
 			IllegalAccessException {
 		Field field = Jenkins.class.getDeclaredField("theInstance");
-    field.setAccessible(true);
-    Jenkins jenkins = PowerMock.createNiceMock(Jenkins.class);
-    field.set(null, jenkins);
-    //EasyMock.expect(jenkins.getInstance()).andReturn(jenkins);
-    //<T extends Describable<T>, D extends Descriptor<T>> 
-    DescriptorExtensionList del = PowerMock.createNiceMock(DescriptorExtensionList.class);
-    List<String> al = new ArrayList<String>();
-    EasyMock.expect(del.iterator()).andReturn(al.iterator());
-    EasyMock.expect(jenkins.getDescriptorList(ListViewColumn.class)).andReturn(del);
+        field.setAccessible(true);
+        Jenkins jenkins = PowerMock.createNiceMock(Jenkins.class);
+        field.set(null, jenkins);
+        //EasyMock.expect(jenkins.getInstance()).andReturn(jenkins);
+        //<T extends Describable<T>, D extends Descriptor<T>> 
+        DescriptorExtensionList del = PowerMock.createNiceMock(DescriptorExtensionList.class);
+        List<String> al = new ArrayList<String>();
+        EasyMock.expect(del.iterator()).andReturn(al.iterator());
+        EasyMock.expect(jenkins.getDescriptorList(ListViewColumn.class)).andReturn(del);
 		FreeStyleProject project = PowerMock.createNiceMock(FreeStyleProject.class);
 		Job job = project;
 		XFPanelView view = PowerMock.createNiceMock(XFPanelView.class);
@@ -94,7 +115,7 @@ public class XFPanelEntryTest {
 		
 		TestResult testResult = PowerMock.createNiceMock(TestResult.class);
 
-    List<CaseResult> crl = new ArrayList<CaseResult>();
+		List<CaseResult> crl = new ArrayList<CaseResult>();
 		CaseResult cr = PowerMock.createNiceMock(CaseResult.class);
 		ClaimTestAction cta = PowerMock.createNiceMock(ClaimTestAction.class);
 		EasyMock.expect(cta.isClaimed()).andReturn(oneClaimed);
@@ -113,7 +134,7 @@ public class XFPanelEntryTest {
 		EasyMock.expect(job.getLastSuccessfulBuild()).andReturn(lastBuild).anyTimes();
 		EasyMock.expect(job.getLastBuild()).andReturn(lastBuild).anyTimes();
 
-    EasyMock.expect(jenkins.getPlugin("claim")).andReturn(new Plugin.DummyImpl()).anyTimes();
+		EasyMock.expect(jenkins.getPlugin("claim")).andReturn(new Plugin.DummyImpl()).anyTimes();
 		
 		PowerMock.replayAll();
 		assertNotNull(Jenkins.getInstance().getPlugin("claim"));

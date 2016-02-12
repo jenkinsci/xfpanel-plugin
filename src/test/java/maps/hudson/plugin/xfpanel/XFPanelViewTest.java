@@ -40,7 +40,7 @@ public class XFPanelViewTest {
 
 	@Test
 	public void testGetPrioritySortedJobsAlphabetical() throws Exception {
-  	PowerMock.resetAll();
+	    PowerMock.resetAll();
 		List<FreeStyleProject> fsps = prepareJobs();
 		List<TopLevelItem> tli = Collections.<TopLevelItem>unmodifiableList(fsps);
 		Collection<Job<?, ?>> jobs = Collections.<Job<?, ?>>unmodifiableList(fsps);;
@@ -58,7 +58,7 @@ public class XFPanelViewTest {
 	
 	@Test
 	public void testGetPrioritySortedJobsPriority() throws Exception {
-  	PowerMock.resetAll();
+	    PowerMock.resetAll();
 		List<FreeStyleProject> fsps = prepareJobs();
 		List<TopLevelItem> tli = Collections.<TopLevelItem>unmodifiableList(fsps);
 		Collection<Job<?, ?>> jobs = Collections.<Job<?, ?>>unmodifiableList(fsps);;
@@ -83,13 +83,13 @@ public class XFPanelViewTest {
     field.set(null, null);
 */
 		Field field = Jenkins.class.getDeclaredField("theInstance");
-    field.setAccessible(true);
-    Jenkins jenkins = PowerMock.createNiceMock(Hudson.class);
-    field.set(null, jenkins);
-    EasyMock.expect(jenkins.getNodes()).andReturn(new ArrayList<Node>()).anyTimes(); 
+        field.setAccessible(true);
+        Jenkins jenkins = PowerMock.createNiceMock(Hudson.class);
+        field.set(null, jenkins);
+        EasyMock.expect(jenkins.getNodes()).andReturn(new ArrayList<Node>()).anyTimes(); 
 		PowerMock.replayAll();
 		
-    List<FreeStyleProject> list = new ArrayList<FreeStyleProject>();
+		List<FreeStyleProject> list = new ArrayList<FreeStyleProject>();
 		//Jenkins jenkins = PowerMock.createNiceMock(Jenkins.class);
 		Constructor<?> constructor = FreeStyleProject.class.getConstructor(Jenkins.class, String.class);
 		for (int i = NR_OF_JOBS - 1; i >= 0; i--) { //make order different than alphabetical
@@ -102,25 +102,25 @@ public class XFPanelViewTest {
 
 	private XFPanelView prepareData(List<TopLevelItem> jobs, Boolean manualSort) throws Exception {
 		Field field = Jenkins.class.getDeclaredField("theInstance");
-    field.setAccessible(true);
-    Jenkins jenkins = PowerMock.createNiceMock(Hudson.class);
-    field.set(null, jenkins);
-    EasyMock.expect(jenkins.getNodes()).andReturn(new ArrayList<Node>()).anyTimes(); 
-
-    DescriptorExtensionList del = PowerMock.createNiceMock(DescriptorExtensionList.class);
-//    DescriptorExtensionList del = DescriptorExtensionList.createDescriptorList(jenkins, Publisher.class);
-    List<String> al = new ArrayList<String>();
-    EasyMock.expect(del.iterator()).andReturn(al.iterator()).anyTimes();
-    EasyMock.expect(del.toArray()).andReturn(al.toArray()).anyTimes();
-    EasyMock.expect(jenkins.getDescriptorList(ListViewColumn.class)).andReturn(del);
+        field.setAccessible(true);
+        Jenkins jenkins = PowerMock.createNiceMock(Hudson.class);
+        field.set(null, jenkins);
+        EasyMock.expect(jenkins.getNodes()).andReturn(new ArrayList<Node>()).anyTimes(); 
+    
+        DescriptorExtensionList del = PowerMock.createNiceMock(DescriptorExtensionList.class);
+    //    DescriptorExtensionList del = DescriptorExtensionList.createDescriptorList(jenkins, Publisher.class);
+        List<String> al = new ArrayList<String>();
+        EasyMock.expect(del.iterator()).andReturn(al.iterator()).anyTimes();
+        EasyMock.expect(del.toArray()).andReturn(al.toArray()).anyTimes();
+        EasyMock.expect(jenkins.getDescriptorList(ListViewColumn.class)).andReturn(del);
 		PowerMock.replayAll();
 		
 
-    XFPanelView view = PowerMock.createPartialMock(XFPanelView.class, new String[]{"getItems"}, "testview", 2);
-  	PowerMock.resetAll();
+        XFPanelView view = PowerMock.createPartialMock(XFPanelView.class, new String[]{"getItems"}, "testview", 2);
+      	PowerMock.resetAll();
 //    XFPanelView view = PowerMock.createPartialMockAndInvokeDefaultConstructor(XFPanelView.class, new String[]{"getItems"});
     //createDefaultInitialColumnList
-    EasyMock.expect(view.getItems()).andReturn(jobs).anyTimes();
+      	EasyMock.expect(view.getItems()).andReturn(jobs).anyTimes();
     
 		Field fieldEnableAutomaticSort = XFPanelView.class.getDeclaredField("enableAutomaticSort");
 		fieldEnableAutomaticSort.setAccessible(true);
@@ -140,6 +140,6 @@ public class XFPanelViewTest {
 			fieldPriorityPerJob.set(view, priorityPerJob);
 		}
 		PowerMock.replayAll();
-    return view;
+		return view;
 	}
 }

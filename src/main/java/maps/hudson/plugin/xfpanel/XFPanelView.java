@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Comparator;
+import java.util.regex.Pattern;
 import java.lang.Math;
 
 import javax.servlet.ServletException;
@@ -81,6 +82,10 @@ public class XFPanelView extends ListView {
     private String brokenBuildColor = "#FF0000";
     private String otherBuildColor = "#CCCCCC";
     private String buildFontColor = "#FFFFFF";
+    
+		private String jobNameReplaceRegExp;
+    private String jobNameReplacement;
+    private Pattern jobNameReplaceRegExpPattern;
 
     /**
      * C'tor<meta  />
@@ -319,7 +324,9 @@ public class XFPanelView extends ListView {
             List<XFPanelEntry> ents = new ArrayList<XFPanelEntry>();
             Collection<Job<?,?>> sortedJobs = getPrioritySortedJobs(jobs, false);
             for (Job<?, ?> job : sortedJobs) {
-                ents.add(new XFPanelEntry(this, job));
+            	  XFPanelEntry xfPanelEntry = new XFPanelEntry(this, job);
+            	  xfPanelEntry.init();
+            	  ents.add(xfPanelEntry);
             }
             if ( enableAutomaticSort == true ){
                 Collections.sort(ents, new selectComparator() );
@@ -524,6 +531,9 @@ public class XFPanelView extends ListView {
         else if (blameType.equals("blame.everyInvolved")) {
             this.BlameState = Blame.EVERYINVOLVED;
         }
+        this.jobNameReplaceRegExp = req.getParameter("jobNameReplaceRegExp");
+        this.jobNameReplacement = req.getParameter("jobNameReplacement");
+        
     }
 
     private Integer asInteger(StaplerRequest request, String parameterName) throws FormException {
@@ -533,8 +543,24 @@ public class XFPanelView extends ListView {
             throw new FormException(parameterName + " must be a positive integer", parameterName);
         }
     }
+    
+    public String getJobNameReplaceRegExp() {
+	    return jobNameReplaceRegExp;
+	}
 
-    /**
+	public String getJobNameReplacement() {
+	    return jobNameReplacement;
+	}
+
+
+    public Pattern getJobNameReplaceRegExpPattern() {
+        if (jobNameReplaceRegExpPattern == null && getJobNameReplaceRegExp() != null && getJobNameReplaceRegExp().length() > 0) {
+            jobNameReplaceRegExpPattern = Pattern.compile(getJobNameReplaceRegExp());
+        }
+        return jobNameReplaceRegExpPattern;
+	}
+
+		/**
      * Notify Hudson we're implementing a new View
      * @author jrenaut
      */
