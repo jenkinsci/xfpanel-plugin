@@ -1,0 +1,17 @@
+Regular expression to apply on job name in order to show changed name on the dashboard. <br/>
+In field 'Job name replace regular expression' put regular expression. <br/>
+In field 'Job name replacement' put replacement text. <br/>
+Example: <br/>
+<br/>
+1. <br/>
+ Job name replace regular expression: prefix<br/>
+ Job name replacement: <i>left empty</i><br/>
+ for job name prefix_my_job will give my_job<br/>
+<br/>
+2. <br/>
+ Job name replace regular expression: prefix_(.*)<br/>
+ Job name replacement: $1_suffix<br/>
+ for job name prefix_my_job will give my_job_suffix<br/>
+<br/>
+<br/>
+Basically it uses java <i>String.replaceAll(regExp, replacement)</i> on job name, so refer there for more explanation. <br/>
