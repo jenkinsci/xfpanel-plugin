@@ -21,7 +21,7 @@
 		</j:when>
 		<j:otherwise>
 			<div class="dashboard"
-				style="left: 0px; top: 34px; position: absolute; height: 100%; z-index: 9999; width: 100%; background-color: white; text-align: center;">
+				style="left: 0px; top: 34px; position: absolute; height: 100%; z-index: 9999; width: 100%; background-color: white; text-align: center; line-height: normal;">
 
 				<j:invoke var="jobs" on="${from}" method="sort">
 					<j:arg type="java.util.Collection" value="${items}" />
