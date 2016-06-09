@@ -83,7 +83,7 @@ public class XFPanelView extends ListView {
     private String otherBuildColor = "#CCCCCC";
     private String buildFontColor = "#FFFFFF";
     
-		private String jobNameReplaceRegExp;
+    private String jobNameReplaceRegExp;
     private String jobNameReplacement;
     private Pattern jobNameReplaceRegExpPattern;
 
@@ -163,7 +163,7 @@ public class XFPanelView extends ListView {
         }
         return this.showDescription;
     }
-
+    
     public Boolean getShowBrokenBuildCount() {
         if (this.showBrokenBuildCount == null) {
             this.showBrokenBuildCount = Boolean.FALSE;;
@@ -531,9 +531,10 @@ public class XFPanelView extends ListView {
         else if (blameType.equals("blame.everyInvolved")) {
             this.BlameState = Blame.EVERYINVOLVED;
         }
+        
         this.jobNameReplaceRegExp = req.getParameter("jobNameReplaceRegExp");
         this.jobNameReplacement = req.getParameter("jobNameReplacement");
-        
+        this.jobNameReplaceRegExpPattern = null;
     }
 
     private Integer asInteger(StaplerRequest request, String parameterName) throws FormException {
