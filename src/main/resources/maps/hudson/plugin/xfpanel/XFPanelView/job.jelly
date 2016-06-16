@@ -16,6 +16,7 @@
            <div class="tag"><span class="tagLabel">${job.lastSucceedTag}</span></div>
    </div>
    
+
    
 	<a href="${rootURL}/${job.url}" style="font-style:normal; font-weight:bold; height:${height};">
 		<div>
