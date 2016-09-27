@@ -430,7 +430,7 @@ public final class XFPanelEntry {
             }
             // if building check previous status
             if (lastBuild.isBuilding()){
-                lastBuild = (AbstractBuild<?, ?>) lastBuild.getPreviousBuild();
+                lastBuild = lastBuild.getPreviousBuild();
                 if (lastBuild == null){
                     return null;
                 }
